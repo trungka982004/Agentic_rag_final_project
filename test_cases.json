@@ -1,0 +1,102 @@
+[
+    {
+        "id": 1,
+        "domain": "it",
+        "question": "What is BERT and how is it pre-trained?"
+    },
+    {
+        "id": 2,
+        "domain": "it",
+        "question": "Explain the architecture of Deep Residual Learning (ResNet)."
+    },
+    {
+        "id": 3,
+        "domain": "it",
+        "question": "How do Generative Adversarial Nets (GANs) work?"
+    },
+    {
+        "id": 4,
+        "domain": "it",
+        "question": "What is MapReduce and how is it used for large-scale data processing?"
+    },
+    {
+        "id": 5,
+        "domain": "it",
+        "question": "What is the Transformer architecture and why is attention important?"
+    },
+    {
+        "id": 6,
+        "domain": "math",
+        "question": "What is the Riemann Hypothesis?"
+    },
+    {
+        "id": 7,
+        "domain": "math",
+        "question": "Explain the distribution of primes as discussed in Riemann's work."
+    },
+    {
+        "id": 8,
+        "domain": "math",
+        "question": "What is the relationship between entropy and the mathematical models provided?"
+    },
+    {
+        "id": 9,
+        "domain": "math",
+        "question": "Discuss the field theoretic aspects of condensed matter physics mentioned in the math documents."
+    },
+    {
+        "id": 10,
+        "domain": "math",
+        "question": "Who are the key figures in the history of the Riemann Hypothesis according to the texts?"
+    },
+    {
+        "id": 11,
+        "domain": "physics",
+        "question": "What are gravitational waves and what was the significance of the binary black hole merger observation?"
+    },
+    {
+        "id": 12,
+        "domain": "physics",
+        "question": "Explain the core principles of Quantum Information Theory."
+    },
+    {
+        "id": 13,
+        "domain": "physics",
+        "question": "What is 'Solid inflation' and how does it differ from standard inflation?"
+    },
+    {
+        "id": 14,
+        "domain": "physics",
+        "question": "How did Quantum Mechanics begin according to the birth of quantum mechanics document?"
+    },
+    {
+        "id": 15,
+        "domain": "physics",
+        "question": "What are cosmological perturbations and their role in the large-scale structure of the universe?"
+    },
+    {
+        "id": 16,
+        "domain": "electronics",
+        "question": "What is neuromorphic computing and how does it mimic the human brain?"
+    },
+    {
+        "id": 17,
+        "domain": "electronics",
+        "question": "Explain the LIF (Leaky Integrate-and-Fire) neuronal network model."
+    },
+    {
+        "id": 18,
+        "domain": "electronics",
+        "question": "What are the challenges in designing low power neuromorphic hardware?"
+    },
+    {
+        "id": 19,
+        "domain": "electronics",
+        "question": "How are Learnable Quantum Efficiency Filters used in hyperspectral segmentation?"
+    },
+    {
+        "id": 20,
+        "domain": "electronics",
+        "question": "What are the Frontiers of High-performance design regimes mentioned in the electronics survey?"
+    }
+]

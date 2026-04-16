@@ -15,7 +15,7 @@ def ingest_docs():
 
     # Check root folder
     if not os.path.exists(RAW_DATA_PATH):
-        print(f"❌ Directory not found: {RAW_DATA_PATH}")
+        print(f"Directory not found: {RAW_DATA_PATH}", flush=True)
         return
 
     # Iterate through each domain folder (it, math, physics, electronics)
@@ -25,14 +25,14 @@ def ingest_docs():
         domain_input_path = os.path.join(RAW_DATA_PATH, domain)
         domain_db_path = os.path.join(DB_BASE_PATH, f"{domain}_index")
         
-        print(f"\n--- 📦 Processing domain: {domain.upper()} ---")
+        print(f"\n--- Processing domain: {domain.upper()} ---", flush=True)
 
         # Load all PDFs in the domain folder
         documents = []
         pdf_files = [f for f in os.listdir(domain_input_path) if f.endswith(".pdf")]
         
         if not pdf_files:
-            print(f"⚠️ No PDF files in {domain}. Skipping...")
+            print(f"No PDF files in {domain}. Skipping...", flush=True)
             continue
 
         for file in pdf_files:
@@ -44,21 +44,21 @@ def ingest_docs():
                 doc.metadata["domain"] = domain  # Assign domain label to each page
             documents.extend(loaded_docs)
     
-        print(f"✅ Loaded {len(documents)} document pages from {len(pdf_files)} files.")
+        print(f"Loaded {len(documents)} document pages from {len(pdf_files)} files.", flush=True)
 
         # Split text (Chunking) according to academic standards
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000, 
-            chunk_overlap=150,
+            chunk_size=512, 
+            chunk_overlap=50,
             separators=["\n\n", "\n", ".", " ", ""]
         )
         splits = text_splitter.split_documents(documents)
-        print(f"✅ Split into {len(splits)} chunks.")
+        print(f"Split into {len(splits)} chunks.", flush=True)
 
         # Save to separate ChromaDB for each domain
         # Delete old DB to refresh with new embedding model
         if os.path.exists(domain_db_path):
-            print(f"🧹 Clearing old index: {domain_db_path}")
+            print(f"Clearing old index: {domain_db_path}", flush=True)
             shutil.rmtree(domain_db_path)
 
         # Initialize Chroma and add documents in batches
@@ -69,14 +69,14 @@ def ingest_docs():
         )
 
         batch_size = 50
-        print(f"🚀 Starting ingestion for {len(splits)} chunks (Batch size: {batch_size})...")
+        print(f"Starting ingestion for {len(splits)} chunks (Batch size: {batch_size})...", flush=True)
         
         for i in range(0, len(splits), batch_size):
             batch = splits[i : i + batch_size]
             vectorstore.add_documents(batch)
-            print(f"📦 Progress: {min(i + batch_size, len(splits))}/{len(splits)} chunks saved...")
+            print(f"Progress: {min(i + batch_size, len(splits))}/{len(splits)} chunks saved...", flush=True)
         
-        print(f"✨ Completed storage for domain {domain}!")
+        print(f"Completed storage for domain {domain}!", flush=True)
 
 if __name__ == "__main__":
     # Ensure DB folder exists
@@ -84,4 +84,4 @@ if __name__ == "__main__":
         os.makedirs(DB_BASE_PATH)
     
     ingest_docs()
-    print("\n\n🎉 ALL DOMAINS HAVE BEEN SUCCESSFULLY VECTORIZED!")
+    print("\n\nALL DOMAINS HAVE BEEN SUCCESSFULLY VECTORIZED!", flush=True)
