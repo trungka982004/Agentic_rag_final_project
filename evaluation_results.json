@@ -1,0 +1,182 @@
+[
+    {
+        "id": 1,
+        "domain_expected": "it",
+        "domain_routed": "it",
+        "question": "What is BERT and how is it pre-trained?",
+        "answer": "BERT (Bidirectional Encoder Representations from Transformers) là một mô hình biểu diễn ngôn ngữ được thiết kế để học từ các dữ liệu không nhãn. Nó bao gồm hai bước chính: quá trình huấn luyện trước và quá trình fine-tuning.\n\n### Bước 1: Quá Trình Huấn Luyện Trước (Pre-training)\n- **Dữ Liệu Sử Dụng**: BERT được huấn luyện trên một tập dữ liệu lớn không nhãn, bao gồm cả BooksCorpus (800 triệu từ) và Wikipedia (2.5 tỷ từ).\n- **Các Nhiệm Vụ Huấn Luyện Trước**: Trong quá trình này, BERT học các biểu diễn ngôn ngữ thông qua việc sử dụng mô hình ngôn ngữ unidirectional để học đại diện chung cho ngôn ngữ.\n- **Phương Pháp**: BERT sử dụng một phương pháp huấn luyện trước đơn giản nhưng hiệu quả. Cụ thể, trong mỗi ví dụ huấn luyện, 50% thời gian, câu B là câu tiếp theo thực tế của câu A (được đánh dấu là IsNext), và 50% thời gian khác, câu B là một câu ngẫu nhiên từ corpus (được đánh dấu là NotNext). Mô hình này sử dụng câu B để dự đoán câu tiếp theo (Next Sentence Prediction - NSP).\n\n### Bước 2: Quá Trình Fine-tuning\n- **Khởi Tạo**: Sau khi huấn luyện trước, mô hình BERT được khởi tạo với các tham số đã được huấn luyện.\n- **Fine-tuning trên Nhiệm Vụ Downstream**: Mô hình BERT sau đó được fine-tuning trên các nhiệm vụ cụ thể (downstream tasks) bằng cách điều chỉnh tất cả các tham số đã được huấn luyện trước.\n\nQua quá trình này, BERT học được biểu diễn ngôn ngữ bidirectional từ dữ liệu không nhãn lớn, giúp cải thiện hiệu suất trong nhiều tác vụ xử lý ngôn ngữ tự nhiên.",
+        "latency": 189.57,
+        "status": "Success"
+    },
+    {
+        "id": 2,
+        "domain_expected": "it",
+        "domain_routed": "it",
+        "question": "Explain the architecture of Deep Residual Learning (ResNet).",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về kiến trúc của Deep Residual Learning (ResNet). Thông tin trong phần ngữ cảnh chỉ đề cập đến các mô hình BERT, GPT, ELMo và kiến trúc Transformer, nhưng không có thông tin liên quan đến ResNet.",
+        "latency": 65.83,
+        "status": "Success"
+    },
+    {
+        "id": 3,
+        "domain_expected": "it",
+        "domain_routed": "it",
+        "question": "How do Generative Adversarial Nets (GANs) work?",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về cáchGenerative Adversarial Nets (GANs) hoạt động. Tài liệu chỉ đề cập đến MapReduce và BERT mà không nói gì về GANs.",
+        "latency": 59.27,
+        "status": "Success"
+    },
+    {
+        "id": 4,
+        "domain_expected": "it",
+        "domain_routed": "it",
+        "question": "What is MapReduce and how is it used for large-scale data processing?",
+        "answer": "MapReduce is a programming model designed for processing and generating large datasets. Here are the key points about MapReduce based on the provided context:\n\n- **Definition**: Users specify two functions: \n  - A map function that processes a key/value pair to generate intermediate key/value pairs.\n  - A reduce function that merges all intermediate values associated with the same intermediate key.\n\n- **Applications**:\n  - It is used for various tasks such as generating data, sorting, data mining, and machine learning.\n  - Specifically at Google, it has been applied across multiple domains including large-scale machine learning problems, clustering problems (for products like Google News and Froogle), extraction of popular query reports (e.g., Google Zeitgeist), and properties of web pages for new experiments.\n\n- **Implementation**:\n  - An implementation of MapReduce that scales to large clusters of machines comprising thousands of machines has been developed.\n  - This implementation efficiently utilizes machine resources, making it suitable for handling many large computational problems encountered at Google.\n\nIn summary, MapReduce is a powerful tool for processing and generating large datasets by breaking down tasks into map and reduce functions. Its versatility allows it to be applied in various domains within Google, demonstrating its broad applicability in solving complex data processing challenges.",
+        "latency": 111.09,
+        "status": "Success"
+    },
+    {
+        "id": 5,
+        "domain_expected": "it",
+        "domain_routed": "electronics",
+        "question": "What is the Transformer architecture and why is attention important?",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về Transformer kiến trúc và tại sao sự chú ý (attention) quan trọng. Thông tin trong phần ngữ cảnh đề cập đến von Neumann kiến trúc và các khái niệm liên quan đến xử lý tín hiệu điện tử, nhưng không nói gì về Transformer hoặc sự chú ý trong máy học hay trí tuệ nhân tạo.",
+        "latency": 75.81,
+        "status": "Success"
+    },
+    {
+        "id": 6,
+        "domain_expected": "math",
+        "domain_routed": "math",
+        "question": "What is the Riemann Hypothesis?",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi về Riemann Hypothesis. Tài liệu chỉ đề cập đến các công thức liên quan đến số nguyên tố và hàm Riemann Ψ(x), nhưng không có thông tin chi tiết về giả thuyết Riemann.",
+        "latency": 48.64,
+        "status": "Success"
+    },
+    {
+        "id": 7,
+        "domain_expected": "math",
+        "domain_routed": "math",
+        "question": "Explain the distribution of primes as discussed in Riemann's work.",
+        "answer": "Riemann's work on the distribution of prime numbers focuses on the complex zeros of the zeta function, ζ(s). Here are key points from his research:\n\n- **Complex Zeros and Prime Distribution**: Riemann observed that the distribution of prime numbers is determined by the complex zeros of the zeta function. This insight was revolutionary because it linked the primes, which are distributed in a seemingly random manner among the integers, to the zeros of this special function.\n\n- **Riemann Hypothesis**: One of his most famous contributions is the Riemann hypothesis, which posits that all non-trivial zeros of the zeta function lie on the critical line of 1/2. This hypothesis remains unproven but has profound implications for understanding the distribution of prime numbers.\n\n- **Integral Representations and Gamma Function**: In his work, Riemann also explored integral representations involving the gamma function (Γ(s)) to derive properties of the zeta function. For instance, he used transformations like \\( x = \\pi t n^2 \\) in integrals to explore these functions further.\n\nThese insights laid the groundwork for modern number theory and continue to be a central focus of research due to their deep implications for understanding prime numbers. The Riemann hypothesis, in particular, remains one of the most important unsolved problems in mathematics.\n\n**Reference**: \n- [data/raw\\math\\riemann.pdf (Page 2)]",
+        "latency": 146.8,
+        "status": "Success"
+    },
+    {
+        "id": 8,
+        "domain_expected": "math",
+        "domain_routed": "math",
+        "question": "What is the relationship between entropy and the mathematical models provided?",
+        "answer": "- Entropy, both in discrete and continuous cases, serves as a measure of randomness or uncertainty. In the context of probability distributions:\n  - For a discrete random variable \\(x\\), the entropy is given by \\(H(x) = -\\sum p_i \\log p_i\\). This formula quantifies the uncertainty associated with the outcomes of the variable.\n  - In the continuous case, the maximum entropy occurs under specific conditions (as detailed in Page 36 of the provided document).\n\n- The relationship between entropy and mathematical models is significant:\n  - For a channel model, where \\(x\\) represents the input to the channel and \\(y\\) its output, the concept of entropy helps in understanding information rates and channel capacities. Specifically, the difference between the entropies of the input and output (i.e., \\(H(y) - H(x)\\)) is crucial for defining these concepts.\n  - The entropy can be negative in continuous distributions, reflecting a measure relative to an assumed standard coordinate system.\n\n- When changing coordinates, the entropy changes due to the Jacobian factor, but the difference between entropies of related variables remains invariant, making it useful despite its dependence on the chosen coordinate system.\n\nThese relationships highlight how entropy is integral to understanding and quantifying randomness in various mathematical models.",
+        "latency": 125.97,
+        "status": "Success"
+    },
+    {
+        "id": 9,
+        "domain_expected": "math",
+        "domain_routed": "physics",
+        "question": "Discuss the field theoretic aspects of condensed matter physics mentioned in the math documents.",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về các khía cạnh trường lý trong vật lý chất rắn. Thông tin trong phần ngữ cảnh chỉ đề cập đến một số khía cạnh chung của mối quan hệ giữa vật lý và khoa học máy tính, cũng như vai trò của vật lý trong việc nghiên cứu thông tin và các hiện tượng tập thể, nhưng không cung cấp chi tiết về trường lý trong vật lý chất rắn.",
+        "latency": 71.71,
+        "status": "Success"
+    },
+    {
+        "id": 10,
+        "domain_expected": "math",
+        "domain_routed": "math",
+        "question": "Who are the key figures in the history of the Riemann Hypothesis according to the texts?",
+        "answer": "Based on the provided context, the key figures mentioned in the history of the Riemann Hypothesis include:\n\n- **Hardy and Littlewood**: Their contributions are referenced under section 2.1.5.\n- **Selberg**: His early contributions during the 1940s to 1950s are noted in section 2.1.6.\n\nThese figures have made significant contributions to the study of the Riemann Hypothesis, particularly concerning aspects such as the proportion of zeros on the critical line and zero-free regions (referenced under sections 2.1.7 and 2.1.8).\n\nThe context does not provide detailed information about other key figures or their specific roles in relation to the Riemann Hypothesis beyond these references.\n\nFor a more comprehensive understanding, additional sources would be necessary.",
+        "latency": 97.42,
+        "status": "Success"
+    },
+    {
+        "id": 11,
+        "domain_expected": "physics",
+        "domain_routed": "physics",
+        "question": "What are gravitational waves and what was the significance of the binary black hole merger observation?",
+        "answer": "Gravitational waves are ripples in the fabric of spacetime caused by some of the most violent and energetic processes in the Universe. The first significant observation related to this question is as follows:\n\n- **Detection and Observation**: Gravitational waves were detected from the merger of two stellar-mass black holes (see Page 7, [Observation_of_Gravitational_Waves_from_a_Binary_Black_Hole_Merger.pdf]). This event demonstrated the existence of binary stellar-mass black hole systems.\n\n- **Significance**:\n  - It is the first direct detection of gravitational waves.\n  - It marks the first observation of a binary black hole merger (see Page 0, [Observation_of_Gravitational_Waves_from_a_Binary_Black_Hole_Merger.pdf]).\n  - The detected waveform matched predictions from general relativity for the inspiral and merger process as well as the ringdown of the resulting single black hole.\n  \nThese observations are significant because they confirm theoretical predictions about gravitational waves and provide direct evidence of binary stellar-mass black hole systems, which was previously unobserved.",
+        "latency": 115.32,
+        "status": "Success"
+    },
+    {
+        "id": 12,
+        "domain_expected": "physics",
+        "domain_routed": "physics",
+        "question": "Explain the core principles of Quantum Information Theory.",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về các nguyên lý cơ bản của Lý thuyết Thông tin Đ quantum. Tài liệu chỉ đề cập đến một số công trình khoa học quan trọng trong lịch sử phát triển của Mekhanics lượng tử và Lý thuyết thông tin, nhưng không đi sâu vào giải thích các nguyên lý cơ bản của Lý thuyết Thông tin Đ quantum.",
+        "latency": 68.61,
+        "status": "Success"
+    },
+    {
+        "id": 13,
+        "domain_expected": "physics",
+        "domain_routed": "physics",
+        "question": "What is 'Solid inflation' and how does it differ from standard inflation?",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về \"Solid inflation\" và cách nó khác với chuẩn inflation. Tài liệu chỉ đề cập đến khái niệm của Solid inflation ở một mức độ nhất định nhưng không đi sâu vào so sánh giữa hai mô hình này.\n\nTài liệu đã nêu rằng:\n- Solid inflation sử dụng ký hiệu P như là một hàm chung (trang 17).\n- Trong ngữ cảnh này, X không phải là [B] được đề cập trước đó mà là ∂µψ∂µψ, nơi ψ là một trường thang nào đó có giá trị trung bình kỳ vọng ⟨ψ⟩ = ¯ψ(t) (trang 17).\n\nTài liệu cũng nêu rõ về cấu trúc của张力，让我继续用中文回答您的问题。\n\n根据提供的上下文信息，目前没有足够的内容来详细说明“Solid inflation”与标准通胀的区别。文档仅对Solid inflation进行了简要提及，并未进行深入比较或解释。\n\n文档中提到的内容包括：\n- Solid inflation使用P作为通用函数（第17页）。\n- 在这里，X不是之前文本中提到的[B]，而是∂µψ∂µψ，其中ψ是一个背景期望值为⟨ψ⟩ = ¯ψ(t)的标量场（第17页）。",
+        "latency": 122.48,
+        "status": "Success"
+    },
+    {
+        "id": 14,
+        "domain_expected": "physics",
+        "domain_routed": "physics",
+        "question": "How did Quantum Mechanics begin according to the birth of quantum mechanics document?",
+        "answer": "According to the \"The Birth of Quantum Mechanics: A Historical Study Through the Canonical Papers\" document, Quantum Mechanics began with Planck's introduction of energy quantization in blackbody radiation. Here are key points from the document:\n\n- **Introduction**: The development of quantum physics is described as one of the most profound revolutions in the history of science.\n- **Historical Context**: Before the advent of quantum theory, significant milestones included Einstein’s light quanta hypothesis, Bohr’s atomic model, and statistical implications related to indistinguishable particles.\n- **Transition Period**: Special emphasis is placed on the transition from Old Quantum Theory to modern quantum mechanics, particularly through Heisenberg's matrix mechanics and Schrödinger's wave mechanics.\n\nThe document traces key ideas and discoveries leading up to the formulation of quantum mechanics until the development of wave mechanics and the uncertainty principle. Planck’s introduction of energy quantization in blackbody radiation marks a pivotal starting point for this historical journey.\n\n**Reference**: \n- **Title**: The Birth of Quantum Mechanics: A Historical Study Through the Canonical Papers\n- **Author**: Eren Volkan K¨ u¸ c¨ uk\n- **Source**: data/raw\\physics\\The_Birth_of_Quantum_Mechanics_A.pdf (Page 1)",
+        "latency": 121.46,
+        "status": "Success"
+    },
+    {
+        "id": 15,
+        "domain_expected": "physics",
+        "domain_routed": "physics",
+        "question": "What are cosmological perturbations and their role in the large-scale structure of the universe?",
+        "answer": "Cosmological perturbations play a crucial role in understanding the large-scale structure of the universe. Here’s an overview based on the provided context:\n\n- **Definition and Origin**: Cosmological perturbations refer to small fluctuations or seeds that existed at very early times (primordial fluctuations) in the otherwise homogeneous universe. These initial conditions grew over time due to gravitational instability, leading to the large-scale structures we observe today.\n\n- **Role in Structure Formation**:\n  - The current explanation for the large-scale structure of the universe is that it results from these primordial, small seed fluctuations being amplified by gravitational instability.\n  - Gravitational instability plays a central role in giving rise to the complex structures seen in galaxy surveys. Understanding this process requires a quantitative understanding of how these perturbations evolve over cosmic time.\n\n- **Technical Analysis and Results**:\n  - Detailed technical analyses are conducted, including up to three-point correlation functions of scalar perturbations.\n  - Key results include the scalar tilt (6.34), tensor-to-scalar ratio (6.35), tensor tilt (6.19), and a detailed analysis of the three-point function of scalar perturbations (7.15).\n\n- **Conceptual Subtleties**:\n  - The absence of adiabatic perturbations during inflation in some models introduces unique challenges that need to be addressed.\n  - These subtleties are explored in sections 9 and 10, highlighting the complexity involved in analyzing cosmological perturbations.\n\nIn summary, cosmological perturbations are essential for explaining how small initial fluctuations grew into the large-scale structures of the universe. Their study is critical for advancing our understanding of cosmic evolution and validating cosmological theories.",
+        "latency": 154.03,
+        "status": "Success"
+    },
+    {
+        "id": 16,
+        "domain_expected": "electronics",
+        "domain_routed": "electronics",
+        "question": "What is neuromorphic computing and how does it mimic the human brain?",
+        "answer": "Neuromorphic computing is a type of architecture that mimics the structure and function of biological neural systems, particularly in comparison to traditional von Neumann systems. Here are key points regarding its nature and how it mimics the human brain:\n\n- **Definition**: Neuromorphic computing was coined by Carver Mead in 1990 [1]. It refers to very large scale integration (VLSI) with analog components that mimic biological neural systems.\n\n- **Mimicking Biological Neural Systems**: The architecture is designed to replicate key aspects of the human brain, such as:\n  - **Neural Networks and Synapses**: Just like neurons in the brain communicate through synapses, neuromorphic systems use similar mechanisms for information processing.\n  - **Parallel Processing**: The brain processes information in parallel, and neuromorphic computing aims to achieve this by designing hardware that can handle multiple tasks simultaneously.\n\n- **Advantages Over Traditional Systems**: By mimicking biological neural systems, neuromorphic computing offers potential advantages such as:\n  - **Energy Efficiency**: Biological brains are highly energy-efficient compared to traditional digital computers. Neuromorphic systems aim to replicate this efficiency.\n  - **Adaptability and Learning**: The brain's ability to learn and adapt is a key feature that neuromorphic computing seeks to emulate, enabling more flexible and adaptive computational models.\n\nIn summary, neuromorphic computing aims to create hardware architectures that closely mimic the structure and function of biological neural systems, offering potential improvements in energy efficiency and adaptability over traditional von Neumann systems.",
+        "latency": 138.99,
+        "status": "Success"
+    },
+    {
+        "id": 17,
+        "domain_expected": "electronics",
+        "domain_routed": "it",
+        "question": "Explain the LIF (Leaky Integrate-and-Fire) neuronal network model.",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về mô hình mạng neuron Leaky Integrate-and-Fire (LIF). Thông tin trong phần ngữ cảnh tập trung vào các kiến thức liên quan đến Transformer và các mô hình mạng neuron khác như RNN, LSTM, GRU, cũng như shortcut connections trong mạng neural.",
+        "latency": 66.58,
+        "status": "Success"
+    },
+    {
+        "id": 18,
+        "domain_expected": "electronics",
+        "domain_routed": "electronics",
+        "question": "What are the challenges in designing low power neuromorphic hardware?",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về các thách thức cụ thể trong thiết kế hệ thống vi điện tử thần kinh tiêu thụ năng lượng thấp. Tài liệu đề cập đến việc giảm tiêu thụ năng lượng là một động lực chính cho sự phát triển của hệ thống vi điện tử thần kinh, nhưng không đi sâu vào các thách thức cụ thể liên quan đến việc thiết kế chúng.",
+        "latency": 73.93,
+        "status": "Success"
+    },
+    {
+        "id": 19,
+        "domain_expected": "electronics",
+        "domain_routed": "electronics",
+        "question": "How are Learnable Quantum Efficiency Filters used in hyperspectral segmentation?",
+        "answer": "Tôi xin lỗi, tài liệu hiện có không cung cấp đủ thông tin để trả lời câu hỏi này về cách sử dụng Learnable Quantum Efficiency Filters trong quá trình phân đoạn phổ siêu viễn (hyperspectral segmentation). Tài liệu chỉ đề cập đến các công trình nghiên cứu liên quan khác như Spectral Textile Detection và Snapshot Hyperspectral Imaging, nhưng không có thông tin cụ thể về Learnable Quantum Efficiency Filters.",
+        "latency": 83.09,
+        "status": "Success"
+    },
+    {
+        "id": 20,
+        "domain_expected": "electronics",
+        "domain_routed": "electronics",
+        "question": "What are the Frontiers of High-performance design regimes mentioned in the electronics survey?",
+        "answer": "The frontiers of high-performance design regimes, as discussed in the provided document, primarily focus on several key areas:\n\n- **Interplay Between Sampling Mechanisms and Design Regimes**: The paper emphasizes the importance of understanding how different sampling mechanisms interact with various design regimes. This includes exploring beyond sole parametric optimization to consider a broader range of factors.\n\n- **Metastability and Application-Oriented Specifications**: Recent research has drawn attention to metastability, which is often in conflict with the Figure of Merit (FoM)-driven design philosophy. The document highlights that application-specific requirements should be considered alongside traditional performance metrics like FoM.\n\n- **Tradeoffs at the System Level**: The article discusses how high-speed Nyquist ADCs face significant tradeoffs between speed, accuracy, and metastability. It also examines sampling mechanisms, time-interleaving strategies, and quantization architectures to optimize these parameters.\n\n- **Beyond FoM-Driven Design Philosophy**: There is a push to move beyond the traditional focus on single-parameter metrics like FoM, recognizing that high-speed ADCs require a more holistic approach considering multiple performance aspects simultaneously.\n\nThese areas collectively represent the frontiers of high-performance design regimes in the context of this document.",
+        "latency": 121.36,
+        "status": "Success"
+    }
+]

@@ -1,50 +1,87 @@
 import os
+import shutil
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma 
 
-# 1. Cấu hình đường dẫn
-DATA_PATH = "data/"
-DB_PATH = "db/"
+# 1. Path configuration according to new structure
+RAW_DATA_PATH = "data/raw"
+DB_BASE_PATH = "db/vector_stores"
 
 def ingest_docs():
-    # Bước 1: Load tất cả file PDF trong thư mục data
-    documents = []
-    for file in os.listdir(DATA_PATH):
-        if file.endswith(".pdf"):
-            loader = PyPDFLoader(os.path.join(DATA_PATH, file))
-            documents.extend(loader.load())
+    # Initialize Embedding model (nomic-embed-text) - Much faster and optimized for search
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+
+    # Check root folder
+    if not os.path.exists(RAW_DATA_PATH):
+        print(f"Directory not found: {RAW_DATA_PATH}", flush=True)
+        return
+
+    # Iterate through each domain folder (it, math, physics, electronics)
+    domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d))]
     
-    print(f"✅ Đã tải {len(documents)} trang tài liệu.")
+    for domain in domains:
+        domain_input_path = os.path.join(RAW_DATA_PATH, domain)
+        domain_db_path = os.path.join(DB_BASE_PATH, f"{domain}_index")
+        
+        print(f"\n--- Processing domain: {domain.upper()} ---", flush=True)
 
-    # Bước 2: Chia nhỏ văn bản (Chunking)
-    # chunk_size=1000 và overlap=100 giúp giữ ngữ cảnh giữa các đoạn
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, 
-        chunk_overlap=100,
-        separators=["\n\n", "\n", ".", " ", ""]
-    )
-    splits = text_splitter.split_documents(documents)
-    print(f"✅ Đã chia thành {len(splits)} đoạn văn bản (chunks).")
+        # Load all PDFs in the domain folder
+        documents = []
+        pdf_files = [f for f in os.listdir(domain_input_path) if f.endswith(".pdf")]
+        
+        if not pdf_files:
+            print(f"No PDF files in {domain}. Skipping...", flush=True)
+            continue
 
-    # Bước 3: Khởi tạo Embedding model (sử dụng Qwen qua Ollama hoặc mxbai-embed-large)
-    # Lưu ý: Ollama có model chuyên dụng cho embedding như 'mxbai-embed-large' 
-    # sẽ hiệu quả hơn dùng trực tiếp model chat để embed.
-    embeddings = OllamaEmbeddings(model="qwen2.5:7b")
-
-    # Bước 4: Lưu vào ChromaDB
-    print("🚀 Đang tiến hành Vectorizing và lưu vào DB... (Vui lòng đợi)")
-    vectorstore = Chroma.from_documents(
-        documents=splits,
-        embedding=embeddings,
-        persist_directory=DB_PATH
-    )
+        for file in pdf_files:
+            file_path = os.path.join(domain_input_path, file)
+            loader = PyPDFLoader(file_path)
+            # Manually add metadata to ensure consistency
+            loaded_docs = loader.load()
+            for doc in loaded_docs:
+                doc.metadata["domain"] = domain  # Assign domain label to each page
+            documents.extend(loaded_docs)
     
-    print(f"✨ Hoàn tất! Vector Database đã được lưu tại: {DB_PATH}")
+        print(f"Loaded {len(documents)} document pages from {len(pdf_files)} files.", flush=True)
+
+        # Split text (Chunking) according to academic standards
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=512, 
+            chunk_overlap=50,
+            separators=["\n\n", "\n", ".", " ", ""]
+        )
+        splits = text_splitter.split_documents(documents)
+        print(f"Split into {len(splits)} chunks.", flush=True)
+
+        # Save to separate ChromaDB for each domain
+        # Delete old DB to refresh with new embedding model
+        if os.path.exists(domain_db_path):
+            print(f"Clearing old index: {domain_db_path}", flush=True)
+            shutil.rmtree(domain_db_path)
+
+        # Initialize Chroma and add documents in batches
+        vectorstore = Chroma(
+            persist_directory=domain_db_path,
+            embedding_function=embeddings,
+            collection_name=f"{domain}_collection"
+        )
+
+        batch_size = 50
+        print(f"Starting ingestion for {len(splits)} chunks (Batch size: {batch_size})...", flush=True)
+        
+        for i in range(0, len(splits), batch_size):
+            batch = splits[i : i + batch_size]
+            vectorstore.add_documents(batch)
+            print(f"Progress: {min(i + batch_size, len(splits))}/{len(splits)} chunks saved...", flush=True)
+        
+        print(f"Completed storage for domain {domain}!", flush=True)
 
 if __name__ == "__main__":
-    # Tạo thư mục nếu chưa có
-    if not os.path.exists(DATA_PATH): os.makedirs(DATA_PATH)
+    # Ensure DB folder exists
+    if not os.path.exists(DB_BASE_PATH): 
+        os.makedirs(DB_BASE_PATH)
     
     ingest_docs()
+    print("\n\nALL DOMAINS HAVE BEEN SUCCESSFULLY VECTORIZED!", flush=True)
