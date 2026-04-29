@@ -1,7 +1,7 @@
 import json
 import time
 import os
-from main import classify_domain, retrieve_context, generate_answer
+from local_rag import classify_domain, retrieve_context, generate_answer
 
 def run_evaluation():
     if not os.path.exists("test_cases.json"):

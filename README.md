@@ -1,76 +1,99 @@
-# Agentic RAG Project
+# Agentic RAG Final Project
 
-This project implements a basic Agentic RAG (Retrieval-Augmented Generation) system using LangChain, Ollama, and ChromaDB to process and query PDF documents.
+## Overview
+This project implements an advanced **Agentic Retrieval-Augmented Generation (RAG)** system designed to provide highly accurate, context-aware answers by intelligently routing queries across multiple knowledge tiers. 
 
-## 🚀 Features
-- Automated PDF document loading and processing.
-- Intelligent text chunking using `RecursiveCharacterTextSplitter`.
-- Local Vector Embedding storage using ChromaDB.
-- Semantic similarity search powered by LLM models via Ollama.
+Currently in **Phase 3 (Agentic Tier)**, the system transitions from a linear RAG pipeline to a dynamic, graph-based agent workflow using **LangGraph**. It employs a "Local First, Global Second" strategy to optimize both latency and response quality.
 
-## 📋 Prerequisites
-Before you begin, ensure you have the following installed:
-- [Python 3.9+](https://www.python.org/downloads/)
-- [Ollama](https://ollama.com/)
-- The `qwen2.5:7b` model in Ollama (or update the model identifier in the code).
+## Architecture & Tool Layering
 
-## 🛠️ Installation
+The system operates across three distinct knowledge tiers:
 
-1. **Clone the repository:**
+1. **Tier 1 (Local Knowledge Base):** 
+   - **ChromaDB** storing vectorized academic PDFs categorized into four domains: IT, Math, Physics, and Electronics.
+   - Powered by local `nomic-embed-text` embeddings.
+2. **Tier 2 (Web Search Fallback):**
+   - **DuckDuckGo Search** is triggered automatically if the local database lacks relevant information.
+3. **Tier 3 (Expert Consultant):**
+   - **Tavily API** is invoked for complex, trend-based, or comparative questions requiring deep research and expert summarization.
+
+### The LangGraph Workflow
+- **Router Node:** Classifies the user's intent and domain, deciding whether to route to the Local DB or consult the Expert API immediately.
+- **Grader Node (Self-Correction):** Evaluates the retrieved local documents. If the relevance score is low, it intelligently falls back to Web Search.
+- **Generator Node:** Synthesizes the final answer using **Qwen2.5 (7b)** via Ollama, strictly adhering to the provided context to prevent hallucinations.
+
+## Project Structure
+```text
+Agentic_rag_final_project/
+├── agent/                  # LangGraph workflow definitions
+│   ├── edges.py            # Routing logic and conditional edges
+│   ├── graph.py            # StateGraph assembly and compilation
+│   ├── nodes.py            # Execution nodes (router, grader, generator)
+│   └── state.py            # TypedDict defining the GraphState
+├── tools/                  # External API wrappers
+│   ├── expert_search.py    # Tavily API integration
+│   └── web_search.py       # DuckDuckGo integration
+├── data/                   # Raw PDF documents (categorized by domain)
+├── db/                     # Persisted ChromaDB vector stores
+├── ingestion.py            # Script to chunk and vectorize PDFs
+├── local_rag.py            # Core local RAG functions (LLM setup, retrieval)
+├── main.py                 # Application entry point
+├── requirements.txt        # Project dependencies
+└── .env                    # Environment variables (API Keys)
+```
+
+## Prerequisites
+1. **Python 3.10+**
+2. **Ollama** installed and running locally with the following models pulled:
    ```bash
-   git clone <your-repo-url>
+   ollama pull qwen2.5:7b
+   ollama pull nomic-embed-text
+   ```
+3. **Tavily API Key**: Get a free API key from [tavily.com](https://tavily.com/).
+
+## Installation & Setup
+
+1. **Clone the repository and navigate to the folder:**
+   ```bash
+   git clone <repository_url>
    cd Agentic_rag_final_project
    ```
 
-2. **Create a Virtual Environment:**
+2. **Set up a virtual environment and activate it:**
    ```bash
    python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On Mac/Linux:
+   source venv/bin/activate
    ```
 
-3. **Activate the Virtual Environment:**
-   - **Windows:**
-     ```bash
-     .\venv\Scripts\activate
-     ```
-   - **macOS/Linux:**
-     ```bash
-     source venv/bin/activate
-     ```
-
-4. **Install Required Dependencies:**
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-5. **Pull the LLM Model (Ollama):**
-   ```bash
-   ollama pull qwen2.5:7b
+4. **Configure Environment Variables:**
+   Create a `.env` file in the root directory and add your Tavily API Key:
+   ```env
+   TAVILY_API_KEY=your_tavily_api_key_here
    ```
 
-## 📖 Usage Guide
+## Usage
 
-### 1. Data Ingestion
-- Place your PDF files into the `data/` directory.
-- Run the ingestion script to process documents and create the vector database:
-  ```bash
-  python ingestion.py
-  ```
+### 1. Data Ingestion (Vectorizing Documents)
+Place your PDF files into the respective domain folders inside `data/raw/` (`it`, `math`, `physics`, `electronics`). Then run the ingestion script:
+```bash
+python ingestion.py
+```
+This will process the documents and build the local ChromaDB indices.
 
-### 2. Testing the Database
-- After ingestion is complete, you can test the retrieval system:
-  ```bash
-  python test_db.py
-  ```
+### 2. Run the Agentic RAG System
+Start the main interactive terminal interface:
+```bash
+python main.py
+```
+You can now ask questions. The Agent will autonomously decide whether to retrieve local documents, search DuckDuckGo, or consult Tavily.
 
-## 📂 Project Structure
-- `data/`: Input directory for PDF documents.
-- `db/`: Local storage directory for the ChromaDB vector store.
-- `ingestion.py`: Script for document processing and embedding.
-- `test_db.py`: Script for testing semantic search queries.
-- `main.py`: Entry point for the application (under development).
-- `requirements.txt`: List of required Python packages.
-
-## 📝 Troubleshooting & Notes
-- **Ollama Engine:** Ensure the Ollama application is running before executing ingestion or search scripts.
-- **Model Configuration:** If you wish to use a different model, update the `model` parameter in both `ingestion.py` and `test_db.py`.
-- **Directory Creation:** The script automatically creates `data/` and `db/` folders if they do not exist.
+## License
+MIT License
