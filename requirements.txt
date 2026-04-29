@@ -5,3 +5,8 @@ langchain-ollama
 chromadb
 pypdf
 langchain-chroma
+langgraph
+duckduckgo-search
+langchain-openai
+tavily-python
+python-dotenv
