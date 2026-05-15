@@ -19,3 +19,68 @@ def decide_to_generate(state: GraphState):
     else:
         print("[*] Decision: Generate Answer.")
         return "generate"
+
+from local_rag import llm
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+def grade_generation_v_documents_and_question(state: GraphState):
+    """
+    Determines whether the generation is grounded in the document and answers question.
+    """
+    print("--- CHECK HALLUCINATIONS ---")
+    question = state["question"]
+    documents = state.get("documents", [])
+    generation = state["generation"]
+
+    if not documents:
+        # If no documents, we can't check for hallucination against context
+        # But we can still check answer relevance
+        pass
+
+    # 1. Hallucination Grader
+    hallucination_prompt = ChatPromptTemplate.from_template(
+        "You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. \n"
+        "Here are the facts:\n"
+        "-------\n"
+        "{documents}\n"
+        "-------\n"
+        "Here is the LLM generation: {generation}\n"
+        "Give a binary score 'yes' or 'no'. 'yes' means that the answer is grounded in / supported by the facts."
+    )
+    hallucination_chain = hallucination_prompt | llm | StrOutputParser()
+    
+    context = "\n\n".join(documents) if documents else "No documents."
+    score = hallucination_chain.invoke({"documents": context, "generation": generation})
+    grade = score.strip().lower()
+
+    if "yes" in grade:
+        print("[*] Decision: Generation is grounded in documents.")
+        
+        # 2. Answer Grader
+        print("--- GRADE GENERATION vs QUESTION ---")
+        answer_prompt = ChatPromptTemplate.from_template(
+            "You are a grader assessing whether an answer addresses / resolves a question. \n"
+            "Here is the question:\n"
+            "-------\n"
+            "{question}\n"
+            "-------\n"
+            "Here is the answer:\n"
+            "-------\n"
+            "{generation}\n"
+            "-------\n"
+            "Give a binary score 'yes' or 'no'. 'yes' means that the answer resolves the question."
+        )
+        answer_chain = answer_prompt | llm | StrOutputParser()
+        score = answer_chain.invoke({"question": question, "generation": generation})
+        grade = score.strip().lower()
+        
+        if "yes" in grade:
+            print("[*] Decision: Generation addresses question.")
+            return "useful"
+        else:
+            print("[*] Decision: Generation does not address question.")
+            return "not useful"
+    else:
+        print("[*] Decision: Generation is not grounded in documents, retry.")
+        return "not supported"

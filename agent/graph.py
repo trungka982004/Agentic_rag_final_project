@@ -8,7 +8,8 @@ from agent.nodes import (
     expert_consult_node,
     generate_node
 )
-from agent.edges import route_question, decide_to_generate
+from agent.edges import route_question, decide_to_generate, grade_generation_v_documents_and_question
+from langgraph.checkpoint.memory import MemorySaver
 
 def create_agent_graph():
     workflow = StateGraph(GraphState)
@@ -46,8 +47,18 @@ def create_agent_graph():
     
     workflow.add_edge("web_search", "generate")
     workflow.add_edge("expert_consult", END)
-    workflow.add_edge("generate", END)
+    
+    workflow.add_conditional_edges(
+        "generate",
+        grade_generation_v_documents_and_question,
+        {
+            "not supported": "generate",
+            "useful": END,
+            "not useful": "web_search",
+        }
+    )
 
-    # Compile
-    app = workflow.compile()
+    # Compile with checkpointer for state management
+    memory = MemorySaver()
+    app = workflow.compile(checkpointer=memory)
     return app
