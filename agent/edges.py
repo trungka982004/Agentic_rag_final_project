@@ -1,9 +1,12 @@
 from agent.state import GraphState
 
 def route_question(state: GraphState):
-    """Route question to web search, expert consult, or local RAG."""
+    """Route question to web search, expert consult, local RAG, or Python REPL."""
     print("--- ROUTE QUESTION ---")
-    if state.get("expert_required"):
+    if state.get("python_repl"):
+        print("[*] Routing to Python REPL.")
+        return "python_repl"
+    elif state.get("expert_required"):
         print("[*] Routing to Expert Consultant (Tavily).")
         return "expert_consult"
     else:

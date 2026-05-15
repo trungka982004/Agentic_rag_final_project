@@ -4,6 +4,7 @@ from tools.expert_search import get_expert_answer
 from local_rag import classify_domain, retrieve_context, llm
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_experimental.utilities import PythonREPL
 
 def router_node(state: GraphState):
     """Classifies domain and decides initial path."""
@@ -22,7 +23,10 @@ def router_node(state: GraphState):
     else:
         print("[*] Tavily trigger is OFF. Forcing Local/Web search track.")
     
-    return {"domain": domain, "expert_required": expert_required}
+    python_keywords = ["python", "code", "tính toán", "calculate", "giải phương trình", "vẽ biểu đồ", "plot"]
+    python_repl = any(kw in question.lower() for kw in python_keywords)
+    
+    return {"domain": domain, "expert_required": expert_required, "python_repl": python_repl}
 
 def retrieve_local_node(state: GraphState):
     """Retrieves documents from local ChromaDB."""
@@ -123,3 +127,27 @@ def generate_node(state: GraphState):
     
     response = chain.invoke({"question": question, "context": context})
     return {"generation": response}
+
+def python_repl_node(state: GraphState):
+    """Executes Python code to answer math/coding queries."""
+    print("--- PYTHON REPL NODE ---")
+    question = state["question"]
+    
+    prompt = ChatPromptTemplate.from_template(
+        "You are an expert Python programmer. Write Python code to solve the following problem. "
+        "Return ONLY the raw python code. Do NOT wrap it in markdown block, do NOT include explanations. "
+        "Use print() to output the final answer.\n\nProblem: {question}"
+    )
+    chain = prompt | llm | StrOutputParser()
+    code = chain.invoke({"question": question}).replace("```python", "").replace("```", "").strip()
+    
+    print(f"[*] Generated Code:\n{code}")
+    
+    repl = PythonREPL()
+    try:
+        result = repl.run(code)
+        answer = f"**Executed Python Code:**\n```python\n{code}\n```\n**Result:**\n{result}"
+    except Exception as e:
+        answer = f"**Failed to execute code:**\n```python\n{code}\n```\n**Error:** {e}"
+        
+    return {"generation": answer}

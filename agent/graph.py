@@ -6,7 +6,8 @@ from agent.nodes import (
     grade_documents_node,
     web_search_node,
     expert_consult_node,
-    generate_node
+    generate_node,
+    python_repl_node
 )
 from agent.edges import route_question, decide_to_generate, grade_generation_v_documents_and_question
 from langgraph.checkpoint.memory import MemorySaver
@@ -21,6 +22,7 @@ def create_agent_graph():
     workflow.add_node("web_search", web_search_node)
     workflow.add_node("expert_consult", expert_consult_node)
     workflow.add_node("generate", generate_node)
+    workflow.add_node("python_repl", python_repl_node)
 
     # Build graph
     workflow.add_edge(START, "router")
@@ -29,6 +31,7 @@ def create_agent_graph():
         "router",
         route_question,
         {
+            "python_repl": "python_repl",
             "retrieve_local": "retrieve_local",
             "expert_consult": "expert_consult",
         }
@@ -47,6 +50,7 @@ def create_agent_graph():
     
     workflow.add_edge("web_search", "generate")
     workflow.add_edge("expert_consult", END)
+    workflow.add_edge("python_repl", END)
     
     workflow.add_conditional_edges(
         "generate",

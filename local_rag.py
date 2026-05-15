@@ -4,6 +4,9 @@ from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
+from langchain_core.documents import Document
 
 # --- CONFIGURATION ---
 DB_BASE_PATH = "db/vector_stores"
@@ -51,18 +54,40 @@ def classify_domain(query):
         return "physics" 
     return domain
 
+def get_bm25_retriever(db, k=5):
+    docs_data = db.get()
+    documents = []
+    if not docs_data or not docs_data.get('documents'):
+        return None
+        
+    for i in range(len(docs_data['documents'])):
+        doc = Document(
+            page_content=docs_data['documents'][i],
+            metadata=docs_data['metadatas'][i] if docs_data.get('metadatas') else {}
+        )
+        documents.append(doc)
+    if not documents:
+        return None
+    retriever = BM25Retriever.from_documents(documents)
+    retriever.k = k
+    return retriever
+
 def retrieve_context(query, domain, k=5, score_threshold=0.3):
-    """Retrieves relevant chunks from the domain-specific vector DB with score filtering."""
+    """Retrieves relevant chunks from the domain-specific vector DB using Hybrid Search (BM25 + Vector)."""
     db = get_vector_db(domain)
     if not db:
         return "No database found for this domain."
     
-    # Use similarity_search_with_relevance_scores for filtering
-    # Higher score means more relevant
-    docs_with_scores = db.similarity_search_with_relevance_scores(query, k=k)
+    vector_retriever = db.as_retriever(search_kwargs={"k": k})
+    bm25_retriever = get_bm25_retriever(db, k=k)
     
-    # Filter by threshold
-    filtered_docs = [doc for doc, score in docs_with_scores if score >= score_threshold]
+    if bm25_retriever:
+        ensemble_retriever = EnsembleRetriever(
+            retrievers=[bm25_retriever, vector_retriever], weights=[0.5, 0.5]
+        )
+        filtered_docs = ensemble_retriever.invoke(query)
+    else:
+        filtered_docs = vector_retriever.invoke(query)
     
     if not filtered_docs:
         return "No relevant information found in the database."

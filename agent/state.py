@@ -8,3 +8,4 @@ class GraphState(TypedDict):
     expert_required: bool        # Flag for expert consultation
     generation: str              # Generated answer
     use_tavily: bool             # Flag to enable/disable Tavily search
+    python_repl: bool            # Flag for Python REPL execution
