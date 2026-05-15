@@ -87,3 +87,11 @@ def grade_generation_v_documents_and_question(state: GraphState):
     else:
         print("[*] Decision: Generation is not grounded in documents, retry.")
         return "not supported"
+
+def decide_to_export(state: GraphState):
+    """Decides whether to export the result to Google Workspace."""
+    if state.get("export_to_workspace"):
+        print("[*] Export flag is ON. Routing to Export Report node.")
+        return "export"
+    print("[*] Export flag is OFF. Ending.")
+    return "end"

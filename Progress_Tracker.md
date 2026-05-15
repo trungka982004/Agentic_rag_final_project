@@ -21,8 +21,8 @@ Dựa trên tài liệu `Implementation_Plan.md` và tình trạng thực tế c
 ## Giai đoạn 3: Tích hợp Công cụ & Tính năng Nâng cao
 - [x] **Hybrid Search**: Bổ sung BM25 (keyword search) và kết hợp với Vector Search hiện tại bằng `EnsembleRetriever`.
 - [x] Tích hợp **Python REPL Tool**: Cho phép Agent thực thi mã Python.
-- [ ] Tích hợp **Google Workspace API Tool**: Hỗ trợ Agent xuất báo cáo ra Google Docs/Sheets.
-- [ ] Xử lý **LaTeX & Mermaid**: Hỗ trợ Agent trả về kết quả chuẩn định dạng để hiển thị công thức/sơ đồ.
+- [x] Tích hợp **Google Workspace API Tool**: Hỗ trợ Agent xuất báo cáo ra Google Docs/Sheets.
+- [x] Xử lý **LaTeX & Mermaid**: Hỗ trợ Agent trả về kết quả chuẩn định dạng để hiển thị công thức/sơ đồ.
 
 ## Giai đoạn 4: Đánh giá, Tối ưu & Hoàn thiện
 - [ ] Tích hợp framework đánh giá **RAGAS** (Faithfulness, Answer Relevance, Context Precision) vào file `evaluate.py`.

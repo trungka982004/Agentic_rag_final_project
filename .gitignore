@@ -54,3 +54,8 @@ Desktop.ini
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Google Workspace API credentials (SENSITIVE - never commit)
+credentials.json
+token.json
+client_secret*.json

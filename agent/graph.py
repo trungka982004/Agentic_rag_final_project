@@ -7,9 +7,10 @@ from agent.nodes import (
     web_search_node,
     expert_consult_node,
     generate_node,
-    python_repl_node
+    python_repl_node,
+    export_report_node
 )
-from agent.edges import route_question, decide_to_generate, grade_generation_v_documents_and_question
+from agent.edges import route_question, decide_to_generate, grade_generation_v_documents_and_question, decide_to_export
 from langgraph.checkpoint.memory import MemorySaver
 
 def create_agent_graph():
@@ -23,6 +24,7 @@ def create_agent_graph():
     workflow.add_node("expert_consult", expert_consult_node)
     workflow.add_node("generate", generate_node)
     workflow.add_node("python_repl", python_repl_node)
+    workflow.add_node("export_report", export_report_node)
 
     # Build graph
     workflow.add_edge(START, "router")
@@ -57,10 +59,20 @@ def create_agent_graph():
         grade_generation_v_documents_and_question,
         {
             "not supported": "generate",
-            "useful": END,
+            "useful": "check_export",
             "not useful": "web_search",
         }
     )
+    workflow.add_node("check_export", lambda state: state)  # pass-through
+    workflow.add_conditional_edges(
+        "check_export",
+        decide_to_export,
+        {
+            "export": "export_report",
+            "end": END,
+        }
+    )
+    workflow.add_edge("export_report", END)
 
     # Compile with checkpointer for state management
     memory = MemorySaver()
