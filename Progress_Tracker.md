@@ -13,10 +13,10 @@ Dựa trên tài liệu `Implementation_Plan.md` và tình trạng thực tế c
 - [x] Xây dựng bộ khung LangGraph: Các node router, retrieve, web_search, generate.
 - [x] Node **Router Grader**: Phân loại domain của câu hỏi.
 - [x] Logic Self-RAG - **Retrieve Grader**: Kiểm tra độ tương quan giữa tài liệu tìm được và câu hỏi (`grade_documents_node`).
-- [ ] Logic Self-RAG - **Hallucination Grader**: Node đối chiếu câu trả lời của LLM với dữ liệu gốc để chống ảo giác.
-- [ ] Logic Self-RAG - **Answer Grader**: Node đánh giá xem câu trả lời có thỏa mãn yêu cầu của người dùng hay chưa.
-- [ ] Cập nhật Conditional Edges trong `graph.py` để kết nối Hallucination Grader và Answer Grader.
-- [ ] **State Management**: Cấu hình Checkpointing/Snapshotting (vd: `MemorySaver`) trong quá trình compile LangGraph để lưu trữ trạng thái hội thoại.
+- [x] Logic Self-RAG - **Hallucination Grader**: Node đối chiếu câu trả lời của LLM với dữ liệu gốc để chống ảo giác.
+- [x] Logic Self-RAG - **Answer Grader**: Node đánh giá xem câu trả lời có thỏa mãn yêu cầu của người dùng hay chưa.
+- [x] Cập nhật Conditional Edges trong `graph.py` để kết nối Hallucination Grader và Answer Grader.
+- [x] **State Management**: Cấu hình Checkpointing/Snapshotting (vd: `MemorySaver`) trong quá trình compile LangGraph để lưu trữ trạng thái hội thoại.
 
 ## Giai đoạn 3: Tích hợp Công cụ & Tính năng Nâng cao
 - [ ] **Hybrid Search**: Bổ sung BM25 (keyword search) và kết hợp với Vector Search hiện tại bằng `EnsembleRetriever`.

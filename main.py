@@ -31,7 +31,8 @@ def main():
         
         print("\n" + "="*50)
         # Run the LangGraph app
-        final_state = app.invoke(inputs)
+        config = {"configurable": {"thread_id": "1"}}
+        final_state = app.invoke(inputs, config=config)
         
         print("\n--- Final Answer ---")
         print(final_state.get("generation", "No answer generated."))
