@@ -1,9 +1,12 @@
 from agent.state import GraphState
 
 def route_question(state: GraphState):
-    """Route question to web search, expert consult, or local RAG."""
+    """Route question to web search, expert consult, local RAG, or Python REPL."""
     print("--- ROUTE QUESTION ---")
-    if state.get("expert_required"):
+    if state.get("python_repl"):
+        print("[*] Routing to Python REPL.")
+        return "python_repl"
+    elif state.get("expert_required"):
         print("[*] Routing to Expert Consultant (Tavily).")
         return "expert_consult"
     else:
@@ -84,3 +87,11 @@ def grade_generation_v_documents_and_question(state: GraphState):
     else:
         print("[*] Decision: Generation is not grounded in documents, retry.")
         return "not supported"
+
+def decide_to_export(state: GraphState):
+    """Decides whether to export the result to Google Workspace."""
+    if state.get("export_to_workspace"):
+        print("[*] Export flag is ON. Routing to Export Report node.")
+        return "export"
+    print("[*] Export flag is OFF. Ending.")
+    return "end"

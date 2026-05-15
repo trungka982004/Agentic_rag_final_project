@@ -10,3 +10,9 @@ duckduckgo-search
 langchain-openai
 tavily-python
 python-dotenv
+rank_bm25
+langchain_experimental
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+
