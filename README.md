@@ -11,7 +11,7 @@ The system operates across three distinct knowledge tiers:
 
 1. **Tier 1 (Local Knowledge Base):** 
    - **ChromaDB** storing vectorized academic PDFs categorized into four domains: IT, Math, Physics, and Electronics.
-   - Powered by local `nomic-embed-text` embeddings.
+   - Powered by local `bge-m3` embeddings.
 2. **Tier 2 (Web Search Fallback):**
    - **DuckDuckGo Search** is triggered automatically if the local database lacks relevant information.
 3. **Tier 3 (Expert Consultant):**
@@ -47,7 +47,7 @@ Agentic_rag_final_project/
 2. **Ollama** installed and running locally with the following models pulled:
    ```bash
    ollama pull qwen2.5:7b
-   ollama pull nomic-embed-text
+   ollama pull bge-m3
    ```
 3. **Tavily API Key**: Get a free API key from [tavily.com](https://tavily.com/).
 
