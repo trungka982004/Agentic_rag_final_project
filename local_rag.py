@@ -7,7 +7,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 # --- CONFIGURATION ---
 DB_BASE_PATH = "db/vector_stores"
-EMBEDDING_MODEL = "nomic-embed-text"
+EMBEDDING_MODEL = "bge-m3"
 LLM_MODEL = "qwen2.5:7b"  # Optimized version
 DOMAINS = ["it", "math", "physics", "electronics"]
 

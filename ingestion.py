@@ -10,8 +10,8 @@ RAW_DATA_PATH = "data/raw"
 DB_BASE_PATH = "db/vector_stores"
 
 def ingest_docs():
-    # Initialize Embedding model (nomic-embed-text) - Much faster and optimized for search
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    # Initialize Embedding model (bge-m3) - Much faster and optimized for search
+    embeddings = OllamaEmbeddings(model="bge-m3")
 
     # Check root folder
     if not os.path.exists(RAW_DATA_PATH):
