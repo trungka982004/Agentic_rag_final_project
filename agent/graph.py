@@ -52,7 +52,7 @@ def create_agent_graph():
     
     workflow.add_edge("web_search", "generate")
     workflow.add_edge("expert_consult", END)
-    workflow.add_edge("python_repl", END)
+    workflow.add_edge("python_repl", "generate")
     
     workflow.add_conditional_edges(
         "generate",

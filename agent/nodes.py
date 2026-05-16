@@ -1,8 +1,12 @@
 from agent.state import GraphState
 from tools.web_search import duckduckgo_search
 from tools.expert_search import get_expert_answer
-from tools.google_workspace import export_to_google_docs, export_to_google_sheets
+from tools.google_workspace import export_to_google_docs, export_to_google_sheets, upload_image_to_drive
+from tools.mermaid_renderer import render_mermaid_to_image
 from tools.formatter import format_agent_output
+import re
+import os
+
 from local_rag import classify_domain, retrieve_context, llm, logger
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -30,7 +34,16 @@ def router_node(state: GraphState):
     
     python_repl = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
     
-    return {"domain": domain, "expert_required": expert_required, "python_repl": python_repl}
+    # Detect export intent
+    export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo"]
+    export_to_workspace = any(kw in question.lower() for kw in export_keywords)
+    
+    return {
+        "domain": domain, 
+        "expert_required": expert_required, 
+        "python_repl": python_repl,
+        "export_to_workspace": export_to_workspace
+    }
 
 def retrieve_local_node(state: GraphState):
     """Retrieves documents from local ChromaDB."""
@@ -110,13 +123,15 @@ def generate_node(state: GraphState):
     context = "\n\n".join(documents)
     
     template = """
-    You are a professional scientific assistant. Use the following [CONTEXT] to answer the user's [QUESTION].
+    You are a professional technical assistant. Answer the [QUESTION] based ONLY on the provided [CONTEXT].
     
     MANDATORY RULES:
-    1. Only use the information provided in the [CONTEXT]. Do not invent external knowledge.
-    2. If the [CONTEXT] does not contain enough information, state: "I'm sorry, the provided documents do not contain enough information to answer this question."
-    3. Your answer must be clear, structured, and highly accurate.
-    4. Provide citations whenever possible.
+    1. BE CONCISE. Do not explain your plan or describe how you will do things. Just provide the final result.
+    2. NEVER mention "Google Forms", "API", or "environment details".
+    3. If calculation results are present in [CONTEXT], use them as the primary answer.
+    4. If the user asked for a diagram, provide EXACTLY ONE Mermaid code block wrapped in ```mermaid.
+    5. Do not repeat information.
+    6. Return ONLY the final report content.
 
     [CONTEXT]:
     {context}
@@ -145,7 +160,11 @@ def python_repl_node(state: GraphState):
     prompt = ChatPromptTemplate.from_template(
         "You are an expert Python programmer. Write Python code to solve the following problem. "
         "Return ONLY the raw python code. Do NOT wrap it in markdown block, do NOT include explanations. "
-        "Use print() to output the final answer.\n\nProblem: {question}"
+        "Use print() to output the final answer.\n\n"
+        "IMPORTANT: Only use standard libraries or common ones like numpy. "
+        "Do NOT attempt to generate diagrams (like Mermaid) or reports (like pyodoc) inside the Python code. "
+        "Just output the calculated values.\n\n"
+        "Problem: {question}"
     )
     chain = prompt | llm | StrOutputParser()
     
@@ -154,35 +173,55 @@ def python_repl_node(state: GraphState):
         logger.info(f"[*] Generated Code:\n{code}")
         
         repl = PythonREPL()
-        result = repl.run(code)
-        answer = f"**Executed Python Code:**\n```python\n{code}\n```\n**Result:**\n{result}"
+        result = repl.run(code).strip()
+        
+        # Prepare structured data for Sheets
+        structured_data = [["Result Type", "Value"]]
+        structured_data.append(["Computation Output", result])
+        
+        answer = f"--- Python Computation Result ---\nCode:\n{code}\nResult:\n{result}"
+        docs = state.get("documents", [])
+        docs.append(answer)
+        
+        return {"documents": docs, "structured_data": structured_data}
     except Exception as e:
         logger.error(f"Python REPL execution failed: {e}")
         answer = f"**Failed to execute Python logic.** Error: {e}"
-
-    return {"generation": format_agent_output(answer)}
+        return {"generation": format_agent_output(answer)}
 
 def export_report_node(state: GraphState):
     """Exports the generated answer to Google Docs and Google Sheets."""
     logger.info("--- EXPORT REPORT NODE ---")
     question = state["question"]
     generation = state.get("generation", "")
+    structured_data = state.get("structured_data")
 
     if not generation:
         return {"generation": "[Export] No content available to export."}
 
-    # Export to Google Docs
-    doc_title = f"RAG Report: {question[:60]}"
-    doc_result = export_to_google_docs(title=doc_title, content=generation)
+    # 1. Detect and Render UNIQUE Mermaid Diagrams
+    image_urls = []
+    # Use set to deduplicate identical blocks
+    mermaid_blocks = list(set(re.findall(r"```mermaid\s*\n(.*?)\n```", generation, re.DOTALL)))
+    
+    print(f"[Export Debug] Found {len(mermaid_blocks)} unique mermaid blocks.")
+    
+    for mmd_code in mermaid_blocks:
+        image_path = render_mermaid_to_image(mmd_code.strip())
+        if image_path:
+            drive_url = upload_image_to_drive(image_path)
+            if drive_url:
+                image_urls.append(drive_url)
+            if os.path.exists(image_path):
+                os.remove(image_path)
 
-    # Export summary to Google Sheets
-    sheet_title = f"RAG Summary: {question[:50]}"
-    sheet_data = [
-        ["Field", "Value"],
-        ["Question", question],
-        ["Report Excerpt", generation[:1000] + "..."],
-        ["Status", "Generated & Exported"]
-    ]
+    # 2. Export to Google Docs
+    doc_title = f"RAG Report: {question[:60]}"
+    doc_result = export_to_google_docs(title=doc_title, content=generation, image_urls=image_urls)
+
+    # 3. Export to Google Sheets
+    sheet_title = f"RAG Data: {question[:50]}"
+    sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
     sheet_result = export_to_google_sheets(title=sheet_title, data=sheet_data)
 
     export_summary = f"{doc_result}\n{sheet_result}"

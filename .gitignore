@@ -59,3 +59,4 @@ Desktop.ini
 credentials.json
 token.json
 client_secret*.json
+node_modules

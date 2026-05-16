@@ -18,11 +18,12 @@ Dựa trên tài liệu `Implementation_Plan.md` và tình trạng thực tế c
 - [x] Cập nhật Conditional Edges trong `graph.py` để kết nối Hallucination Grader và Answer Grader.
 - [x] **State Management**: Cấu hình Checkpointing/Snapshotting (vd: `MemorySaver`) trong quá trình compile LangGraph để lưu trữ trạng thái hội thoại.
 
-## Giai đoạn 3: Tích hợp Công cụ & Tính năng Nâng cao
+## Giai đoạn 3: Tích hợp Công cụ & Tính năng Nâng cao (Hoàn thành - 16/05/2026)
 - [x] **Hybrid Search**: Bổ sung BM25 (keyword search) và kết hợp với Vector Search hiện tại bằng `EnsembleRetriever`.
-- [x] Tích hợp **Python REPL Tool**: Cho phép Agent thực thi mã Python.
-- [x] Tích hợp **Google Workspace API Tool**: Hỗ trợ Agent xuất báo cáo ra Google Docs/Sheets.
-- [x] Xử lý **LaTeX & Mermaid**: Hỗ trợ Agent trả về kết quả chuẩn định dạng để hiển thị công thức/sơ đồ.
+- [x] Tích hợp **Python REPL Tool**: Cho phép Agent thực thi mã Python và trả về kết quả cấu trúc cho Sheets.
+- [x] Tích hợp **Google Workspace API Tool**: Hỗ trợ Agent xuất báo cáo ra Google Docs/Sheets (Bao gồm cả Drive API).
+- [x] Xử lý **LaTeX & Mermaid**: Hỗ trợ Agent trả về kết quả chuẩn định dạng và tự động render Mermaid thành ảnh nhúng vào báo cáo.
+- [x] Tối ưu hóa luồng Export: Tự động phát hiện yêu cầu xuất dữ liệu và xóa bỏ các câu dẫn rườm rà.
 
 ## Giai đoạn 4: Đánh giá, Tối ưu & Hoàn thiện
 - [ ] Tích hợp framework đánh giá **RAGAS** (Faithfulness, Answer Relevance, Context Precision) vào file `evaluate.py`.
