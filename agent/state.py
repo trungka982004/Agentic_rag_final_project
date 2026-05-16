@@ -10,3 +10,4 @@ class GraphState(TypedDict):
     use_tavily: bool             # Flag to enable/disable Tavily search
     python_repl: bool            # Flag for Python REPL execution
     export_to_workspace: bool    # Flag to export result to Google Workspace
+    structured_data: Optional[List[List]] # Data for Google Sheets
