@@ -29,7 +29,7 @@ Dựa trên tài liệu `Implementation_Plan.md` và tình trạng thực tế c
 - [ ] Tích hợp framework đánh giá **RAGAS** (Faithfulness, Answer Relevance, Context Precision) vào file `evaluate.py`.
 - [ ] **UI/UX**: Xây dựng giao diện cho phép hiển thị luồng tư duy (Thought Process) của Agent một cách trực quan.
 - [ ] **Citations**: Tối ưu UI để hiển thị trích dẫn nguồn chi tiết và chính xác.
-- [ ] **Security & Guardrails**: Cấu hình `recursion_limit` trong LangGraph để kiểm soát số vòng lặp tối đa của Agent.
+- [x] **Security & Guardrails**: Cấu hình `recursion_limit` trong LangGraph để kiểm soát số vòng lặp tối đa của Agent.
 
 ---
 **Hướng dẫn sử dụng:** 

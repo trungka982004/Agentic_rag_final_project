@@ -35,6 +35,8 @@ def grade_generation_v_documents_and_question(state: GraphState):
     question = state["question"]
     documents = state.get("documents", [])
     generation = state["generation"]
+    retry_count = state.get("retry_count", 0)
+    max_retries = 2
 
     if not documents:
         # If no documents, we can't check for hallucination against context
@@ -82,9 +84,15 @@ def grade_generation_v_documents_and_question(state: GraphState):
             print("[*] Decision: Generation addresses question.")
             return "useful"
         else:
+            if retry_count >= max_retries:
+                print(f"[*] Max retries ({max_retries}) reached. Accepting answer despite not fully addressing question to prevent loop.")
+                return "useful"
             print("[*] Decision: Generation does not address question.")
             return "not useful"
     else:
+        if retry_count >= max_retries:
+            print(f"[*] Max retries ({max_retries}) reached. Accepting answer despite hallucination suspicion to prevent loop.")
+            return "useful"
         print("[*] Decision: Generation is not grounded in documents, retry.")
         return "not supported"
 

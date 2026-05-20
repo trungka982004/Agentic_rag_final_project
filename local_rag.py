@@ -30,7 +30,7 @@ class Config:
     TEMPERATURE = 0
     CONTEXT_WINDOW = 4096
     MAX_TOKENS = 1024
-    KEEP_ALIVE = -1
+    KEEP_ALIVE = "5m"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
