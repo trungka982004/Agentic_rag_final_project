@@ -27,33 +27,11 @@ def ingest_docs():
         
         print(f"\n--- Processing domain: {domain.upper()} ---", flush=True)
 
-        # Load all PDFs in the domain folder
-        documents = []
         pdf_files = [f for f in os.listdir(domain_input_path) if f.endswith(".pdf")]
         
         if not pdf_files:
             print(f"No PDF files in {domain}. Skipping...", flush=True)
             continue
-
-        for file in pdf_files:
-            file_path = os.path.join(domain_input_path, file)
-            loader = PyPDFLoader(file_path)
-            # Manually add metadata to ensure consistency
-            loaded_docs = loader.load()
-            for doc in loaded_docs:
-                doc.metadata["domain"] = domain  # Assign domain label to each page
-            documents.extend(loaded_docs)
-    
-        print(f"Loaded {len(documents)} document pages from {len(pdf_files)} files.", flush=True)
-
-        # Split text (Chunking) according to academic standards
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=512, 
-            chunk_overlap=50,
-            separators=["\n\n", "\n", ".", " ", ""]
-        )
-        splits = text_splitter.split_documents(documents)
-        print(f"Split into {len(splits)} chunks.", flush=True)
 
         # Save to separate ChromaDB for each domain
         # Delete old DB to refresh with new embedding model
@@ -61,22 +39,44 @@ def ingest_docs():
             print(f"Clearing old index: {domain_db_path}", flush=True)
             shutil.rmtree(domain_db_path)
 
-        # Initialize Chroma and add documents in batches
+        # Initialize Chroma for the domain
         vectorstore = Chroma(
             persist_directory=domain_db_path,
             embedding_function=embeddings,
             collection_name=f"{domain}_collection"
         )
 
-        batch_size = 50
-        print(f"Starting ingestion for {len(splits)} chunks (Batch size: {batch_size})...", flush=True)
-        
-        for i in range(0, len(splits), batch_size):
-            batch = splits[i : i + batch_size]
-            vectorstore.add_documents(batch)
-            print(f"Progress: {min(i + batch_size, len(splits))}/{len(splits)} chunks saved...", flush=True)
-        
-        print(f"Completed storage for domain {domain}!", flush=True)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=512, 
+            chunk_overlap=50,
+            separators=["\n\n", "\n", ".", " ", ""]
+        )
+
+        print(f"Found {len(pdf_files)} files. Starting streaming ingestion...", flush=True)
+        total_chunks = 0
+
+        for file in pdf_files:
+            file_path = os.path.join(domain_input_path, file)
+            print(f"  -> Processing {file}...", flush=True)
+            loader = PyPDFLoader(file_path)
+            loaded_docs = loader.load()
+            
+            for doc in loaded_docs:
+                doc.metadata["domain"] = domain  # Assign domain label to each page
+            
+            splits = text_splitter.split_documents(loaded_docs)
+            total_chunks += len(splits)
+            
+            batch_size = 50
+            for i in range(0, len(splits), batch_size):
+                batch = splits[i : i + batch_size]
+                vectorstore.add_documents(batch)
+            
+            # Clear references to free memory explicitly
+            del loaded_docs
+            del splits
+            
+        print(f"Completed storage for domain {domain}! Total {total_chunks} chunks saved.", flush=True)
 
 if __name__ == "__main__":
     # Ensure DB folder exists

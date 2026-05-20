@@ -190,7 +190,7 @@ def python_repl_node(state: GraphState):
         return {"generation": format_agent_output(answer)}
 
 def export_report_node(state: GraphState):
-    """Exports the generated answer to Google Docs and Google Sheets."""
+    """Exports the generated answer to Google Docs and Google Sheets based on user intent."""
     logger.info("--- EXPORT REPORT NODE ---")
     question = state["question"]
     generation = state.get("generation", "")
@@ -198,6 +198,22 @@ def export_report_node(state: GraphState):
 
     if not generation:
         return {"generation": "[Export] No content available to export."}
+
+    # Detect specific export formats requested by user
+    question_lower = question.lower()
+    has_docs_intent = any(kw in question_lower for kw in ["docs", "doc", "document", "văn bản", "tài liệu", "word"])
+    has_sheets_intent = any(kw in question_lower for kw in ["sheets", "sheet", "bảng", "trang tính", "excel"])
+
+    # Default is to export to both formats
+    export_docs = True
+    export_sheets = True
+
+    # If the user explicitly specified formats, override the defaults
+    if has_docs_intent or has_sheets_intent:
+        export_docs = has_docs_intent
+        export_sheets = has_sheets_intent
+
+    logger.info(f"[*] Export Targets -> Docs: {export_docs}, Sheets: {export_sheets}")
 
     # 1. Detect and Render UNIQUE Mermaid Diagrams
     image_urls = []
@@ -215,14 +231,24 @@ def export_report_node(state: GraphState):
             if os.path.exists(image_path):
                 os.remove(image_path)
 
+    export_summary_parts = []
+
     # 2. Export to Google Docs
-    doc_title = f"RAG Report: {question[:60]}"
-    doc_result = export_to_google_docs(title=doc_title, content=generation, image_urls=image_urls)
+    if export_docs:
+        doc_title = f"RAG Report: {question[:60]}"
+        doc_result = export_to_google_docs(title=doc_title, content=generation, image_urls=image_urls)
+        export_summary_parts.append(doc_result)
+    else:
+        logger.info("[*] Google Docs export bypassed as per query instructions.")
 
     # 3. Export to Google Sheets
-    sheet_title = f"RAG Data: {question[:50]}"
-    sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
-    sheet_result = export_to_google_sheets(title=sheet_title, data=sheet_data)
+    if export_sheets:
+        sheet_title = f"RAG Data: {question[:50]}"
+        sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
+        sheet_result = export_to_google_sheets(title=sheet_title, data=sheet_data)
+        export_summary_parts.append(sheet_result)
+    else:
+        logger.info("[*] Google Sheets export bypassed as per query instructions.")
 
-    export_summary = f"{doc_result}\n{sheet_result}"
+    export_summary = "\n".join(export_summary_parts) if export_summary_parts else "No export target selected."
     return {"generation": generation + "\n\n---\n**System Note:** " + export_summary}
