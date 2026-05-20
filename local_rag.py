@@ -29,6 +29,8 @@ class Config:
     DOMAINS = ["it", "math", "physics", "electronics"]
     TEMPERATURE = 0
     CONTEXT_WINDOW = 4096
+    MAX_TOKENS = 1024
+    KEEP_ALIVE = -1
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -40,28 +42,49 @@ try:
     llm = ChatOllama(
         model=Config.LLM_MODEL, 
         temperature=Config.TEMPERATURE,
-        num_ctx=Config.CONTEXT_WINDOW
+        num_ctx=Config.CONTEXT_WINDOW,
+        num_predict=Config.MAX_TOKENS,
+        keep_alive=Config.KEEP_ALIVE
     )
 except Exception as e:
     logger.error(f"Failed to initialize Ollama components: {e}")
     embeddings = None
     llm = None
 
+_db_cache = {}
+
 def get_vector_db(domain: str) -> Optional[Chroma]:
-    """Loads the specific ChromaDB for a given domain."""
+    """Loads the specific ChromaDB for a given domain, using a memory cache to prevent recreation."""
+    if domain in _db_cache:
+        return _db_cache[domain]
+
     db_path = os.path.join(Config.DB_BASE_PATH, f"{domain}_index")
     if not os.path.exists(db_path):
         logger.warning(f"Database path not found: {db_path}")
         return None
     
-    return Chroma(
+    db = Chroma(
         persist_directory=db_path,
         embedding_function=embeddings,
         collection_name=f"{domain}_collection"
     )
+    _db_cache[domain] = db
+    return db
 
 def classify_domain(query: str) -> str:
-    """Classifies the user query into one of the pre-defined domains."""
+    """Classifies the user query into one of the pre-defined domains using fast routing and LLM fallback."""
+    query_lower = query.lower()
+    
+    # Fast Keyword Routing
+    if any(kw in query_lower for kw in ["it", "network", "code", "python", "programming", "algorithm", "software", "computer", "deep learning", "machine learning", "resnet", "bert", "mapreduce", "transformer"]):
+        return "it"
+    if any(kw in query_lower for kw in ["math", "integral", "derivative", "equation", "riemann", "prime", "theorem", "entropy", "algebra"]):
+        return "math"
+    if any(kw in query_lower for kw in ["physics", "quantum", "gravity", "gravitational", "black hole", "relativity", "mechanics", "cosmological", "inflation"]):
+        return "physics"
+    if any(kw in query_lower for kw in ["electronics", "circuit", "transistor", "neuromorphic", "hardware", "sensor", "voltage", "neuronal"]):
+        return "electronics"
+
     if not llm:
         return "physics" # Fallback
 
@@ -85,9 +108,17 @@ def classify_domain(query: str) -> str:
         logger.error(f"Domain classification failed: {e}")
         return "physics"
 
-def get_bm25_retriever(db: Chroma, k: int = 5) -> Optional[BM25Retriever]:
-    """Creates a BM25 retriever from the documents stored in a ChromaDB instance."""
+_bm25_cache = {}
+
+def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retriever]:
+    """Creates a BM25 retriever from the documents stored in a ChromaDB instance, utilizing caching."""
+    if domain in _bm25_cache:
+        retriever = _bm25_cache[domain]
+        retriever.k = k
+        return retriever
+
     try:
+        logger.info(f"Building BM25 retriever cache for domain '{domain}'...")
         docs_data = db.get()
         if not docs_data or not docs_data.get('documents'):
             return None
@@ -105,6 +136,8 @@ def get_bm25_retriever(db: Chroma, k: int = 5) -> Optional[BM25Retriever]:
             
         retriever = BM25Retriever.from_documents(documents)
         retriever.k = k
+        _bm25_cache[domain] = retriever
+        logger.info(f"Successfully cached BM25 retriever for domain '{domain}'.")
         return retriever
     except Exception as e:
         logger.error(f"Failed to create BM25 retriever: {e}")
@@ -117,7 +150,7 @@ def retrieve_context(query: str, domain: str, k: int = 5) -> str:
         return "No database found for this domain."
     
     vector_retriever = db.as_retriever(search_kwargs={"k": k})
-    bm25_retriever = get_bm25_retriever(db, k=k)
+    bm25_retriever = get_bm25_retriever(db, domain=domain, k=k)
     
     try:
         if bm25_retriever and EnsembleRetriever:
