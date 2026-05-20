@@ -2,101 +2,751 @@
     {
         "id": 1,
         "domain": "it",
-        "question": "What is BERT and how is it pre-trained?"
+        "question": "How does the system or methodology of 'An Analysis of Attention Mechanisms The Case of' enhance performance in IT applications?"
     },
     {
         "id": 2,
         "domain": "it",
-        "question": "Explain the architecture of Deep Residual Learning (ResNet)."
+        "question": "What are the hardware design methodologies and challenges described in 'Applications of Natural Language Processing in Software Engineering A Systematic Mapping Study'?"
     },
     {
         "id": 3,
         "domain": "it",
-        "question": "How do Generative Adversarial Nets (GANs) work?"
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'A Comprehensive Survey on Word Representation Models From Classical to State-Of-The-Art Word Representation Language Models'?"
     },
     {
         "id": 4,
         "domain": "it",
-        "question": "What is MapReduce and how is it used for large-scale data processing?"
+        "question": "How is reinforcement learning utilized in the context of 'A Real-Time Energy Management Strategy for Fuel Cell Hybrid Electric Vehicles Based on Deep Reinforcement Learning'?"
     },
     {
         "id": 5,
         "domain": "it",
-        "question": "What is the Transformer architecture and why is attention important?"
+        "question": "How does bidirectional pre-training improve transformer-based language representations?"
     },
     {
         "id": 6,
-        "domain": "math",
-        "question": "What is the Riemann Hypothesis?"
+        "domain": "it",
+        "question": "How does the network or graph structure in 'Bridging the Gap Between Spectral and Spatial Domains in Graph Neural Networks' optimize overall performance?"
     },
     {
         "id": 7,
-        "domain": "math",
-        "question": "Explain the distribution of primes as discussed in Riemann's work."
+        "domain": "it",
+        "question": "How does the system or methodology of 'Comparative Evaluation of Embedding Representations for Financial News Sentiment Analysis' enhance performance in IT applications?"
     },
     {
         "id": 8,
-        "domain": "math",
-        "question": "What is the relationship between entropy and the mathematical models provided?"
+        "domain": "it",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Comprehensive Survey on Graph Neural Networks'?"
     },
     {
         "id": 9,
-        "domain": "math",
-        "question": "Discuss the field theoretic aspects of condensed matter physics mentioned in the math documents."
+        "domain": "it",
+        "question": "How is reinforcement learning utilized in the context of 'Continuous Control with Deep Reinforcement Learning'?"
     },
     {
         "id": 10,
-        "domain": "math",
-        "question": "Who are the key figures in the history of the Riemann Hypothesis according to the texts?"
+        "domain": "it",
+        "question": "How does the network or graph structure in 'Convolutional Neural Networks Based Object' optimize overall performance?"
     },
     {
         "id": 11,
-        "domain": "physics",
-        "question": "What are gravitational waves and what was the significance of the binary black hole merger observation?"
+        "domain": "it",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'DEEPREINFORCEMENT LEARNING ANOVERVIEW Yuxi Li (yuxili@gmail.com)'?"
     },
     {
         "id": 12,
-        "domain": "physics",
-        "question": "Explain the core principles of Quantum Information Theory."
+        "domain": "it",
+        "question": "How does the system or methodology of 'Deep Learning and Machine Learning Object Detection' enhance performance in IT applications?"
     },
     {
         "id": 13,
-        "domain": "physics",
-        "question": "What is 'Solid inflation' and how does it differ from standard inflation?"
+        "domain": "it",
+        "question": "Explain the architecture of Deep Residual Learning (ResNet) and how it addresses the vanishing gradient problem."
     },
     {
         "id": 14,
-        "domain": "physics",
-        "question": "How did Quantum Mechanics begin according to the birth of quantum mechanics document?"
+        "domain": "it",
+        "question": "How does the system or methodology of 'Doubly Attentive Decoder for Multi modal Neural Machine Translation' enhance performance in IT applications?"
     },
     {
         "id": 15,
-        "domain": "physics",
-        "question": "What are cosmological perturbations and their role in the large-scale structure of the universe?"
+        "domain": "it",
+        "question": "How does the proposed Effective Approaches to Attention based Neural Machine Translation improve performance and efficiency?"
     },
     {
         "id": 16,
-        "domain": "electronics",
-        "question": "What is neuromorphic computing and how does it mimic the human brain?"
+        "domain": "it",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Evaluating Word Embeddings for Sentiment Analysis in E-Commerce A Case Study on MercadoLibre Reviews'?"
     },
     {
         "id": 17,
-        "domain": "electronics",
-        "question": "Explain the LIF (Leaky Integrate-and-Fire) neuronal network model."
+        "domain": "it",
+        "question": "How does the system or methodology of 'Fast YOLO A Fast You Only Look Once System for Real time Embedded Object Detection in Video' enhance performance in IT applications?"
     },
     {
         "id": 18,
-        "domain": "electronics",
-        "question": "What are the challenges in designing low power neuromorphic hardware?"
+        "domain": "it",
+        "question": "How do Generative Adversarial Nets (GANs) utilize a minimax game to train generative models?"
     },
     {
         "id": 19,
-        "domain": "electronics",
-        "question": "How are Learnable Quantum Efficiency Filters used in hyperspectral segmentation?"
+        "domain": "it",
+        "question": "How does the network or graph structure in 'Graph Networks with Spectral Message Passing Kimberly L. Stachenfeld' optimize overall performance?"
     },
     {
         "id": 20,
+        "domain": "it",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Graph neural networks A review of methods and applications'?"
+    },
+    {
+        "id": 21,
+        "domain": "it",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Image Segmentation with transformers An Overview, Challenges and Future'?"
+    },
+    {
+        "id": 22,
+        "domain": "it",
+        "question": "How is the system improving the Accuracy of Pre-trained Word Embeddings for Sentiment Analysis in this paper?"
+    },
+    {
+        "id": 23,
+        "domain": "it",
+        "question": "How does the system or methodology of 'Interactive Attention for Neural Machine Translation' enhance performance in IT applications?"
+    },
+    {
+        "id": 24,
+        "domain": "it",
+        "question": "What is MapReduce and how is it used for large-scale data processing on distributed clusters?"
+    },
+    {
+        "id": 25,
+        "domain": "it",
+        "question": "What are the hardware design methodologies and challenges described in 'MaskPlus Improving Mask Generation for Instance Segmentation Shichao Xu'?"
+    },
+    {
+        "id": 26,
+        "domain": "it",
+        "question": "What are the hardware design methodologies and challenges described in 'Mask R-CNN Kaiming He Georgia Gkioxari Piotr Doll ´ar Ross Girshick'?"
+    },
+    {
+        "id": 27,
+        "domain": "it",
+        "question": "How does the system or methodology of 'Parallel Attention Mechanisms in Neural Machine' enhance performance in IT applications?"
+    },
+    {
+        "id": 28,
+        "domain": "it",
+        "question": "What is the Transformer architecture and why is the attention mechanism crucial for sequence-to-sequence tasks?"
+    },
+    {
+        "id": 29,
+        "domain": "it",
+        "question": "How does the system or methodology of 'Recent Advances in Deep Learning for Object Detection' enhance performance in IT applications?"
+    },
+    {
+        "id": 30,
+        "domain": "it",
+        "question": "How does the system or methodology of 'Sentiment Analysis by Joint Learning of Word Embeddings and Classifier Prathusha Kameswar Sarma and Bill Sethares' enhance performance in IT applications?"
+    },
+    {
+        "id": 31,
+        "domain": "it",
+        "question": "How does the network or graph structure in 'Spectral GNN via Two-dimensional (2-D) Graph Convolution' optimize overall performance?"
+    },
+    {
+        "id": 32,
+        "domain": "it",
+        "question": "What are the hardware design methodologies and challenges described in 'Text Classification based on Multiple Block Convolutional Highways'?"
+    },
+    {
+        "id": 33,
+        "domain": "it",
+        "question": "How does the proposed Definitive Guide to Policy Gradients in Deep Reinforcement Learning Theory, Algorithms and Implementations improve performance and efficiency?"
+    },
+    {
+        "id": 34,
+        "domain": "it",
+        "question": "How does the system or methodology of 'Tree to Sequence Attentional Neural Machine Translation' enhance performance in IT applications?"
+    },
+    {
+        "id": 35,
+        "domain": "it",
+        "question": "What are the hardware design methodologies and challenges described in 'U-Net Convolutional Networks for Biomedical Image Segmentation'?"
+    },
+    {
+        "id": 36,
+        "domain": "it",
+        "question": "How does YOLOv10 achieve real-time end-to-end object detection without relying on non-maximum suppression?"
+    },
+    {
+        "id": 37,
+        "domain": "it",
+        "question": "What are the key architectural enhancements introduced in YOLOv11 for advanced real-time object detection?"
+    },
+    {
+        "id": 38,
+        "domain": "it",
+        "question": "Explain the unified, real-time object detection paradigm introduced by the original YOLO model."
+    },
+    {
+        "id": 39,
+        "domain": "math",
+        "question": "What are the mathematical properties and algebraic problems related to '(Deep) Learning about Elliptic Curve'?"
+    },
+    {
+        "id": 40,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Abstract Sheaf Theory'?"
+    },
+    {
+        "id": 41,
+        "domain": "math",
+        "question": "How is reinforcement learning utilized in the context of 'Actor Critic Reinforcement Learning'?"
+    },
+    {
+        "id": 42,
+        "domain": "math",
+        "question": "What are the hardware design methodologies and challenges described in 'ALMOST PRIME VALUES OF THE ORDER OF ELLIPTIC'?"
+    },
+    {
+        "id": 43,
+        "domain": "math",
+        "question": "What are the mathematical properties and algebraic problems related to 'ANALYTIC PROBLEMS FOR ELLIPTIC CURVES'?"
+    },
+    {
+        "id": 44,
+        "domain": "math",
+        "question": "What are the fundamental principles of information theory established in Shannon's 'A Mathematical Theory of Communication'?"
+    },
+    {
+        "id": 45,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'A PRIMER ON SHEAF THEORY AND SHEAF COHOMOLOGY SAAD SLAOUI'?"
+    },
+    {
+        "id": 46,
+        "domain": "math",
+        "question": "How does the proposed SPECTRAL ELEMENT METHOD FOR MESHES WITH SKINNY ELEMENTS improve performance and efficiency?"
+    },
+    {
+        "id": 47,
+        "domain": "math",
+        "question": "What are the hardware design methodologies and challenges described in 'Categorification of sheaf theory'?"
+    },
+    {
+        "id": 48,
+        "domain": "math",
+        "question": "How is reinforcement learning utilized in the context of 'Combining Policy Gradient and Q-Learning'?"
+    },
+    {
+        "id": 49,
+        "domain": "math",
+        "question": "How is the process of CONSTRUCTING ELLIPTIC CURVES achieved in this research?"
+    },
+    {
+        "id": 50,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'CUT AND PASTE INVARIANTS OF MODULI SPACES OF'?"
+    },
+    {
+        "id": 51,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'DEFORMATION OF PAIRS OF P3 AND HYPERSURFACES'?"
+    },
+    {
+        "id": 52,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Divide and Pair Faster subgroup membership'?"
+    },
+    {
+        "id": 53,
+        "domain": "math",
+        "question": "How does the proposed Efficient Q-Learning and Actor-Critic Methods for Robust Average Reward Reinforcement Learning improve performance and efficiency?"
+    },
+    {
+        "id": 54,
+        "domain": "math",
+        "question": "What are the mathematical properties and algebraic problems related to 'ELLIPTIC CURVES OF UNBOUNDED RANK AND CHEBYSHEV'S'?"
+    },
+    {
+        "id": 55,
+        "domain": "math",
+        "question": "How does the proposed Fast global spectral methods for three-dimensional partial diﬀerential equations improve performance and efficiency?"
+    },
+    {
+        "id": 56,
+        "domain": "math",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Field Theoretic Aspects of Condensed Matter Physics An Overview'?"
+    },
+    {
+        "id": 57,
+        "domain": "math",
+        "question": "How does the proposed Finite Expression Method for Solving High-Dimensional Partial Differential Equations improve performance and efficiency?"
+    },
+    {
+        "id": 58,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'GENERALIZED ESTERMANN PROBLEM FOR NON INTEGER POWERS WITH'?"
+    },
+    {
+        "id": 59,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Going Beyond the Data as the Patching (Sheaving) of Local Knowledge'?"
+    },
+    {
+        "id": 60,
+        "domain": "math",
+        "question": "How does the proposed Grothendieck Topologies and Sheaf Theory for Data and Graphs An Approach Through Cech Closure Spaces improve performance and efficiency?"
+    },
+    {
+        "id": 61,
+        "domain": "math",
+        "question": "What are the hardware design methodologies and challenges described in 'Homological Support of Big Objects in Tensor-Triangulated Categories'?"
+    },
+    {
+        "id": 62,
+        "domain": "math",
+        "question": "How does the proposed Numerical Methods for Solving Partial Differential Equations improve performance and efficiency?"
+    },
+    {
+        "id": 63,
+        "domain": "math",
+        "question": "What are the primary findings and theoretical analysis presented in 'On Sheaf Cohomology and Natural Expansions'?"
+    },
+    {
+        "id": 64,
+        "domain": "math",
+        "question": "What are the primary findings and theoretical analysis presented in 'ON THE AUTOMORPHISMS'?"
+    },
+    {
+        "id": 65,
+        "domain": "math",
+        "question": "How does Bernhard Riemann's work establish the relationship between prime distribution and the zeros of the zeta function?"
+    },
+    {
+        "id": 66,
+        "domain": "math",
+        "question": "How does the proposed Partial Differential Equations in the Age of Machine Learning A Critical Synthesis of Classical, Machine Learning, and Hybrid Methods improve performance and efficiency?"
+    },
+    {
+        "id": 67,
+        "domain": "math",
+        "question": "What is the Riemann Hypothesis and why is it considered one of the Millennium Prize Problems in mathematics?"
+    },
+    {
+        "id": 68,
+        "domain": "math",
+        "question": "What are the mathematical properties and algebraic problems related to 'PSEUDOPRIME REDUCTIONS OF ELLIPTIC CURVES'?"
+    },
+    {
+        "id": 69,
+        "domain": "math",
+        "question": "What are the hardware design methodologies and challenges described in 'SHEAF COHOMOLOGY AND ALGEBRAIC DE RHAM THEOREM'?"
+    },
+    {
+        "id": 70,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Sheaf theory from deep geometry to deep learning Anton Ayzenberg German Magai'?"
+    },
+    {
+        "id": 71,
+        "domain": "math",
+        "question": "How does the network or graph structure in 'Spectral-based Graph Convolutional Network for Directed Graphs' optimize overall performance?"
+    },
+    {
+        "id": 72,
+        "domain": "math",
+        "question": "How is reinforcement learning utilized in the context of 'Supervised Reinforcement Learning with Recurrent Neural Network for Dynamic Treatment Recommendation'?"
+    },
+    {
+        "id": 73,
+        "domain": "math",
+        "question": "How does the proposed AUTOMATIC SOLUTION OF PARTIAL DIFFERENTIAL EQUATIONS USING A GLOBAL SPECTRAL METHOD improve performance and efficiency?"
+    },
+    {
+        "id": 74,
+        "domain": "math",
+        "question": "Explain the historical context, current state, and mathematical significance of the Riemann Hypothesis."
+    },
+    {
+        "id": 75,
+        "domain": "math",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'WEIGHTED LINEARIZATION OF VECTOR FIELDS'?"
+    },
+    {
+        "id": 76,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'Anomalous Transport and Explicit Symmetry'?"
+    },
+    {
+        "id": 77,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'A Simple Symmetry as a Guide Towards New Physics'?"
+    },
+    {
+        "id": 78,
+        "domain": "physics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?"
+    },
+    {
+        "id": 79,
+        "domain": "physics",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Deep Reinforcement Learning for Intelligent Transportation Systems A Survey'?"
+    },
+    {
+        "id": 80,
+        "domain": "physics",
+        "question": "What are the physical principles, experimental observations, and models described in 'Einstein Fields A Neural Perspective To Computational General Relativity'?"
+    },
+    {
+        "id": 81,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'Energy Dependent Polarization Angle Variability as a Robust Diagnostic for Blazar Flaring'?"
+    },
+    {
+        "id": 82,
+        "domain": "physics",
+        "question": "What are the physical principles, experimental observations, and models described in 'EUROPEAN ORGANISATION FOR NUCLEAR RESEARCH (CERN)'?"
+    },
+    {
+        "id": 83,
+        "domain": "physics",
+        "question": "What are the physical principles, experimental observations, and models described in 'Flavour changing charged current decays at LHCb'?"
+    },
+    {
+        "id": 84,
+        "domain": "physics",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Gravitational Lensing by Black Holes in Einstein Quartic Gravity H. Khodabakhshi1;2;3, Robert B. Mann3;4'?"
+    },
+    {
+        "id": 85,
+        "domain": "physics",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Gravitational lensing by Einstein-Born-Infeld black holes'?"
+    },
+    {
+        "id": 86,
+        "domain": "physics",
+        "question": "How does the research on 'Integrated Photonics for Quantum Communications and Metrology' contribute to quantum information or technology?"
+    },
+    {
+        "id": 87,
+        "domain": "physics",
+        "question": "How does the research on 'Large quantum dot energy level shifts in anomalous photon assisted tunneling' contribute to quantum information or technology?"
+    },
+    {
+        "id": 88,
+        "domain": "physics",
+        "question": "What are cosmological perturbations and what role do they play in the large-scale structure of the universe?"
+    },
+    {
+        "id": 89,
+        "domain": "physics",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Learning Null Geodesics for Gravitational Lensing Rendering in General Relativity'?"
+    },
+    {
+        "id": 90,
+        "domain": "physics",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Master field equations for spherically symmetric gravitational fields beyond general relativity'?"
+    },
+    {
+        "id": 91,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'Neutrino Physics at the LHC Status and Prospects'?"
+    },
+    {
+        "id": 92,
+        "domain": "physics",
+        "question": "What are gravitational waves and what was the significance of the first binary black hole merger observation by LIGO?"
+    },
+    {
+        "id": 93,
+        "domain": "physics",
+        "question": "What are the primary findings and theoretical analysis presented in 'ON ENUMERATION OF b ANGULATIONS OF SURFACES FROM AN'?"
+    },
+    {
+        "id": 94,
+        "domain": "physics",
+        "question": "What are the primary findings and theoretical analysis presented in 'On the Geometry of Cotton Gravity'?"
+    },
+    {
+        "id": 95,
+        "domain": "physics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'OPTICAL COMMUNICATION CIRCUTS'?"
+    },
+    {
+        "id": 96,
+        "domain": "physics",
+        "question": "How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?"
+    },
+    {
+        "id": 97,
+        "domain": "physics",
+        "question": "What are the key results and methodology used in the 'Quantitative comparison of heat flow, guarded-heater and AC Harman methods for thermoelectric module efficiency'?"
+    },
+    {
+        "id": 98,
+        "domain": "physics",
+        "question": "How does the proposed Quantum Graph Convolutional Networks Based on Spectral Methods improve performance and efficiency?"
+    },
+    {
+        "id": 99,
+        "domain": "physics",
+        "question": "What are the core mathematical and physical principles underlying Quantum Information Theory?"
+    },
+    {
+        "id": 100,
+        "domain": "physics",
+        "question": "How does the research on 'Quantum Probe to the Higher Dimensional Yang Mills' contribute to quantum information or technology?"
+    },
+    {
+        "id": 101,
+        "domain": "physics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Research on Optical Communication Technologies and'?"
+    },
+    {
+        "id": 102,
+        "domain": "physics",
+        "question": "How does the research on 'Scalable Measurement-Based Quantum Simulation Patterns for Benchmarking' contribute to quantum information or technology?"
+    },
+    {
+        "id": 103,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'Simulating dynamics of RLC circuits with a'?"
+    },
+    {
+        "id": 104,
+        "domain": "physics",
+        "question": "What are the physical principles, experimental observations, and models described in 'Solid inflation'?"
+    },
+    {
+        "id": 105,
+        "domain": "physics",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Spacetime Perspective of Gravitational Lensing in Perturbed Cosmologies'?"
+    },
+    {
+        "id": 106,
+        "domain": "physics",
+        "question": "How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?"
+    },
+    {
+        "id": 107,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'Thermal and geometric normal modes of spectral fluctuations in heavy ion collisions'?"
+    },
+    {
+        "id": 108,
+        "domain": "physics",
+        "question": "Describe the historical origins and physical experiments that led to the birth of quantum mechanics."
+    },
+    {
+        "id": 109,
+        "domain": "physics",
+        "question": "What are the astrophysical implications and general relativity aspects of 'The particle gravity frontier'?"
+    },
+    {
+        "id": 110,
+        "domain": "physics",
+        "question": "What are the physical principles, limitations, and future outlook of optical computing as described by Peter McMahon?"
+    },
+    {
+        "id": 111,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'The Standard Model of Particle Physics. Neutrino Oscillations'?"
+    },
+    {
+        "id": 112,
+        "domain": "physics",
+        "question": "What are the hardware design methodologies and challenges described in 'Topical Collection Testing the Kerr spacetime with'?"
+    },
+    {
+        "id": 113,
+        "domain": "physics",
+        "question": "What are the physical principles, experimental observations, and models described in 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?"
+    },
+    {
+        "id": 114,
         "domain": "electronics",
-        "question": "What are the Frontiers of High-performance design regimes mentioned in the electronics survey?"
+        "question": "What are the key design methodologies for an Advanced Integrated Audio and Power Conversion IC?"
+    },
+    {
+        "id": 115,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'Analog Front-End ASIC for Compact Silicon Photomultiplier Sensor Interfaces in Mixed-Signal Systems'?"
+    },
+    {
+        "id": 116,
+        "domain": "electronics",
+        "question": "What are the key results and methodology used in the 'Analysis and Application of Analog Electronic'?"
+    },
+    {
+        "id": 117,
+        "domain": "electronics",
+        "question": "Explain the design, operation, and advantages of the LIF (Leaky Integrate-and-Fire) neuronal network model."
+    },
+    {
+        "id": 118,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'An Energy-Efficient ASIC for Wireless Body'?"
+    },
+    {
+        "id": 119,
+        "domain": "electronics",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'arXiv2407.09166v1 [eess.SP] 12 Jul 202468-Channel Highly-Integrated Neural Signal Processing PSoC with On-Chip Feature'?"
+    },
+    {
+        "id": 120,
+        "domain": "electronics",
+        "question": "How does a high-performance Lock-In Amplifier (LIA) based interface benefit battery-powered systems?"
+    },
+    {
+        "id": 121,
+        "domain": "electronics",
+        "question": "What is neuromorphic computing and how does it mimic the structure and function of the human brain?"
+    },
+    {
+        "id": 122,
+        "domain": "electronics",
+        "question": "What are the frontiers of high-performance design regimes beyond sole parametric optimization in electronics?"
+    },
+    {
+        "id": 123,
+        "domain": "electronics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?"
+    },
+    {
+        "id": 124,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'CSI Transactions on ICT manuscript No. (will be inserted by the editor)'?"
+    },
+    {
+        "id": 125,
+        "domain": "electronics",
+        "question": "How is the process of Design and Comparative analysis of a Two Stage achieved in this research?"
+    },
+    {
+        "id": 126,
+        "domain": "electronics",
+        "question": "How is the process of Design of Analog CMOS Circuits for Bateryless achieved in this research?"
+    },
+    {
+        "id": 127,
+        "domain": "electronics",
+        "question": "How is the process of Design of a fault free Inverter Circuit using Minimum achieved in this research?"
+    },
+    {
+        "id": 128,
+        "domain": "electronics",
+        "question": "How is the system enabling AI-Native Mobility in 6G A Real-World Dataset for Handover, Beam Management, and Timing Advance in this paper?"
+    },
+    {
+        "id": 129,
+        "domain": "electronics",
+        "question": "How does the proposed General and concise operator approach to the dyadic Green's function of layered media improve performance and efficiency?"
+    },
+    {
+        "id": 130,
+        "domain": "electronics",
+        "question": "How does the proposed Implantable Medical Electronic Devices Sensing Mechanisms, Communication Methods, and the Biodegradable Future improve performance and efficiency?"
+    },
+    {
+        "id": 131,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'Integrated Circuit Audio Amplifier Design'?"
+    },
+    {
+        "id": 132,
+        "domain": "electronics",
+        "question": "How are Learnable Quantum Efficiency Filters used to improve accuracy in urban hyperspectral segmentation?"
+    },
+    {
+        "id": 133,
+        "domain": "electronics",
+        "question": "What are the primary challenges and design approaches for developing low-power neuromorphic hardware?"
+    },
+    {
+        "id": 134,
+        "domain": "electronics",
+        "question": "How does the network or graph structure in 'Massive MIMO CSI Feedback with Spiking Neural Networks' optimize overall performance?"
+    },
+    {
+        "id": 135,
+        "domain": "electronics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Optical Communication Circuits'?"
+    },
+    {
+        "id": 136,
+        "domain": "electronics",
+        "question": "How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?"
+    },
+    {
+        "id": 137,
+        "domain": "electronics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Photonic and Optoelectronic Devices and Systems, Second Edition'?"
+    },
+    {
+        "id": 138,
+        "domain": "electronics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Photonic Integrated Circuits for Communication Systems'?"
+    },
+    {
+        "id": 139,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'Power Electronics Revolutionized A Comprehensive Analysis'?"
+    },
+    {
+        "id": 140,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'Power Management IC for a Dual Input Triple Output'?"
+    },
+    {
+        "id": 141,
+        "domain": "electronics",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Real Time Minimum Energy Operating Point'?"
+    },
+    {
+        "id": 142,
+        "domain": "electronics",
+        "question": "What are the operation principles and design characteristics of the proposed semiconductor device?"
+    },
+    {
+        "id": 143,
+        "domain": "electronics",
+        "question": "What are the hardware design methodologies and challenges described in 'Signal Processing Semiconductors and Devices'?"
+    },
+    {
+        "id": 144,
+        "domain": "electronics",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Silicon photonic devices and integrated circuits'?"
+    },
+    {
+        "id": 145,
+        "domain": "electronics",
+        "question": "How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?"
+    },
+    {
+        "id": 146,
+        "domain": "electronics",
+        "question": "What are the physical principles, limitations, and future outlook of optical computing as described by Peter McMahon?"
+    },
+    {
+        "id": 147,
+        "domain": "electronics",
+        "question": "What advancements are proposed in the paper 'Towards Closed-loop Stability of Nonlinear Receding Horizon Games'?"
+    },
+    {
+        "id": 148,
+        "domain": "electronics",
+        "question": "How is reinforcement learning utilized in the context of 'Traffic aware Multi Agent Reinforcement Learning based Distributed Routing for Low Earth Orbit Satel'?"
+    },
+    {
+        "id": 149,
+        "domain": "electronics",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?"
+    },
+    {
+        "id": 150,
+        "domain": "electronics",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Ultrafast Time Compressive CMOS Image Sensors Based on Multitap Charge Modulators for Filming Light'?"
     }
 ]

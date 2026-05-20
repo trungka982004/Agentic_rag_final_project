@@ -119,6 +119,7 @@ def generate_node(state: GraphState):
     logger.info("--- GENERATE NODE ---")
     question = state["question"]
     documents = state.get("documents", [])
+    retry_count = state.get("retry_count", 0)
     
     context = "\n\n".join(documents)
     
@@ -132,13 +133,13 @@ def generate_node(state: GraphState):
     4. If the user asked for a diagram, provide EXACTLY ONE Mermaid code block wrapped in ```mermaid.
     5. Do not repeat information.
     6. Return ONLY the final report content.
-
+ 
     [CONTEXT]:
     {context}
-
+ 
     [QUESTION]:
     {question}
-
+ 
     [ANSWER]:
     """
     
@@ -147,10 +148,10 @@ def generate_node(state: GraphState):
     
     try:
         response = chain.invoke({"question": question, "context": context})
-        return {"generation": format_agent_output(response)}
+        return {"generation": format_agent_output(response), "retry_count": retry_count + 1}
     except Exception as e:
         logger.error(f"Generation node failed: {e}")
-        return {"generation": "Error occurred during generation."}
+        return {"generation": "Error occurred during generation.", "retry_count": retry_count + 1}
 
 def python_repl_node(state: GraphState):
     """Executes Python code to answer math/coding queries."""

@@ -11,3 +11,4 @@ class GraphState(TypedDict):
     python_repl: bool            # Flag for Python REPL execution
     export_to_workspace: bool    # Flag to export result to Google Workspace
     structured_data: Optional[List[List]] # Data for Google Sheets
+    retry_count: int             # Number of retries for generation loops

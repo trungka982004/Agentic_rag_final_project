@@ -48,7 +48,7 @@ def main():
 
         print("\n" + "="*50)
         # Run the LangGraph app
-        config = {"configurable": {"thread_id": "1"}}
+        config = {"configurable": {"thread_id": "1"}, "recursion_limit": 10}
         final_state = app.invoke(inputs, config=config)
 
         print("\n--- Final Answer ---")
