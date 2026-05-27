@@ -12,3 +12,4 @@ class GraphState(TypedDict):
     export_to_workspace: bool    # Flag to export result to Google Workspace
     structured_data: Optional[List[List]] # Data for Google Sheets
     retry_count: int             # Number of retries for generation loops
+    export_links: Optional[dict] # URLs of exported documents (e.g. docs, sheets)

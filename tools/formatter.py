@@ -1,14 +1,13 @@
 """
 tools/formatter.py
 
-Bộ xử lý định dạng đầu ra cho Agentic RAG System.
-Hỗ trợ chuẩn hoá LaTeX (công thức toán học) và Mermaid (sơ đồ kiến trúc).
+Output formatting processor for the Agentic RAG System.
+Supports normalization of LaTeX (mathematical formulas) and Mermaid (architectural flowcharts).
 
-Mục tiêu:
-    - Đảm bảo công thức toán học được bao bọc đúng cú pháp LaTeX ($...$  hoặc $$...$$).
-    - Đảm bảo các đoạn mã Mermaid được đặt trong fenced code block đúng chuẩn.
-    - Giúp frontend (Streamlit, Gradio, hoặc bất kỳ UI nào) render được ngay lập tức
-      mà không cần xử lý thêm.
+Objectives:
+    - Ensure mathematical formulas are correctly wrapped in LaTeX syntax ($...$ or $$...$$).
+    - Ensure Mermaid code blocks are enclosed in the correct fenced code blocks.
+    - Assist the frontend (Streamlit, Gradio, or any UI) to render content instantly without extra processing.
 """
 
 import re
@@ -18,11 +17,11 @@ import re
 # LaTeX Normalizer
 # ---------------------------------------------------------------------------
 
-# Các cú pháp LaTeX phổ biến mà LLM thường trả về sai format
+# Common LaTeX syntaxes that LLM often returns in incorrect format
 _LATEX_INLINE_PATTERNS = [
-    # \( ... \) → $ ... $
+    # \( ... \) -> $ ... $
     (r"\\\((.+?)\\\)", r"$\1$"),
-    # \[ ... \] → $$ ... $$
+    # \[ ... \] -> $$ ... $$
     (r"\\\[(.+?)\\\]", r"$$\1$$"),
 ]
 
@@ -34,19 +33,19 @@ _LATEX_BLOCK_PATTERN = re.compile(
 
 def normalize_latex(text: str) -> str:
     """
-    Chuẩn hoá các công thức LaTeX trong văn bản về dạng $ ... $ (inline)
-    hoặc $$ ... $$ (block), tương thích với MathJax / KaTeX.
+    Normalizes LaTeX formulas in text to standard $ ... $ (inline)
+    or $$ ... $$ (block) formats, compatible with MathJax / KaTeX.
 
     Args:
-        text: Văn bản đầu vào có thể chứa LaTeX.
+        text: Input text potentially containing LaTeX.
 
     Returns:
-        Văn bản đã được chuẩn hoá.
+        Normalized text.
     """
-    # Thay \\[ ... \\] (multi-line) bằng $$ ... $$
+    # Replace \\[ ... \\] (multi-line) with $$ ... $$
     text = _LATEX_BLOCK_PATTERN.sub(lambda m: f"$$\n{m.group(1).strip()}\n$$", text)
 
-    # Thay \\( ... \\) (inline) bằng $ ... $
+    # Replace \\( ... \\) (inline) with $ ... $
     text = re.sub(r"\\\((.+?)\\\)", r"$\1$", text)
 
     return text
@@ -56,7 +55,7 @@ def normalize_latex(text: str) -> str:
 # Mermaid Normalizer
 # ---------------------------------------------------------------------------
 
-# Pattern nhận diện các khối mermaid bị viết sai (thiếu backtick, hoặc chỉ có "mermaid:")
+# Pattern to detect improperly formatted mermaid blocks (missing backticks or starting with "mermaid:")
 _MERMAID_LOOSE_PATTERN = re.compile(
     r"(?:```mermaid\s*\n|mermaid:\s*\n)(.*?)(?:```|$)",
     re.DOTALL | re.IGNORECASE,
@@ -70,22 +69,22 @@ _MERMAID_STRICT_PATTERN = re.compile(
 
 def normalize_mermaid(text: str) -> str:
     """
-    Đảm bảo tất cả khối Mermaid diagram đều nằm trong fenced code block
-    chuẩn (```mermaid ... ```) để frontend có thể render được.
+    Ensures all Mermaid diagram blocks are enclosed in standard fenced code blocks
+    (```mermaid ... ```) so that the frontend can render them properly.
 
-    Nếu LLM xuất ra "mermaid:\n<code>", hàm này sẽ bọc lại đúng chuẩn.
+    If the LLM outputs "mermaid:\n<code>", this function wraps it correctly.
 
     Args:
-        text: Văn bản đầu vào có thể chứa Mermaid diagram.
+        text: Input text potentially containing Mermaid diagrams.
 
     Returns:
-        Văn bản đã được chuẩn hoá.
+        Normalized text.
     """
-    # Nếu đã có ``` mermaid đúng chuẩn → không cần sửa, giữ nguyên
+    # If standard ```mermaid already exists, keep as-is
     if _MERMAID_STRICT_PATTERN.search(text):
         return text
 
-    # Nếu phát hiện cú pháp lỏng lẻo → bọc lại
+    # If loose syntax is detected, wrap it
     def _wrap(m: re.Match) -> str:
         inner = m.group(1).strip()
         return f"```mermaid\n{inner}\n```"
@@ -100,14 +99,14 @@ def normalize_mermaid(text: str) -> str:
 
 def format_citations(text: str) -> str:
     """
-    Làm nổi bật các trích dẫn nguồn tài liệu (Source: ...) trong output
-    bằng cách bổ sung định dạng markdown bold.
+    Highlights document citations (Source: ...) in the output
+    by formatting them as markdown bold elements.
 
     Args:
-        text: Văn bản có thể chứa nguồn trích dẫn theo chuẩn ingestion pipeline.
+        text: Text potentially containing standard citations from the ingestion pipeline.
 
     Returns:
-        Văn bản với các trích dẫn được làm nổi bật.
+        Text with highlighted citations.
     """
     # Pattern: "--- Source: filename.pdf (Page N) ---"
     citation_pattern = re.compile(
@@ -118,9 +117,28 @@ def format_citations(text: str) -> str:
     def _bold_citation(m: re.Match) -> str:
         source = m.group(1).strip()
         page = m.group(2).strip()
-        return f"\n> 📄 **Nguồn:** `{source}` — Trang **{page}**\n"
+        return f"\n> 📄 **Source:** `{source}` — Page **{page}**\n"
 
     return citation_pattern.sub(_bold_citation, text)
+
+
+# ---------------------------------------------------------------------------
+# Meta-Notes Filter
+# ---------------------------------------------------------------------------
+
+def strip_llm_meta_notes(text: str) -> str:
+    """
+    Detects and strips out LLM self-referential reflection notes (e.g., Note: Since the instruction...)
+    to ensure the output is clean for the end user and document exports.
+    """
+    # Remove notes or comments starting with "Note:" or "Ghi chú:" that discuss system prompts, rules, or constraints
+    text = re.sub(
+        r"(?:Note|Ghi chú):\s*(?:Since the instruction|Bởi vì hướng dẫn|Do quy định|Because of rules|Since the rules).*?($|\n)", 
+        "", 
+        text, 
+        flags=re.IGNORECASE | re.DOTALL
+    )
+    return text.strip()
 
 
 # ---------------------------------------------------------------------------
@@ -129,20 +147,55 @@ def format_citations(text: str) -> str:
 
 def format_agent_output(text: str) -> str:
     """
-    Pipeline xử lý đầu ra tổng hợp: áp dụng tuần tự tất cả các bộ chuẩn hoá.
+    Comprehensive output processing pipeline: sequentially applies all normalizers.
 
-    Thứ tự xử lý:
-        1. Chuẩn hoá LaTeX
-        2. Chuẩn hoá Mermaid
-        3. Làm nổi bật Citations
+    Processing order:
+        1. Normalize LaTeX
+        2. Normalize Mermaid
+        3. Highlight Citations
+        4. Strip LLM reflection and system constraint notes
 
     Args:
-        text: Văn bản thô từ LLM.
+        text: Raw text generated by the LLM.
 
     Returns:
-        Văn bản đã được định dạng đầy đủ.
+        Fully formatted and cleaned text.
     """
     text = normalize_latex(text)
     text = normalize_mermaid(text)
     text = format_citations(text)
+    text = strip_llm_meta_notes(text)
     return text
+
+
+def parse_markdown_table(text: str) -> list[list[str]] | None:
+    """
+    Parses the first markdown table found in the text into a list of lists of strings
+    suitable for exporting to Google Sheets.
+    """
+    lines = text.strip().split("\n")
+    table_lines = []
+    in_table = False
+    
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("|") and stripped.endswith("|"):
+            in_table = True
+            table_lines.append(stripped)
+        else:
+            if in_table:
+                break
+                
+    if not table_lines or len(table_lines) < 2:
+        return None
+        
+    parsed_table = []
+    for line in table_lines:
+        # Skip the divider/separator row (e.g., |---|---| or | :--- | :---: |)
+        if all(c in " |:-" for c in line) and "-" in line:
+            continue
+        # Split cell contents and strip whitespaces, ignoring the leading and trailing empty split items
+        row = [cell.strip() for cell in line.split("|")[1:-1]]
+        parsed_table.append(row)
+        
+    return parsed_table if parsed_table else None

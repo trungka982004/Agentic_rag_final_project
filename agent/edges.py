@@ -98,6 +98,7 @@ def grade_generation_v_documents_and_question(state: GraphState):
 
 def decide_to_export(state: GraphState):
     """Decides whether to export the result to Google Workspace."""
+    print(f"[Export Debug] decide_to_export state: keys={list(state.keys())}, export_to_workspace={state.get('export_to_workspace')}")
     if state.get("export_to_workspace"):
         print("[*] Export flag is ON. Routing to Export Report node.")
         return "export"

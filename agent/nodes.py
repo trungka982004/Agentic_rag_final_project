@@ -35,8 +35,8 @@ def router_node(state: GraphState):
     python_repl = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
     
     # Detect export intent
-    export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo"]
-    export_to_workspace = any(kw in question.lower() for kw in export_keywords)
+    export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo", "report", "document", "doc", "sheet", "excel"]
+    export_to_workspace = state.get("export_to_workspace", False) or any(kw in question.lower() for kw in export_keywords)
     
     return {
         "domain": domain, 
@@ -130,9 +130,11 @@ def generate_node(state: GraphState):
     1. BE CONCISE. Do not explain your plan or describe how you will do things. Just provide the final result.
     2. NEVER mention "Google Forms", "API", or "environment details".
     3. If calculation results are present in [CONTEXT], use them as the primary answer.
-    4. If the user asked for a diagram, provide EXACTLY ONE Mermaid code block wrapped in ```mermaid.
-    5. Do not repeat information.
-    6. Return ONLY the final report content.
+    4. If a Python code execution result is present in [CONTEXT], focus on explaining the result and output. DO NOT repeat or rewrite the raw Python code block (```python ... ```) in your answer.
+    5. If the user asked for a diagram, provide EXACTLY ONE Mermaid code block wrapped in ```mermaid.
+    6. Do not repeat information.
+    7. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
+    8. Return ONLY the final report content.
  
     [CONTEXT]:
     {context}
@@ -148,7 +150,19 @@ def generate_node(state: GraphState):
     
     try:
         response = chain.invoke({"question": question, "context": context})
-        return {"generation": format_agent_output(response), "retry_count": retry_count + 1}
+        formatted_response = format_agent_output(response)
+        
+        # Automatically extract markdown tables to populate structured_data for Sheets
+        from tools.formatter import parse_markdown_table
+        structured_data = parse_markdown_table(formatted_response)
+        if structured_data:
+            logger.info(f"[*] Automatically parsed comparison table for Sheets: {len(structured_data)} rows.")
+            
+        return {
+            "generation": formatted_response,
+            "structured_data": structured_data,
+            "retry_count": retry_count + 1
+        }
     except Exception as e:
         logger.error(f"Generation node failed: {e}")
         return {"generation": "Error occurred during generation.", "retry_count": retry_count + 1}
@@ -233,12 +247,30 @@ def export_report_node(state: GraphState):
                 os.remove(image_path)
 
     export_summary_parts = []
+    export_links = {"docs": None, "sheets": None}
 
     # 2. Export to Google Docs
     if export_docs:
         doc_title = f"RAG Report: {question[:60]}"
-        doc_result = export_to_google_docs(title=doc_title, content=generation, image_urls=image_urls)
+        # Strip out raw Mermaid blocks completely so only the LLM's text and explanation remain in the body
+        clean_content = re.sub(
+            r"```mermaid\s*\n(.*?)\n```", 
+            "", 
+            generation, 
+            flags=re.DOTALL
+        ).strip()
+        
+        # Ensure the body content is never empty to avoid Google Docs API insertion error
+        if not clean_content:
+            clean_content = f"Visual report generated for query: {question}"
+            
+        doc_result = export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
         export_summary_parts.append(doc_result)
+        
+        # Extract the clean Google Docs URL
+        match = re.search(r"https?://\S+", doc_result)
+        if match:
+            export_links["docs"] = match.group(0).rstrip(".")
     else:
         logger.info("[*] Google Docs export bypassed as per query instructions.")
 
@@ -248,8 +280,13 @@ def export_report_node(state: GraphState):
         sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
         sheet_result = export_to_google_sheets(title=sheet_title, data=sheet_data)
         export_summary_parts.append(sheet_result)
+        
+        # Extract the clean Google Sheets URL
+        match = re.search(r"https?://\S+", sheet_result)
+        if match:
+            export_links["sheets"] = match.group(0).rstrip(".")
     else:
         logger.info("[*] Google Sheets export bypassed as per query instructions.")
 
-    export_summary = "\n".join(export_summary_parts) if export_summary_parts else "No export target selected."
-    return {"generation": generation + "\n\n---\n**System Note:** " + export_summary}
+    # Return clean generation and structured export links separately
+    return {"generation": generation, "export_links": export_links}
