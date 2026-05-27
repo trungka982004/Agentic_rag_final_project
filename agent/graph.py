@@ -63,7 +63,7 @@ def create_agent_graph():
             "not useful": "web_search",
         }
     )
-    workflow.add_node("check_export", lambda state: state)  # pass-through
+    workflow.add_node("check_export", lambda state: {})  # pass-through
     workflow.add_conditional_edges(
         "check_export",
         decide_to_export,

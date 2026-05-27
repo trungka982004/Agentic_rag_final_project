@@ -2,14 +2,14 @@
 tools/google_workspace.py
 
 Google Workspace API Tool for the Agentic RAG System.
-Cho phép Agent xuất kết quả phân tích ra Google Docs hoặc Google Sheets.
+Allows the agent to export analytical results to Google Docs or Google Sheets.
 
-SETUP (bước một lần):
-    1. Truy cập https://console.cloud.google.com/ → tạo project mới.
-    2. Enable "Google Docs API" và "Google Sheets API".
-    3. Tạo OAuth 2.0 Client ID (loại "Desktop App"), tải file JSON về.
-    4. Đổi tên file đó thành `credentials.json` và đặt vào thư mục gốc dự án.
-    5. Lần chạy đầu tiên sẽ mở trình duyệt để xác thực, sau đó tạo `token.json`.
+SETUP (One-time step):
+    1. Visit https://console.cloud.google.com/ -> create a new project.
+    2. Enable "Google Docs API" and "Google Sheets API".
+    3. Create OAuth 2.0 Client ID (type "Desktop App"), download the JSON file.
+    4. Rename the downloaded file to `credentials.json` and place it in the workspace root directory.
+    5. The first execution will open a browser for authentication, then save the session to `token.json`.
 """
 
 import os
@@ -19,7 +19,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-# Phạm vi quyền truy cập cần thiết
+# Required API access scopes
 SCOPES = [
     "https://www.googleapis.com/auth/documents",
     "https://www.googleapis.com/auth/spreadsheets",
@@ -117,11 +117,11 @@ def upload_image_to_drive(file_path: str) -> str | None:
 
 def export_to_google_docs(title: str, content: str, image_urls: list[str] = None) -> str:
     """
-    Tạo một Google Docs mới, ghi nội dung và chèn ảnh nếu có.
+    Creates a new Google Doc, writes text content, and inserts images if provided.
     """
     creds = _get_google_credentials()
     if not creds:
-        return "[Google Workspace] Chưa cấu hình credentials."
+        return "[Google Workspace] Credentials not configured."
 
     try:
         docs_service = build("docs", "v1", credentials=creds)
@@ -138,24 +138,24 @@ def export_to_google_docs(title: str, content: str, image_urls: list[str] = None
                     "insertInlineImage": {
                         "location": {"index": len(content) + 1 + i}, # Offset by i to avoid overlap
                         "uri": url,
-                        "objectSize": {"height": {"magnitude": 400, "unit": "PT"}}
+                        "objectSize": {"width": {"magnitude": 450, "unit": "PT"}}
                     }
                 })
 
         docs_service.documents().batchUpdate(documentId=doc_id, body={"requests": requests}).execute()
         print(f"[Google Docs] Batch update successful for {doc_id}")
-        return f"✅ Đã xuất ra Google Docs: https://docs.google.com/document/d/{doc_id}/edit"
+        return f"✅ Exported to Google Docs: https://docs.google.com/document/d/{doc_id}/edit"
     except Exception as e:
         print(f"[Google Docs] Batch update error: {e}")
-        return f"[Google Docs] Lỗi: {e}"
+        return f"[Google Docs] Error: {e}"
 
 
 def export_to_google_sheets(title: str, data: list[list]) -> str:
     """
-    Tạo một Google Sheets mới và ghi dữ liệu dạng bảng vào đó.
+    Creates a new Google Spreadsheet and writes structured table data.
     """
     creds = _get_google_credentials()
-    if not creds: return "[Google Workspace] Lỗi credentials."
+    if not creds: return "[Google Workspace] Credentials error."
 
     try:
         sheets_service = build("sheets", "v4", credentials=creds)
@@ -168,9 +168,9 @@ def export_to_google_sheets(title: str, data: list[list]) -> str:
                 valueInputOption="RAW", body={"values": data}
             ).execute()
 
-        return f"✅ Đã xuất ra Google Sheets: https://docs.google.com/spreadsheets/d/{spreadsheet_id}/edit"
+        return f"✅ Exported to Google Sheets: https://docs.google.com/spreadsheets/d/{spreadsheet_id}/edit"
     except Exception as e:
-        return f"[Google Sheets] Lỗi: {e}"
+        return f"[Google Sheets] Error: {e}"
 
 
 def is_google_workspace_configured() -> bool:

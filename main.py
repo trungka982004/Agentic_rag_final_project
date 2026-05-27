@@ -40,19 +40,37 @@ def main():
         if not query:
             continue
 
+        import uuid
         inputs = {
             "question": query,
             "use_tavily": use_tavily,
             "export_to_workspace": export_to_workspace,
+            "documents": [],           # Reset thread documents state to avoid duplicates
+            "generation": "",          # Reset thread generation state to avoid duplicates
+            "structured_data": None    # Reset thread structured data state to avoid duplicates
         }
 
         print("\n" + "="*50)
-        # Run the LangGraph app
-        config = {"configurable": {"thread_id": "1"}, "recursion_limit": 10}
+        # Run the LangGraph app with a fresh unique thread ID to prevent state accumulation
+        config = {"configurable": {"thread_id": str(uuid.uuid4())}, "recursion_limit": 10}
         final_state = app.invoke(inputs, config=config)
 
         print("\n--- Final Answer ---")
         print(final_state.get("generation", "No answer generated."))
+        
+        # Display clean structured export links in the CLI if present
+        export_links = final_state.get("export_links")
+        if export_links:
+            links_summary = []
+            if export_links.get("docs"):
+                links_summary.append(f"📄 Google Docs: {export_links['docs']}")
+            if export_links.get("sheets"):
+                links_summary.append(f"📊 Google Sheets: {export_links['sheets']}")
+            if links_summary:
+                print("\n" + "-"*30)
+                print("✅ Exported Documents:")
+                print("\n".join(links_summary))
+
         print("="*50 + "\n")
 
 if __name__ == "__main__":

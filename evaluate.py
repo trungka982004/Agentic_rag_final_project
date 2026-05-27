@@ -99,7 +99,7 @@ def run_evaluation():
             "question": case["question"],
             "answer": answer,
             "latency": round(latency, 2),
-            "status": "Success" if "Không tìm thấy" not in context and "No relevant information" not in context else "No Context Found"
+            "status": "Success" if "No database found" not in context and "No relevant information" not in context else "No Context Found"
         }
         
         # Append and save incrementally
