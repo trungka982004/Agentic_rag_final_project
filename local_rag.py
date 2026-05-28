@@ -144,7 +144,7 @@ def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retr
         return None
 
 def retrieve_context(query: str, domain: str, k: int = 5) -> str:
-    """Retrieves context using Hybrid Search (BM25 + Vector)."""
+    """Retrieves context using Hybrid Search (BM25 + Vector) with dynamic weights and deduplication."""
     db = get_vector_db(domain)
     if not db:
         return "No database found for this domain."
@@ -154,9 +154,21 @@ def retrieve_context(query: str, domain: str, k: int = 5) -> str:
     
     try:
         if bm25_retriever and EnsembleRetriever:
+            # Dynamic weights calculation based on query characteristics
+            query_lower = query.lower()
+            semantic_indicators = ["giải thích", "tại sao", "như thế nào", "ý nghĩa", "khái niệm", "what is", "why", "how", "explain", "describe", "mô tả"]
+            is_semantic = any(ind in query_lower for ind in semantic_indicators)
+            
+            if is_semantic:
+                logger.info("[*] Semantic query detected. Using dense-heavy weights [0.3 BM25, 0.7 Vector].")
+                weights = [0.3, 0.7]
+            else:
+                logger.info("[*] Keyword-precise query detected. Using sparse-heavy weights [0.6 BM25, 0.4 Vector].")
+                weights = [0.6, 0.4]
+                
             ensemble_retriever = EnsembleRetriever(
                 retrievers=[bm25_retriever, vector_retriever], 
-                weights=[0.5, 0.5]
+                weights=weights
             )
             filtered_docs = ensemble_retriever.invoke(query)
         else:
@@ -168,9 +180,21 @@ def retrieve_context(query: str, domain: str, k: int = 5) -> str:
     if not filtered_docs:
         return "No relevant information found in the database."
 
+    # Deduplicate retrieved documents based on page content snippets to save tokens and prevent context clutter
+    seen_contents = set()
+    unique_docs = []
+    for d in filtered_docs:
+        snippet = d.page_content.strip()[:150]
+        if snippet not in seen_contents:
+            seen_contents.add(snippet)
+            unique_docs.append(d)
+            
+    final_docs = unique_docs[:k]
+    logger.info(f"[*] Retrieved {len(final_docs)} unique documents after deduplication.")
+
     return "\n\n".join([
         f"--- Source: {d.metadata.get('source', 'Unknown')} (Page {d.metadata.get('page', '?')}) ---\n{d.page_content}" 
-        for d in filtered_docs
+        for d in final_docs
     ])
 
 def generate_answer(query: str, context: str) -> str:

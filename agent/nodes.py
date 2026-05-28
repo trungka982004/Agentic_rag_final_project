@@ -12,6 +12,25 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_experimental.utilities import PythonREPL
 
+import json
+
+def parse_json_from_llm(raw_output: str) -> dict:
+    cleaned = raw_output.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines[-1].strip() == "```":
+            lines = lines[:-1]
+        cleaned = "\n".join(lines).strip()
+    
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start != -1 and end != -1:
+        cleaned = cleaned[start:end+1]
+        
+    return json.loads(cleaned)
+
 # --- CONSTANTS ---
 EXPERT_KEYWORDS = ["compare", "latest", "news", "trend", "so sánh", "mới nhất", "xu hướng", "tin tức"]
 PYTHON_KEYWORDS = ["python", "code", "tính toán", "calculate", "giải phương trình", "vẽ biểu đồ", "plot"]
@@ -24,24 +43,70 @@ def router_node(state: GraphState):
     
     logger.info(f"[*] Classified Domain: {domain.upper()}")
     
-    use_tavily = state.get("use_tavily", True)
-    expert_required = False
-    
-    if use_tavily:
-        expert_required = any(kw in question.lower() for kw in EXPERT_KEYWORDS)
-    else:
-        logger.info("[*] Tavily trigger is OFF. Forcing Local/Web search track.")
-    
-    python_repl = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
-    
-    # Detect export intent
+    # Keyword-based fallback configurations
     export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo", "report", "document", "doc", "sheet", "excel"]
-    export_to_workspace = state.get("export_to_workspace", False) or any(kw in question.lower() for kw in export_keywords)
+    fallback_expert = any(kw in question.lower() for kw in EXPERT_KEYWORDS)
+    fallback_python = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
+    fallback_export = any(kw in question.lower() for kw in export_keywords)
     
+    # Default is everything ON/Fallback
+    expert_required = fallback_expert
+    python_repl = fallback_python
+    web_fallback = True
+    export_to_workspace = fallback_export
+    
+    # Fast Keyword-First Routing Optimization: If no special keywords match, bypass LLM router immediately (saves 2+ seconds)
+    if not fallback_expert and not fallback_python and not fallback_export:
+        logger.info("[*] Fast routing triggered: No special keywords matched. Bypassing LLM router to save 2+ seconds.")
+        return {
+            "domain": domain, 
+            "expert_required": False, 
+            "python_repl": False,
+            "web_fallback": True, # keep web fallback available in case local DB has empty context
+            "export_to_workspace": False
+        }
+
+    # Use LLM to analyze the user's question and determine which flags are NOT necessary (should be OFF)
+    prompt = ChatPromptTemplate.from_template(
+        "You are an intelligent supervisor/router of an Agentic RAG system.\n"
+        "Initially, all execution flags are set to ON (True) by default:\n"
+        "1. expert_required: Set to True if the query requires complex expert consultation or high-quality web-search API (Tavily) to answer (e.g. comparison, news, trends, latest updates, or broad scientific/technical comparisons).\n"
+        "2. python_repl: Set to True if the query requires mathematical calculations, coding, plotting, equation solving, or numerical/data analysis.\n"
+        "3. web_fallback: Set to True if the query requires general web search (DuckDuckGo search) to get additional context (e.g., general knowledge, latest information, or questions that might not be in the local database).\n"
+        "4. export_to_workspace: Set to True if the query asks to export, save, draft, report, or create a document/sheet/table/file on Google Workspace (Google Docs/Sheets/Drive).\n\n"
+        "Analyze the user's query and judge which of these flags are actually necessary to be ON (True). If a flag is NOT necessary for this specific query, turn it OFF (False).\n\n"
+        "User Query: {question}\n\n"
+        "Respond ONLY in raw JSON format with the following keys and boolean values (true/false) based on your analysis, and do not include any markdown formatting like ```json or anything else:\n"
+        "{{\n"
+        "  \"expert_required\": true/false,\n"
+        "  \"python_repl\": true/false,\n"
+        "  \"web_fallback\": true/false,\n"
+        "  \"export_to_workspace\": true/false\n"
+        "}}\n"
+        "Do not include any explanation, conversational filler, or markdown wrapping."
+    )
+    
+    chain = prompt | llm | StrOutputParser()
+    try:
+        logger.info("[*] Analyzing flags using LLM...")
+        raw_res = chain.invoke({"question": question})
+        logger.info(f"[*] Raw LLM Flag Decision: {raw_res.strip()}")
+        
+        decision = parse_json_from_llm(raw_res)
+        expert_required = decision.get("expert_required", fallback_expert)
+        python_repl = decision.get("python_repl", fallback_python)
+        web_fallback = decision.get("web_fallback", True)
+        export_to_workspace = decision.get("export_to_workspace", fallback_export)
+        
+        logger.info(f"[*] Decided Flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
+    except Exception as e:
+        logger.error(f"Failed to analyze flags with LLM: {e}. Using keyword-based fallback.")
+        
     return {
         "domain": domain, 
         "expert_required": expert_required, 
         "python_repl": python_repl,
+        "web_fallback": web_fallback,
         "export_to_workspace": export_to_workspace
     }
 
@@ -204,6 +269,43 @@ def python_repl_node(state: GraphState):
         answer = f"**Failed to execute Python logic.** Error: {e}"
         return {"generation": format_agent_output(answer)}
 
+def generate_short_title(question: str, doc_type: str) -> str:
+    """Generates a highly concise, clear, and professional title (max 8 words) for exported files."""
+    if not llm:
+        words = question.split()
+        prefix = "Doc: " if doc_type == "docs" else "Sheet: "
+        core_title = " ".join(words[:5])
+        return f"{prefix}{core_title}"
+        
+    prompt = ChatPromptTemplate.from_template(
+        "You are an expert technical editor. Create a highly concise, professional, "
+        "and clear title (in the same language as the question, usually Vietnamese or English) "
+        "for an exported Google {doc_type} file answering this question:\n"
+        "Question: '{question}'\n\n"
+        "Rules:\n"
+        "1. The title MUST be extremely concise and clear.\n"
+        "2. The entire title (including any prefix) MUST NOT exceed 8 words.\n"
+        "3. Output ONLY the raw title without any quotes, punctuation, or markdown formatting.\n"
+        "4. Avoid generic filler. It should directly represent the core topic (e.g., 'So sánh SRAM và DRAM', 'Phân tích thuật toán ResNet').\n"
+        "5. Prepend a brief type prefix (e.g., 'Doc: ' for documents, 'Sheet: ' for spreadsheets) so it is clear."
+    )
+    chain = prompt | llm | StrOutputParser()
+    try:
+        title = chain.invoke({"question": question, "doc_type": "Doc" if doc_type == "docs" else "Spreadsheet"}).strip().strip('"').strip("'").strip()
+        title = re.sub(r"^#+\s*", "", title)
+        # Ensure under 8 words limit
+        words = title.split()
+        if len(words) > 8:
+            title = " ".join(words[:8])
+        return title
+    except Exception as e:
+        logger.error(f"Failed to generate short title: {e}")
+        words = question.split()
+        prefix = "Doc: " if doc_type == "docs" else "Sheet: "
+        core_title = " ".join(words[:5])
+        return f"{prefix}{core_title}"
+
+
 def export_report_node(state: GraphState):
     """Exports the generated answer to Google Docs and Google Sheets based on user intent."""
     logger.info("--- EXPORT REPORT NODE ---")
@@ -246,12 +348,13 @@ def export_report_node(state: GraphState):
             if os.path.exists(image_path):
                 os.remove(image_path)
 
+    import concurrent.futures
+
     export_summary_parts = []
     export_links = {"docs": None, "sheets": None}
 
-    # 2. Export to Google Docs
-    if export_docs:
-        doc_title = f"RAG Report: {question[:60]}"
+    def run_docs_export():
+        doc_title = generate_short_title(question, "docs")
         # Strip out raw Mermaid blocks completely so only the LLM's text and explanation remain in the body
         clean_content = re.sub(
             r"```mermaid\s*\n(.*?)\n```", 
@@ -264,29 +367,48 @@ def export_report_node(state: GraphState):
         if not clean_content:
             clean_content = f"Visual report generated for query: {question}"
             
-        doc_result = export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
-        export_summary_parts.append(doc_result)
-        
-        # Extract the clean Google Docs URL
-        match = re.search(r"https?://\S+", doc_result)
-        if match:
-            export_links["docs"] = match.group(0).rstrip(".")
-    else:
-        logger.info("[*] Google Docs export bypassed as per query instructions.")
+        return export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
 
-    # 3. Export to Google Sheets
-    if export_sheets:
-        sheet_title = f"RAG Data: {question[:50]}"
+    def run_sheets_export():
+        sheet_title = generate_short_title(question, "sheets")
         sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
-        sheet_result = export_to_google_sheets(title=sheet_title, data=sheet_data)
-        export_summary_parts.append(sheet_result)
-        
-        # Extract the clean Google Sheets URL
-        match = re.search(r"https?://\S+", sheet_result)
-        if match:
-            export_links["sheets"] = match.group(0).rstrip(".")
-    else:
-        logger.info("[*] Google Sheets export bypassed as per query instructions.")
+        return export_to_google_sheets(title=sheet_title, data=sheet_data)
+
+    # Execute Google Docs and Google Sheets exports in parallel using ThreadPoolExecutor
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {}
+        if export_docs:
+            futures["docs"] = executor.submit(run_docs_export)
+        else:
+            logger.info("[*] Google Docs export bypassed as per query instructions.")
+
+        if export_sheets:
+            futures["sheets"] = executor.submit(run_sheets_export)
+        else:
+            logger.info("[*] Google Sheets export bypassed as per query instructions.")
+
+        # Wait for all exports to finish and extract links
+        if "docs" in futures:
+            try:
+                doc_result = futures["docs"].result()
+                export_summary_parts.append(doc_result)
+                match = re.search(r"https?://\S+", doc_result)
+                if match:
+                    export_links["docs"] = match.group(0).rstrip(".")
+            except Exception as e:
+                logger.error(f"Google Docs export failed: {e}")
+                export_summary_parts.append(f"[Export Error] Google Docs: {e}")
+
+        if "sheets" in futures:
+            try:
+                sheet_result = futures["sheets"].result()
+                export_summary_parts.append(sheet_result)
+                match = re.search(r"https?://\S+", sheet_result)
+                if match:
+                    export_links["sheets"] = match.group(0).rstrip(".")
+            except Exception as e:
+                logger.error(f"Google Sheets export failed: {e}")
+                export_summary_parts.append(f"[Export Error] Google Sheets: {e}")
 
     # Return clean generation and structured export links separately
     return {"generation": generation, "export_links": export_links}
