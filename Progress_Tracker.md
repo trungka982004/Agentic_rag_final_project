@@ -1,36 +1,37 @@
-# Bảng Theo Dõi Tiến Độ (Progress Tracker)
+# Progress Tracker
 
-Dựa trên tài liệu `Implementation_Plan.md` và tình trạng thực tế của mã nguồn (cập nhật ngày 15/05/2026), dưới đây là các hạng mục cần thực hiện để hoàn thiện dự án Agentic RAG. Bạn có thể sử dụng file này để đánh dấu (check) các phần việc đã hoàn thành.
+Based on the `Implementation_Plan.md` and the actual state of the codebase (updated as of May 15, 2026), below is the checklist of items required to complete the Agentic RAG project. You can use this file to track and check off completed tasks.
 
-## Giai đoạn 1: Thiết lập Nền tảng & Cấu trúc Dữ liệu
-- [x] Cấu hình môi trường Python 3.10+, Ollama, ChromaDB trên local.
-- [x] Ingestion Pipeline: Parse PDF bằng PyMuPDF và Unstructured.
-- [x] Vector Database: Tạo các collection theo domain (it, math, physics, electronics) với 15,495 chunks.
-- [x] Embedding: Tích hợp mô hình embedding (Hiện tại đang sử dụng `bge-m3`).
-  - [x] *(Tuỳ chọn)* Chuyển đổi mô hình embedding sang `BGE-M3` hoặc `text-embedding-3-small` theo đúng plan.
+## Phase 1: Foundation & Data Ingest
+- [x] Configure environment: Python 3.10+, Ollama, ChromaDB on local.
+- [x] Ingestion Pipeline: Parse PDFs using PyMuPDF and Unstructured.
+- [x] Vector Database: Build domain-specific collections (it, math, physics, electronics) containing 15,495 chunks.
+- [x] Embedding: Integrate embedding model (currently using `bge-m3`).
+  - [x] *(Optional)* Transition embedding model to `BGE-M3` or `text-embedding-3-small` as planned.
 
-## Giai đoạn 2: Phát triển Luồng suy luận Agentic
-- [x] Xây dựng bộ khung LangGraph: Các node router, retrieve, web_search, generate.
-- [x] Node **Router Grader**: Phân loại domain của câu hỏi.
-- [x] Logic Self-RAG - **Retrieve Grader**: Kiểm tra độ tương quan giữa tài liệu tìm được và câu hỏi (`grade_documents_node`).
-- [x] Logic Self-RAG - **Hallucination Grader**: Node đối chiếu câu trả lời của LLM với dữ liệu gốc để chống ảo giác.
-- [x] Logic Self-RAG - **Answer Grader**: Node đánh giá xem câu trả lời có thỏa mãn yêu cầu của người dùng hay chưa.
-- [x] Cập nhật Conditional Edges trong `graph.py` để kết nối Hallucination Grader và Answer Grader.
-- [x] **State Management**: Cấu hình Checkpointing/Snapshotting (vd: `MemorySaver`) trong quá trình compile LangGraph để lưu trữ trạng thái hội thoại.
+## Phase 2: Agentic Reasoning Workflow
+- [x] Construct LangGraph skeleton: router, retrieve, web_search, and generate nodes.
+- [x] Node **Router Grader**: Classify the query's domain.
+- [x] Self-RAG logic - **Retrieve Grader**: Check the correlation between retrieved documents and the query (`grade_documents_node`).
+- [x] Self-RAG logic - **Hallucination Grader**: Evaluate LLM generation against the retrieved context to prevent hallucination.
+- [x] Self-RAG logic - **Answer Grader**: Assess if the answer satisfies the user's requirements.
+- [x] Update Conditional Edges in `graph.py` to link the Hallucination Grader and Answer Grader.
+- [x] **State Management**: Configure Checkpointing/Snapshotting (e.g. `MemorySaver`) during LangGraph compilation to preserve conversation state.
 
-## Giai đoạn 3: Tích hợp Công cụ & Tính năng Nâng cao (Hoàn thành - 16/05/2026)
-- [x] **Hybrid Search**: Bổ sung BM25 (keyword search) và kết hợp với Vector Search hiện tại bằng `EnsembleRetriever`.
-- [x] Tích hợp **Python REPL Tool**: Cho phép Agent thực thi mã Python và trả về kết quả cấu trúc cho Sheets.
-- [x] Tích hợp **Google Workspace API Tool**: Hỗ trợ Agent xuất báo cáo ra Google Docs/Sheets (Bao gồm cả Drive API).
-- [x] Xử lý **LaTeX & Mermaid**: Hỗ trợ Agent trả về kết quả chuẩn định dạng và tự động render Mermaid thành ảnh nhúng vào báo cáo.
-- [x] Tối ưu hóa luồng Export: Tự động phát hiện yêu cầu xuất dữ liệu và xóa bỏ các câu dẫn rườm rà.
+## Phase 3: Tool Integration & Advanced Features (Completed - 2026-05-16)
+- [x] **Hybrid Search**: Add BM25 (keyword search) and combine it with existing Vector Search using `EnsembleRetriever`.
+- [x] **Python REPL Tool**: Enable the Agent to execute Python code and return structured results for Google Sheets.
+- [x] **Google Workspace API Tool**: Support exporting reports to Google Docs/Sheets (including Google Drive API).
+- [x] **LaTeX & Mermaid Support**: Render math formulas and automatically compile Mermaid diagram codes into embedded images within reports.
+- [x] **Export Streamlining**: Automatically detect export intents and bypass unnecessary chat preamble/filler text.
 
-## Giai đoạn 4: Đánh giá, Tối ưu & Hoàn thiện
-- [ ] Tích hợp framework đánh giá **RAGAS** (Faithfulness, Answer Relevance, Context Precision) vào file `evaluate.py`.
-- [ ] **UI/UX**: Xây dựng giao diện cho phép hiển thị luồng tư duy (Thought Process) của Agent một cách trực quan.
-- [ ] **Citations**: Tối ưu UI để hiển thị trích dẫn nguồn chi tiết và chính xác.
-- [x] **Security & Guardrails**: Cấu hình `recursion_limit` trong LangGraph để kiểm soát số vòng lặp tối đa của Agent.
+## Phase 4: Evaluation, Optimization & Polishing
+- [ ] Integrate **RAGAS** evaluation framework (Faithfulness, Answer Relevance, Context Precision) in `evaluate.py`.
+- [ ] **UI/UX**: Build a frontend/interface that visually exposes the Agent's Thought Process.
+- [ ] **Citations**: Optimize UI/UX to display source citations precisely and beautifully.
+- [x] **Performance & Latency Optimization**: Implement Fast Keyword-First Routing (saving LLM router calls), Joint Grader (merging 2 Self-RAG graders), Dynamic Retrieval Weights, context chunk deduplication, and Parallel Google Workspace Export (ThreadPoolExecutor).
+- [x] **Security & Guardrails**: Configure `recursion_limit` in LangGraph to prevent infinite loops.
 
 ---
-**Hướng dẫn sử dụng:** 
-Khi bạn hoàn thành một tính năng, hãy đổi `[ ]` thành `[x]` trong file này để dễ dàng theo dõi tiến độ công việc.
+**Usage Instructions:**
+When you complete a feature, change `[ ]` to `[x]` in this file to easily track development progress.

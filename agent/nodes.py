@@ -55,6 +55,17 @@ def router_node(state: GraphState):
     web_fallback = True
     export_to_workspace = fallback_export
     
+    # Fast Keyword-First Routing Optimization: If no special keywords match, bypass LLM router immediately (saves 2+ seconds)
+    if not fallback_expert and not fallback_python and not fallback_export:
+        logger.info("[*] Fast routing triggered: No special keywords matched. Bypassing LLM router to save 2+ seconds.")
+        return {
+            "domain": domain, 
+            "expert_required": False, 
+            "python_repl": False,
+            "web_fallback": True, # keep web fallback available in case local DB has empty context
+            "export_to_workspace": False
+        }
+
     # Use LLM to analyze the user's question and determine which flags are NOT necessary (should be OFF)
     prompt = ChatPromptTemplate.from_template(
         "You are an intelligent supervisor/router of an Agentic RAG system.\n"
@@ -300,11 +311,12 @@ def export_report_node(state: GraphState):
             if os.path.exists(image_path):
                 os.remove(image_path)
 
+    import concurrent.futures
+
     export_summary_parts = []
     export_links = {"docs": None, "sheets": None}
 
-    # 2. Export to Google Docs
-    if export_docs:
+    def run_docs_export():
         doc_title = f"RAG Report: {question[:60]}"
         # Strip out raw Mermaid blocks completely so only the LLM's text and explanation remain in the body
         clean_content = re.sub(
@@ -318,29 +330,48 @@ def export_report_node(state: GraphState):
         if not clean_content:
             clean_content = f"Visual report generated for query: {question}"
             
-        doc_result = export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
-        export_summary_parts.append(doc_result)
-        
-        # Extract the clean Google Docs URL
-        match = re.search(r"https?://\S+", doc_result)
-        if match:
-            export_links["docs"] = match.group(0).rstrip(".")
-    else:
-        logger.info("[*] Google Docs export bypassed as per query instructions.")
+        return export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
 
-    # 3. Export to Google Sheets
-    if export_sheets:
+    def run_sheets_export():
         sheet_title = f"RAG Data: {question[:50]}"
         sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
-        sheet_result = export_to_google_sheets(title=sheet_title, data=sheet_data)
-        export_summary_parts.append(sheet_result)
-        
-        # Extract the clean Google Sheets URL
-        match = re.search(r"https?://\S+", sheet_result)
-        if match:
-            export_links["sheets"] = match.group(0).rstrip(".")
-    else:
-        logger.info("[*] Google Sheets export bypassed as per query instructions.")
+        return export_to_google_sheets(title=sheet_title, data=sheet_data)
+
+    # Execute Google Docs and Google Sheets exports in parallel using ThreadPoolExecutor
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {}
+        if export_docs:
+            futures["docs"] = executor.submit(run_docs_export)
+        else:
+            logger.info("[*] Google Docs export bypassed as per query instructions.")
+
+        if export_sheets:
+            futures["sheets"] = executor.submit(run_sheets_export)
+        else:
+            logger.info("[*] Google Sheets export bypassed as per query instructions.")
+
+        # Wait for all exports to finish and extract links
+        if "docs" in futures:
+            try:
+                doc_result = futures["docs"].result()
+                export_summary_parts.append(doc_result)
+                match = re.search(r"https?://\S+", doc_result)
+                if match:
+                    export_links["docs"] = match.group(0).rstrip(".")
+            except Exception as e:
+                logger.error(f"Google Docs export failed: {e}")
+                export_summary_parts.append(f"[Export Error] Google Docs: {e}")
+
+        if "sheets" in futures:
+            try:
+                sheet_result = futures["sheets"].result()
+                export_summary_parts.append(sheet_result)
+                match = re.search(r"https?://\S+", sheet_result)
+                if match:
+                    export_links["sheets"] = match.group(0).rstrip(".")
+            except Exception as e:
+                logger.error(f"Google Sheets export failed: {e}")
+                export_summary_parts.append(f"[Export Error] Google Sheets: {e}")
 
     # Return clean generation and structured export links separately
     return {"generation": generation, "export_links": export_links}

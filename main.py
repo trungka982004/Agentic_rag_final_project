@@ -24,7 +24,7 @@ def main():
             continue
 
         import uuid
-        # Đồng loạt các flag đều khởi tạo là ON (True)
+        # Initialize all execution flags to ON (True) by default
         inputs = {
             "question": query,
             "use_tavily": True,
@@ -42,13 +42,13 @@ def main():
         config = {"configurable": {"thread_id": str(uuid.uuid4())}, "recursion_limit": 10}
         final_state = app.invoke(inputs, config=config)
 
-        # In báo cáo kết quả phân tích và phán đoán các flag
+        # Print analysis and flag selection report
         print("\n--- Flag Selection Report ---")
-        print(f"🚩 Trạng thái Flag cuối cùng được chọn cho truy vấn này:")
-        print(f"   - expert_required (Tavily Expert Search) : {'🟢 ON (Cần thiết)' if final_state.get('expert_required') else '🔴 OFF (Đã tắt)'}")
-        print(f"   - python_repl (Thực thi tính toán Python) : {'🟢 ON (Cần thiết)' if final_state.get('python_repl') else '🔴 OFF (Đã tắt)'}")
-        print(f"   - web_fallback (Dự phòng tìm kiếm Web)    : {'🟢 ON (Cần thiết)' if final_state.get('web_fallback') else '🔴 OFF (Đã tắt)'}")
-        print(f"   - export_to_workspace (Xuất Workspace)    : {'🟢 ON (Cần thiết)' if final_state.get('export_to_workspace') else '🔴 OFF (Đã tắt)'}")
+        print(f"🚩 Final flag statuses chosen for this query:")
+        print(f"   - expert_required (Tavily Expert Search) : {'🟢 ON (Required)' if final_state.get('expert_required') else '🔴 OFF (Disabled)'}")
+        print(f"   - python_repl (Python Computation REPL)  : {'🟢 ON (Required)' if final_state.get('python_repl') else '🔴 OFF (Disabled)'}")
+        print(f"   - web_fallback (Web Search Fallback)     : {'🟢 ON (Required)' if final_state.get('web_fallback') else '🔴 OFF (Disabled)'}")
+        print(f"   - export_to_workspace (Workspace Export)  : {'🟢 ON (Required)' if final_state.get('export_to_workspace') else '🔴 OFF (Disabled)'}")
         print("-" * 30)
 
         print("\n--- Final Answer ---")

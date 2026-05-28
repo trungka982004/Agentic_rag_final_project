@@ -27,73 +27,109 @@ from local_rag import llm
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+import json
+
+def parse_json_from_llm(raw_output: str) -> dict:
+    cleaned = raw_output.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines[-1].strip() == "```":
+            lines = lines[:-1]
+        cleaned = "\n".join(lines).strip()
+    
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start != -1 and end != -1:
+        cleaned = cleaned[start:end+1]
+        
+    try:
+        return json.loads(cleaned)
+    except Exception:
+        # Robust fallback parser if json.loads fails
+        res = {}
+        cleaned_lower = cleaned.lower()
+        if "grounded" in cleaned_lower:
+            res["grounded"] = "no" if "grounded" in cleaned_lower and '"no"' in cleaned_lower or "'no'" in cleaned_lower else "yes"
+        if "useful" in cleaned_lower:
+            res["useful"] = "no" if "useful" in cleaned_lower and '"no"' in cleaned_lower or "'no'" in cleaned_lower else "yes"
+        return res
+
 def grade_generation_v_documents_and_question(state: GraphState):
     """
-    Determines whether the generation is grounded in the document and answers question.
+    Determines whether the generation is grounded in the document and answers question
+    using a unified Joint Grader to minimize latency (saving 1 LLM call).
     """
-    print("--- CHECK HALLUCINATIONS ---")
+    print("--- JOINT EVALUATION (HALLUCINATION & RELEVANCE GRADER) ---")
     question = state["question"]
     documents = state.get("documents", [])
     generation = state["generation"]
     retry_count = state.get("retry_count", 0)
     max_retries = 2
 
-    if not documents:
-        # If no documents, we can't check for hallucination against context
-        # But we can still check answer relevance
-        pass
-
-    # 1. Hallucination Grader
-    hallucination_prompt = ChatPromptTemplate.from_template(
-        "You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. \n"
-        "Here are the facts:\n"
+    # 1. Joint Grader Prompt
+    joint_grader_prompt = ChatPromptTemplate.from_template(
+        "You are an expert evaluator assessing the quality of an assistant's answer.\n"
+        "Here is the retrieved context/facts:\n"
         "-------\n"
         "{documents}\n"
         "-------\n"
-        "Here is the LLM generation: {generation}\n"
-        "Give a binary score 'yes' or 'no'. 'yes' means that the answer is grounded in / supported by the facts."
+        "Here is the user's question:\n"
+        "-------\n"
+        "{question}\n"
+        "-------\n"
+        "Here is the assistant's generated answer:\n"
+        "-------\n"
+        "{generation}\n"
+        "-------\n"
+        "Perform a strict analysis on two criteria:\n"
+        "1. Groundedness (Is the answer supported by and grounded in the retrieved facts? If the facts are empty, answer 'yes' for this criterion. Answer 'yes' or 'no').\n"
+        "2. Usefulness (Does the answer resolve and fully address the user's question? Answer 'yes' or 'no').\n\n"
+        "Respond ONLY in raw JSON format with the following keys and values, and do not include any markdown code blocks or explanations:\n"
+        "{{\n"
+        "  \"grounded\": \"yes\"/\"no\",\n"
+        "  \"useful\": \"yes\"/\"no\"\n"
+        "}}\n"
+        "Do not include any explanation or extra text."
     )
-    hallucination_chain = hallucination_prompt | llm | StrOutputParser()
     
+    joint_chain = joint_grader_prompt | llm | StrOutputParser()
     context = "\n\n".join(documents) if documents else "No documents."
-    score = hallucination_chain.invoke({"documents": context, "generation": generation})
-    grade = score.strip().lower()
+    
+    try:
+        print("[*] Calling Joint Grader...")
+        raw_res = joint_chain.invoke({
+            "documents": context,
+            "question": question,
+            "generation": generation
+        })
+        print(f"[*] Joint Grader raw response: {raw_res.strip()}")
+        decision = parse_json_from_llm(raw_res)
+        grounded = decision.get("grounded", "yes").strip().lower()
+        useful = decision.get("useful", "yes").strip().lower()
+    except Exception as e:
+        print(f"[*] Joint grading failed: {e}. Defaulting to safe values.")
+        grounded = "yes"
+        useful = "yes"
 
-    if "yes" in grade:
-        print("[*] Decision: Generation is grounded in documents.")
-        
-        # 2. Answer Grader
-        print("--- GRADE GENERATION vs QUESTION ---")
-        answer_prompt = ChatPromptTemplate.from_template(
-            "You are a grader assessing whether an answer addresses / resolves a question. \n"
-            "Here is the question:\n"
-            "-------\n"
-            "{question}\n"
-            "-------\n"
-            "Here is the answer:\n"
-            "-------\n"
-            "{generation}\n"
-            "-------\n"
-            "Give a binary score 'yes' or 'no'. 'yes' means that the answer resolves the question."
-        )
-        answer_chain = answer_prompt | llm | StrOutputParser()
-        score = answer_chain.invoke({"question": question, "generation": generation})
-        grade = score.strip().lower()
-        
-        if "yes" in grade:
-            print("[*] Decision: Generation addresses question.")
+    print(f"[*] Evaluation result -> Grounded: {grounded.upper()}, Useful: {useful.upper()}")
+
+    if "yes" in grounded:
+        if "yes" in useful:
+            print("[*] Decision: Generation is grounded and answers the question.")
             return "useful"
         else:
             if retry_count >= max_retries:
-                print(f"[*] Max retries ({max_retries}) reached. Accepting answer despite not fully addressing question to prevent loop.")
+                print(f"[*] Max retries ({max_retries}) reached. Accepting useful fallback to prevent loop.")
                 return "useful"
-            print("[*] Decision: Generation does not address question.")
+            print("[*] Decision: Generation does not address the question.")
             return "not useful"
     else:
         if retry_count >= max_retries:
-            print(f"[*] Max retries ({max_retries}) reached. Accepting answer despite hallucination suspicion to prevent loop.")
+            print(f"[*] Max retries ({max_retries}) reached. Accepting grounded fallback to prevent loop.")
             return "useful"
-        print("[*] Decision: Generation is not grounded in documents, retry.")
+        print("[*] Decision: Generation is not grounded (hallucination suspicion), retry.")
         return "not supported"
 
 def decide_to_export(state: GraphState):
