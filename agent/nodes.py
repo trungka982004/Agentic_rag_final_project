@@ -12,6 +12,25 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_experimental.utilities import PythonREPL
 
+import json
+
+def parse_json_from_llm(raw_output: str) -> dict:
+    cleaned = raw_output.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines[-1].strip() == "```":
+            lines = lines[:-1]
+        cleaned = "\n".join(lines).strip()
+    
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start != -1 and end != -1:
+        cleaned = cleaned[start:end+1]
+        
+    return json.loads(cleaned)
+
 # --- CONSTANTS ---
 EXPERT_KEYWORDS = ["compare", "latest", "news", "trend", "so sánh", "mới nhất", "xu hướng", "tin tức"]
 PYTHON_KEYWORDS = ["python", "code", "tính toán", "calculate", "giải phương trình", "vẽ biểu đồ", "plot"]
@@ -24,24 +43,59 @@ def router_node(state: GraphState):
     
     logger.info(f"[*] Classified Domain: {domain.upper()}")
     
-    use_tavily = state.get("use_tavily", True)
-    expert_required = False
-    
-    if use_tavily:
-        expert_required = any(kw in question.lower() for kw in EXPERT_KEYWORDS)
-    else:
-        logger.info("[*] Tavily trigger is OFF. Forcing Local/Web search track.")
-    
-    python_repl = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
-    
-    # Detect export intent
+    # Keyword-based fallback configurations
     export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo", "report", "document", "doc", "sheet", "excel"]
-    export_to_workspace = state.get("export_to_workspace", False) or any(kw in question.lower() for kw in export_keywords)
+    fallback_expert = any(kw in question.lower() for kw in EXPERT_KEYWORDS)
+    fallback_python = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
+    fallback_export = any(kw in question.lower() for kw in export_keywords)
     
+    # Default is everything ON/Fallback
+    expert_required = fallback_expert
+    python_repl = fallback_python
+    web_fallback = True
+    export_to_workspace = fallback_export
+    
+    # Use LLM to analyze the user's question and determine which flags are NOT necessary (should be OFF)
+    prompt = ChatPromptTemplate.from_template(
+        "You are an intelligent supervisor/router of an Agentic RAG system.\n"
+        "Initially, all execution flags are set to ON (True) by default:\n"
+        "1. expert_required: Set to True if the query requires complex expert consultation or high-quality web-search API (Tavily) to answer (e.g. comparison, news, trends, latest updates, or broad scientific/technical comparisons).\n"
+        "2. python_repl: Set to True if the query requires mathematical calculations, coding, plotting, equation solving, or numerical/data analysis.\n"
+        "3. web_fallback: Set to True if the query requires general web search (DuckDuckGo search) to get additional context (e.g., general knowledge, latest information, or questions that might not be in the local database).\n"
+        "4. export_to_workspace: Set to True if the query asks to export, save, draft, report, or create a document/sheet/table/file on Google Workspace (Google Docs/Sheets/Drive).\n\n"
+        "Analyze the user's query and judge which of these flags are actually necessary to be ON (True). If a flag is NOT necessary for this specific query, turn it OFF (False).\n\n"
+        "User Query: {question}\n\n"
+        "Respond ONLY in raw JSON format with the following keys and boolean values (true/false) based on your analysis, and do not include any markdown formatting like ```json or anything else:\n"
+        "{{\n"
+        "  \"expert_required\": true/false,\n"
+        "  \"python_repl\": true/false,\n"
+        "  \"web_fallback\": true/false,\n"
+        "  \"export_to_workspace\": true/false\n"
+        "}}\n"
+        "Do not include any explanation, conversational filler, or markdown wrapping."
+    )
+    
+    chain = prompt | llm | StrOutputParser()
+    try:
+        logger.info("[*] Analyzing flags using LLM...")
+        raw_res = chain.invoke({"question": question})
+        logger.info(f"[*] Raw LLM Flag Decision: {raw_res.strip()}")
+        
+        decision = parse_json_from_llm(raw_res)
+        expert_required = decision.get("expert_required", fallback_expert)
+        python_repl = decision.get("python_repl", fallback_python)
+        web_fallback = decision.get("web_fallback", True)
+        export_to_workspace = decision.get("export_to_workspace", fallback_export)
+        
+        logger.info(f"[*] Decided Flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
+    except Exception as e:
+        logger.error(f"Failed to analyze flags with LLM: {e}. Using keyword-based fallback.")
+        
     return {
         "domain": domain, 
         "expert_required": expert_required, 
         "python_repl": python_repl,
+        "web_fallback": web_fallback,
         "export_to_workspace": export_to_workspace
     }
 
