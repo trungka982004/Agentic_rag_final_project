@@ -269,6 +269,43 @@ def python_repl_node(state: GraphState):
         answer = f"**Failed to execute Python logic.** Error: {e}"
         return {"generation": format_agent_output(answer)}
 
+def generate_short_title(question: str, doc_type: str) -> str:
+    """Generates a highly concise, clear, and professional title (max 8 words) for exported files."""
+    if not llm:
+        words = question.split()
+        prefix = "Doc: " if doc_type == "docs" else "Sheet: "
+        core_title = " ".join(words[:5])
+        return f"{prefix}{core_title}"
+        
+    prompt = ChatPromptTemplate.from_template(
+        "You are an expert technical editor. Create a highly concise, professional, "
+        "and clear title (in the same language as the question, usually Vietnamese or English) "
+        "for an exported Google {doc_type} file answering this question:\n"
+        "Question: '{question}'\n\n"
+        "Rules:\n"
+        "1. The title MUST be extremely concise and clear.\n"
+        "2. The entire title (including any prefix) MUST NOT exceed 8 words.\n"
+        "3. Output ONLY the raw title without any quotes, punctuation, or markdown formatting.\n"
+        "4. Avoid generic filler. It should directly represent the core topic (e.g., 'So sánh SRAM và DRAM', 'Phân tích thuật toán ResNet').\n"
+        "5. Prepend a brief type prefix (e.g., 'Doc: ' for documents, 'Sheet: ' for spreadsheets) so it is clear."
+    )
+    chain = prompt | llm | StrOutputParser()
+    try:
+        title = chain.invoke({"question": question, "doc_type": "Doc" if doc_type == "docs" else "Spreadsheet"}).strip().strip('"').strip("'").strip()
+        title = re.sub(r"^#+\s*", "", title)
+        # Ensure under 8 words limit
+        words = title.split()
+        if len(words) > 8:
+            title = " ".join(words[:8])
+        return title
+    except Exception as e:
+        logger.error(f"Failed to generate short title: {e}")
+        words = question.split()
+        prefix = "Doc: " if doc_type == "docs" else "Sheet: "
+        core_title = " ".join(words[:5])
+        return f"{prefix}{core_title}"
+
+
 def export_report_node(state: GraphState):
     """Exports the generated answer to Google Docs and Google Sheets based on user intent."""
     logger.info("--- EXPORT REPORT NODE ---")
@@ -317,7 +354,7 @@ def export_report_node(state: GraphState):
     export_links = {"docs": None, "sheets": None}
 
     def run_docs_export():
-        doc_title = f"RAG Report: {question[:60]}"
+        doc_title = generate_short_title(question, "docs")
         # Strip out raw Mermaid blocks completely so only the LLM's text and explanation remain in the body
         clean_content = re.sub(
             r"```mermaid\s*\n(.*?)\n```", 
@@ -333,7 +370,7 @@ def export_report_node(state: GraphState):
         return export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
 
     def run_sheets_export():
-        sheet_title = f"RAG Data: {question[:50]}"
+        sheet_title = generate_short_title(question, "sheets")
         sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
         return export_to_google_sheets(title=sheet_title, data=sheet_data)
 
