@@ -363,15 +363,32 @@ def export_report_node(state: GraphState):
             flags=re.DOTALL
         ).strip()
         
-        # Ensure the body content is never empty to avoid Google Docs API insertion error
-        if not clean_content:
-            clean_content = f"Visual report generated for query: {question}"
+        # Build beautifully formatted document content including both the Question and the Answer
+        doc_content = f"QUESTION:\n{question}\n\n"
+        if clean_content:
+            doc_content += f"ANSWER:\n{clean_content}\n"
+        else:
+            doc_content += "ANSWER:\n(Please refer to the diagram below)\n"
             
-        return export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
+        return export_to_google_docs(title=doc_title, content=doc_content, image_urls=image_urls)
 
     def run_sheets_export():
         sheet_title = generate_short_title(question, "sheets")
-        sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
+        
+        # For Sheets, we clean up any raw mermaid blocks from the text to make it more readable
+        clean_generation = re.sub(
+            r"```mermaid\s*\n(.*?)\n```", 
+            "[Diagram Rendered in Doc]", 
+            generation, 
+            flags=re.DOTALL
+        ).strip()
+        
+        sheet_data = structured_data if structured_data else [
+            ["Field", "Value"],
+            ["Question", question],
+            ["Answer", clean_generation],
+            ["Status", "Completed"]
+        ]
         return export_to_google_sheets(title=sheet_title, data=sheet_data)
 
     # Execute Google Docs and Google Sheets exports in parallel using ThreadPoolExecutor
