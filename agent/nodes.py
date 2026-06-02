@@ -224,7 +224,10 @@ def expert_consult_node(state: GraphState):
     logger.info("[*] Consulting Tavily API...")
     answer = get_expert_answer(question)
     
-    return {"generation": format_agent_output(answer)}
+    documents = state.get("documents", [])
+    documents.append(f"--- Expert Search Results ---\n{answer}")
+    
+    return {"documents": documents}
 
 def generate_node(state: GraphState):
     """Generates the final answer using LLM."""
@@ -232,11 +235,24 @@ def generate_node(state: GraphState):
     question = state["question"]
     documents = state.get("documents", [])
     retry_count = state.get("retry_count", 0)
+    chat_history = state.get("chat_history", [])
     
     context = "\n\n".join(documents)
     
+    # Format chat history to inject into prompt context
+    history_str = ""
+    if chat_history:
+        history_str = "--- CONVERSATION HISTORY ---\n"
+        for turn in chat_history:
+            usr = turn.get("user", "")
+            agt = turn.get("agent", "")
+            # Strip out raw Mermaid blocks to avoid massive token bloat
+            clean_agt = re.sub(r"```mermaid\s*\n(.*?)\n```", "[Diagram]", agt, flags=re.DOTALL)
+            history_str += f"User: {usr}\nAgent: {clean_agt}\n\n"
+        history_str += "-------------------------\n\n"
+        
     template = """
-    You are a professional technical assistant. Answer the [QUESTION] based ONLY on the provided [CONTEXT].
+    You are a professional technical assistant. Answer the [QUESTION] based on the provided [CONTEXT] and the past [CONVERSATION HISTORY] (if any).
     
     MANDATORY RULES:
     1. BE CONCISE. Do not explain your plan or describe how you will do things. Just provide the final result.
@@ -248,6 +264,9 @@ def generate_node(state: GraphState):
     7. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
     8. Return ONLY the final report content.
  
+    [CONVERSATION HISTORY]:
+    {history}
+
     [CONTEXT]:
     {context}
  
@@ -261,7 +280,7 @@ def generate_node(state: GraphState):
     chain = prompt | llm | StrOutputParser()
     
     try:
-        response = chain.invoke({"question": question, "context": context})
+        response = chain.invoke({"question": question, "context": context, "history": history_str})
         formatted_response = format_agent_output(response)
         
         # Automatically extract markdown tables to populate structured_data for Sheets
