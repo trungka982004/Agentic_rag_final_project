@@ -15,6 +15,11 @@ def main():
 
     app = create_agent_graph()
 
+    import uuid
+    # Initialize a single session thread ID and local chat history to support conversational memory
+    session_thread_id = str(uuid.uuid4())
+    chat_history = []
+
     while True:
         query = input("\nUser Question: ").strip()
         if query.lower() in ["exit", "quit", "q"]:
@@ -23,10 +28,10 @@ def main():
         if not query:
             continue
 
-        import uuid
         # Initialize all execution flags to ON (True) by default
         inputs = {
             "question": query,
+            "chat_history": chat_history, # Pass active chat history to support follow-ups
             "use_tavily": True,
             "export_to_workspace": True,
             "expert_required": True,
@@ -38,9 +43,15 @@ def main():
         }
 
         print("\n" + "="*50)
-        # Run the LangGraph app with a fresh unique thread ID to prevent state accumulation
-        config = {"configurable": {"thread_id": str(uuid.uuid4())}, "recursion_limit": 10}
+        # Run the LangGraph app with the persistent session thread ID to enable memory saver checkpoints
+        config = {"configurable": {"thread_id": session_thread_id}, "recursion_limit": 10}
         final_state = app.invoke(inputs, config=config)
+
+        # Update persistent conversational history
+        chat_history.append({
+            "user": query,
+            "agent": final_state.get("generation", "No answer generated.")
+        })
 
         # Print analysis and flag selection report
         print("\n--- Flag Selection Report ---")

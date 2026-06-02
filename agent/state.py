@@ -2,6 +2,7 @@ from typing import TypedDict, List, Optional
 
 class GraphState(TypedDict):
     question: str                # User query
+    chat_history: List[dict]     # Conversation history: [{"user": "...", "agent": "..."}]
     domain: str                  # Classified domain
     documents: List[str]         # Context documents retrieved
     web_fallback: bool           # Flag for web search

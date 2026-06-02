@@ -35,10 +35,55 @@ def parse_json_from_llm(raw_output: str) -> dict:
 EXPERT_KEYWORDS = ["compare", "latest", "news", "trend", "so sánh", "mới nhất", "xu hướng", "tin tức"]
 PYTHON_KEYWORDS = ["python", "code", "tính toán", "calculate", "giải phương trình", "vẽ biểu đồ", "plot"]
 
+def condense_question(question: str, chat_history: list) -> str:
+    """Condenses an ambiguous question using chat history to make it standalone."""
+    if not chat_history:
+        return question
+        
+    logger.info("[*] Chat history detected. Condensing follow-up question...")
+    
+    # Form chat history string
+    history_str = ""
+    for turn in chat_history:
+        usr = turn.get("user", "")
+        agt = turn.get("agent", "")
+        # Clean agt if it has mermaid or is too long to save context
+        clean_agt = re.sub(r"```mermaid\s*\n(.*?)\n```", "[Diagram]", agt, flags=re.DOTALL)
+        if len(clean_agt) > 200:
+            clean_agt = clean_agt[:200] + "..."
+        history_str += f"User: {usr}\nAgent: {clean_agt}\n\n"
+        
+    prompt = ChatPromptTemplate.from_template(
+        "Read the following chat history and the latest user question.\n"
+        "If the latest user question references the previous conversation (e.g. using 'it', 'above', 'that', 'them', 'nó', 'đó', 'trên', 'này' or implicit references), "
+        "write a fully standalone, search-friendly version of the question in the same language.\n"
+        "If it is already standalone, keep it exactly as-is.\n\n"
+        "Rules:\n"
+        "1. Do NOT answer the question.\n"
+        "2. Output ONLY the raw condensed question, no commentary, no quotes, no markdown wrappers.\n\n"
+        "[CHAT HISTORY]:\n"
+        "{history_str}\n"
+        "[LATEST USER QUESTION]: {question}\n\n"
+        "[STANDALONE QUESTION]:"
+    )
+    
+    chain = prompt | llm | StrOutputParser()
+    try:
+        condensed = chain.invoke({"history_str": history_str, "question": question}).strip().strip('"').strip("'")
+        logger.info(f"[*] Original Question: '{question}' -> Condensed Standalone Question: '{condensed}'")
+        return condensed
+    except Exception as e:
+        logger.error(f"Failed to condense question: {e}")
+        return question
+
 def router_node(state: GraphState):
     """Classifies domain and decides initial path."""
     logger.info("--- ROUTER NODE ---")
     question = state["question"]
+    chat_history = state.get("chat_history", [])
+    
+    # Condense the question using conversation history
+    question = condense_question(question, chat_history)
     domain = classify_domain(question)
     
     logger.info(f"[*] Classified Domain: {domain.upper()}")
@@ -59,6 +104,7 @@ def router_node(state: GraphState):
     if not fallback_expert and not fallback_python and not fallback_export:
         logger.info("[*] Fast routing triggered: No special keywords matched. Bypassing LLM router to save 2+ seconds.")
         return {
+            "question": question,
             "domain": domain, 
             "expert_required": False, 
             "python_repl": False,
@@ -103,6 +149,7 @@ def router_node(state: GraphState):
         logger.error(f"Failed to analyze flags with LLM: {e}. Using keyword-based fallback.")
         
     return {
+        "question": question,
         "domain": domain, 
         "expert_required": expert_required, 
         "python_repl": python_repl,
