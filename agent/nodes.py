@@ -196,7 +196,7 @@ def generate_node(state: GraphState):
     2. NEVER mention "Google Forms", "API", or "environment details".
     3. If calculation results are present in [CONTEXT], use them as the primary answer.
     4. If a Python code execution result is present in [CONTEXT], focus on explaining the result and output. DO NOT repeat or rewrite the raw Python code block (```python ... ```) in your answer.
-    5. If the user asked for a diagram, provide EXACTLY ONE Mermaid code block wrapped in ```mermaid.
+    5. If the user asked for a diagram, you MUST provide BOTH a detailed, well-structured textual report/explanation answering the question first, and then append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. Do not output only the diagram.
     6. Do not repeat information.
     7. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
     8. Return ONLY the final report content.
