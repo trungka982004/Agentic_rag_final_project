@@ -35,74 +35,81 @@ def parse_json_from_llm(raw_output: str) -> dict:
 EXPERT_KEYWORDS = ["compare", "latest", "news", "trend", "so sánh", "mới nhất", "xu hướng", "tin tức"]
 PYTHON_KEYWORDS = ["python", "code", "tính toán", "calculate", "giải phương trình", "vẽ biểu đồ", "plot"]
 
-def router_node(state: GraphState):
-    """Classifies domain and decides initial path."""
-    logger.info("--- ROUTER NODE ---")
-    question = state["question"]
-    domain = classify_domain(question)
+def condense_question(question: str, chat_history: list) -> str:
+    """Condenses an ambiguous question using chat history to make it standalone."""
+    if not chat_history:
+        return question
+        
+    logger.info("[*] Chat history detected. Condensing follow-up question...")
     
-    logger.info(f"[*] Classified Domain: {domain.upper()}")
-    
-    # Keyword-based fallback configurations
-    export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo", "report", "document", "doc", "sheet", "excel"]
-    fallback_expert = any(kw in question.lower() for kw in EXPERT_KEYWORDS)
-    fallback_python = any(kw in question.lower() for kw in PYTHON_KEYWORDS)
-    fallback_export = any(kw in question.lower() for kw in export_keywords)
-    
-    # Default is everything ON/Fallback
-    expert_required = fallback_expert
-    python_repl = fallback_python
-    web_fallback = True
-    export_to_workspace = fallback_export
-    
-    # Fast Keyword-First Routing Optimization: If no special keywords match, bypass LLM router immediately (saves 2+ seconds)
-    if not fallback_expert and not fallback_python and not fallback_export:
-        logger.info("[*] Fast routing triggered: No special keywords matched. Bypassing LLM router to save 2+ seconds.")
-        return {
-            "domain": domain, 
-            "expert_required": False, 
-            "python_repl": False,
-            "web_fallback": True, # keep web fallback available in case local DB has empty context
-            "export_to_workspace": False
-        }
-
-    # Use LLM to analyze the user's question and determine which flags are NOT necessary (should be OFF)
+    # Form chat history string
+    history_str = ""
+    for turn in chat_history:
+        usr = turn.get("user", "")
+        agt = turn.get("agent", "")
+        # Clean agt if it has mermaid or is too long to save context
+        clean_agt = re.sub(r"```mermaid\s*(.*?)\s*```", "[Diagram]", agt, flags=re.DOTALL)
+        if len(clean_agt) > 200:
+            clean_agt = clean_agt[:200] + "..."
+        history_str += f"User: {usr}\nAgent: {clean_agt}\n\n"
+        
     prompt = ChatPromptTemplate.from_template(
-        "You are an intelligent supervisor/router of an Agentic RAG system.\n"
-        "Initially, all execution flags are set to ON (True) by default:\n"
-        "1. expert_required: Set to True if the query requires complex expert consultation or high-quality web-search API (Tavily) to answer (e.g. comparison, news, trends, latest updates, or broad scientific/technical comparisons).\n"
-        "2. python_repl: Set to True if the query requires mathematical calculations, coding, plotting, equation solving, or numerical/data analysis.\n"
-        "3. web_fallback: Set to True if the query requires general web search (DuckDuckGo search) to get additional context (e.g., general knowledge, latest information, or questions that might not be in the local database).\n"
-        "4. export_to_workspace: Set to True if the query asks to export, save, draft, report, or create a document/sheet/table/file on Google Workspace (Google Docs/Sheets/Drive).\n\n"
-        "Analyze the user's query and judge which of these flags are actually necessary to be ON (True). If a flag is NOT necessary for this specific query, turn it OFF (False).\n\n"
-        "User Query: {question}\n\n"
-        "Respond ONLY in raw JSON format with the following keys and boolean values (true/false) based on your analysis, and do not include any markdown formatting like ```json or anything else:\n"
-        "{{\n"
-        "  \"expert_required\": true/false,\n"
-        "  \"python_repl\": true/false,\n"
-        "  \"web_fallback\": true/false,\n"
-        "  \"export_to_workspace\": true/false\n"
-        "}}\n"
-        "Do not include any explanation, conversational filler, or markdown wrapping."
+        "Read the following chat history and the latest user question.\n"
+        "If the latest user question references the previous conversation (e.g. using 'it', 'above', 'that', 'them', 'nó', 'đó', 'trên', 'này' or implicit references), "
+        "write a fully standalone, search-friendly version of the question in the same language.\n"
+        "If it is already standalone, keep it exactly as-is.\n\n"
+        "Rules:\n"
+        "1. Do NOT answer the question.\n"
+        "2. Output ONLY the raw condensed question, no commentary, no quotes, no markdown wrappers.\n\n"
+        "[CHAT HISTORY]:\n"
+        "{history_str}\n"
+        "[LATEST USER QUESTION]: {question}\n\n"
+        "[STANDALONE QUESTION]:"
     )
     
     chain = prompt | llm | StrOutputParser()
     try:
-        logger.info("[*] Analyzing flags using LLM...")
-        raw_res = chain.invoke({"question": question})
-        logger.info(f"[*] Raw LLM Flag Decision: {raw_res.strip()}")
-        
-        decision = parse_json_from_llm(raw_res)
-        expert_required = decision.get("expert_required", fallback_expert)
-        python_repl = decision.get("python_repl", fallback_python)
-        web_fallback = decision.get("web_fallback", True)
-        export_to_workspace = decision.get("export_to_workspace", fallback_export)
-        
-        logger.info(f"[*] Decided Flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
+        condensed = chain.invoke({"history_str": history_str, "question": question}).strip().strip('"').strip("'")
+        logger.info(f"[*] Original Question: '{question}' -> Condensed Standalone Question: '{condensed}'")
+        return condensed
     except Exception as e:
-        logger.error(f"Failed to analyze flags with LLM: {e}. Using keyword-based fallback.")
+        logger.error(f"Failed to condense question: {e}")
+        return question
+
+def router_node(state: GraphState):
+    """Classifies domain and decides initial path."""
+    logger.info("--- ROUTER NODE ---")
+    question = state["question"]
+    chat_history = state.get("chat_history", [])
+    
+    # Condense the question using conversation history
+    question = condense_question(question, chat_history)
+    domain = classify_domain(question)
+    
+    logger.info(f"[*] Classified Domain: {domain.upper()}")
+    
+    # Keyword-based configurations (All default to ON)
+    expert_required = True
+    python_repl = True
+    web_fallback = True
+    export_to_workspace = True
+    
+    export_keywords = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo", "report", "document", "doc", "sheet", "excel"]
+    
+    # Switch to OFF if keywords are not present in the user question
+    if not any(kw in question.lower() for kw in EXPERT_KEYWORDS):
+        expert_required = False
+        
+    if not any(kw in question.lower() for kw in PYTHON_KEYWORDS):
+        python_repl = False
+        
+    if not any(kw in question.lower() for kw in export_keywords):
+        export_to_workspace = False
+        
+    logger.info(f"[*] Decided Flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
         
     return {
+        "question": question,
         "domain": domain, 
         "expert_required": expert_required, 
         "python_repl": python_repl,
@@ -177,7 +184,10 @@ def expert_consult_node(state: GraphState):
     logger.info("[*] Consulting Tavily API...")
     answer = get_expert_answer(question)
     
-    return {"generation": format_agent_output(answer)}
+    documents = state.get("documents", [])
+    documents.append(f"--- Expert Search Results ---\n{answer}")
+    
+    return {"documents": documents}
 
 def generate_node(state: GraphState):
     """Generates the final answer using LLM."""
@@ -185,22 +195,38 @@ def generate_node(state: GraphState):
     question = state["question"]
     documents = state.get("documents", [])
     retry_count = state.get("retry_count", 0)
+    chat_history = state.get("chat_history", [])
     
     context = "\n\n".join(documents)
     
+    # Format chat history to inject into prompt context
+    history_str = ""
+    if chat_history:
+        history_str = "--- CONVERSATION HISTORY ---\n"
+        for turn in chat_history:
+            usr = turn.get("user", "")
+            agt = turn.get("agent", "")
+            # Strip out raw Mermaid blocks to avoid massive token bloat
+            clean_agt = re.sub(r"```mermaid\s*(.*?)\s*```", "[Diagram]", agt, flags=re.DOTALL)
+            history_str += f"User: {usr}\nAgent: {clean_agt}\n\n"
+        history_str += "-------------------------\n\n"
+        
     template = """
-    You are a professional technical assistant. Answer the [QUESTION] based ONLY on the provided [CONTEXT].
+    You are a professional technical assistant. Answer the [QUESTION] based on the provided [CONTEXT] and the past [CONVERSATION HISTORY] (if any).
     
     MANDATORY RULES:
     1. BE CONCISE. Do not explain your plan or describe how you will do things. Just provide the final result.
     2. NEVER mention "Google Forms", "API", or "environment details".
     3. If calculation results are present in [CONTEXT], use them as the primary answer.
     4. If a Python code execution result is present in [CONTEXT], focus on explaining the result and output. DO NOT repeat or rewrite the raw Python code block (```python ... ```) in your answer.
-    5. If the user asked for a diagram, provide EXACTLY ONE Mermaid code block wrapped in ```mermaid.
+    5. If the user asked for a diagram, you MUST provide BOTH a detailed, well-structured textual report/explanation answering the question first, and then append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. Do not output only the diagram.
     6. Do not repeat information.
     7. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
     8. Return ONLY the final report content.
  
+    [CONVERSATION HISTORY]:
+    {history}
+
     [CONTEXT]:
     {context}
  
@@ -214,7 +240,7 @@ def generate_node(state: GraphState):
     chain = prompt | llm | StrOutputParser()
     
     try:
-        response = chain.invoke({"question": question, "context": context})
+        response = chain.invoke({"question": question, "context": context, "history": history_str})
         formatted_response = format_agent_output(response)
         
         # Automatically extract markdown tables to populate structured_data for Sheets
@@ -286,7 +312,7 @@ def generate_short_title(question: str, doc_type: str) -> str:
         "1. The title MUST be extremely concise and clear.\n"
         "2. The entire title (including any prefix) MUST NOT exceed 8 words.\n"
         "3. Output ONLY the raw title without any quotes, punctuation, or markdown formatting.\n"
-        "4. Avoid generic filler. It should directly represent the core topic (e.g., 'So sánh SRAM và DRAM', 'Phân tích thuật toán ResNet').\n"
+        "4. Avoid generic filler. It should directly represent the core topic (e.g., 'SRAM vs DRAM Comparison', 'ResNet Algorithm Analysis').\n"
         "5. Prepend a brief type prefix (e.g., 'Doc: ' for documents, 'Sheet: ' for spreadsheets) so it is clear."
     )
     chain = prompt | llm | StrOutputParser()
@@ -335,7 +361,7 @@ def export_report_node(state: GraphState):
     # 1. Detect and Render UNIQUE Mermaid Diagrams
     image_urls = []
     # Use set to deduplicate identical blocks
-    mermaid_blocks = list(set(re.findall(r"```mermaid\s*\n(.*?)\n```", generation, re.DOTALL)))
+    mermaid_blocks = list(set(re.findall(r"```mermaid\s*(.*?)\s*```", generation, re.DOTALL)))
     
     print(f"[Export Debug] Found {len(mermaid_blocks)} unique mermaid blocks.")
     
@@ -357,21 +383,38 @@ def export_report_node(state: GraphState):
         doc_title = generate_short_title(question, "docs")
         # Strip out raw Mermaid blocks completely so only the LLM's text and explanation remain in the body
         clean_content = re.sub(
-            r"```mermaid\s*\n(.*?)\n```", 
+            r"```mermaid\s*(.*?)\s*```", 
             "", 
             generation, 
             flags=re.DOTALL
         ).strip()
         
-        # Ensure the body content is never empty to avoid Google Docs API insertion error
-        if not clean_content:
-            clean_content = f"Visual report generated for query: {question}"
+        # Build beautifully formatted document content including both the Question and the Answer
+        doc_content = f"QUESTION:\n{question}\n\n"
+        if clean_content:
+            doc_content += f"ANSWER:\n{clean_content}\n"
+        else:
+            doc_content += "ANSWER:\n(Please refer to the diagram below)\n"
             
-        return export_to_google_docs(title=doc_title, content=clean_content, image_urls=image_urls)
+        return export_to_google_docs(title=doc_title, content=doc_content, image_urls=image_urls)
 
     def run_sheets_export():
         sheet_title = generate_short_title(question, "sheets")
-        sheet_data = structured_data if structured_data else [["Field", "Value"], ["Question", question], ["Status", "Completed"]]
+        
+        # For Sheets, we clean up any raw mermaid blocks from the text to make it more readable
+        clean_generation = re.sub(
+            r"```mermaid\s*(.*?)\s*```", 
+            "[Diagram Rendered in Doc]", 
+            generation, 
+            flags=re.DOTALL
+        ).strip()
+        
+        sheet_data = structured_data if structured_data else [
+            ["Field", "Value"],
+            ["Question", question],
+            ["Answer", clean_generation],
+            ["Status", "Completed"]
+        ]
         return export_to_google_sheets(title=sheet_title, data=sheet_data)
 
     # Execute Google Docs and Google Sheets exports in parallel using ThreadPoolExecutor

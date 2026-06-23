@@ -105,10 +105,9 @@ def upload_image_to_drive(file_path: str) -> str | None:
             body={'type': 'anyone', 'role': 'reader'}
         ).execute()
         
-        # Get the direct download link
-        file = service.files().get(fileId=file_id, fields='webContentLink').execute()
-        link = file.get('webContentLink')
-        print(f"[Google Drive] Public Link generated: {link}")
+        # Use highly compatible direct static hosting link for Drive images (bypasses redirect issues)
+        link = f"https://lh3.googleusercontent.com/d/{file_id}"
+        print(f"[Google Drive] Public Direct Link generated: {link}")
         return link
     except Exception as e:
         print(f"[Google Drive] Error: {e}")
@@ -128,22 +127,25 @@ def export_to_google_docs(title: str, content: str, image_urls: list[str] = None
         doc = docs_service.documents().create(body={"title": title}).execute()
         doc_id = doc["documentId"]
 
+        # Step 1: Write the text content first to establish document length
         requests = [{"insertText": {"location": {"index": 1}, "text": content}}]
+        docs_service.documents().batchUpdate(documentId=doc_id, body={"requests": requests}).execute()
         
-        # Insert images at the end if provided
+        # Step 2: Insert images in a second batch update to avoid Google Docs index-out-of-bounds gotchas
         if image_urls:
             print(f"[Google Docs] Inserting {len(image_urls)} images...")
+            image_requests = []
             for i, url in enumerate(image_urls):
-                requests.append({
+                image_requests.append({
                     "insertInlineImage": {
-                        "location": {"index": len(content) + 1 + i}, # Offset by i to avoid overlap
+                        "location": {"index": len(content) + 1}, # Append at the end of the text
                         "uri": url,
                         "objectSize": {"width": {"magnitude": 450, "unit": "PT"}}
                     }
                 })
+            docs_service.documents().batchUpdate(documentId=doc_id, body={"requests": image_requests}).execute()
 
-        docs_service.documents().batchUpdate(documentId=doc_id, body={"requests": requests}).execute()
-        print(f"[Google Docs] Batch update successful for {doc_id}")
+        print(f"[Google Docs] Export successful for {doc_id}")
         return f"✅ Exported to Google Docs: https://docs.google.com/document/d/{doc_id}/edit"
     except Exception as e:
         print(f"[Google Docs] Batch update error: {e}")

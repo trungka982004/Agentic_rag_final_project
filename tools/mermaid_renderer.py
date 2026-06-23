@@ -21,6 +21,20 @@ def render_mermaid_to_image(mmd_code: str, output_dir: str = "temp_assets") -> O
     mmd_file = os.path.join(output_dir, f"diagram_{file_id}.mmd")
     png_file = os.path.join(output_dir, f"diagram_{file_id}.png")
     
+    # Clean up mermaid code
+    mmd_code = mmd_code.replace("```mermaid", "").replace("```", "").strip()
+    
+    # Self-healing: if there is no 'subgraph' in the flowchart, any standalone 'end' is a syntax error
+    lines = mmd_code.splitlines()
+    cleaned_lines = []
+    has_subgraph = any("subgraph" in line.lower() for line in lines)
+    for line in lines:
+        stripped = line.strip()
+        if not has_subgraph and (stripped.lower() == "end" or stripped.lower() == "end;"):
+            continue
+        cleaned_lines.append(line)
+    mmd_code = "\n".join(cleaned_lines)
+    
     # Write mermaid code to temp file
     with open(mmd_file, "w", encoding="utf-8") as f:
         f.write(mmd_code)
