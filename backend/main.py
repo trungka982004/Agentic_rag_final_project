@@ -16,6 +16,8 @@ from backend.auth import (
     get_password_hash, verify_password, create_access_token, get_current_user
 )
 
+from backend.routers import chat
+
 # Automatically create tables in PostgreSQL if they don't exist
 Base.metadata.create_all(bind=engine)
 
@@ -37,6 +39,8 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Agentic RAG Backend is running successfully!"}
+
+app.include_router(chat.router)
 
 # --- AUTHENTICATION ENDPOINTS ---
 

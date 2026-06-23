@@ -27,10 +27,18 @@ Based on the `Implementation_Plan.md` and the actual state of the codebase (upda
 
 ## Phase 4: Evaluation, Optimization & Polishing
 - [ ] Integrate **RAGAS** evaluation framework (Faithfulness, Answer Relevance, Context Precision) in `evaluate.py`.
-- [ ] **UI/UX**: Build a frontend/interface that visually exposes the Agent's Thought Process.
-- [ ] **Citations**: Optimize UI/UX to display source citations precisely and beautifully.
 - [x] **Performance & Latency Optimization**: Implement Fast Keyword-First Routing (saving LLM router calls), Joint Grader (merging 2 Self-RAG graders), Dynamic Retrieval Weights, context chunk deduplication, and Parallel Google Workspace Export (ThreadPoolExecutor).
 - [x] **Security & Guardrails**: Configure `recursion_limit` in LangGraph to prevent infinite loops.
+
+## Phase 5: Backend API & WebSocket Integration
+- [x] **FastAPI Gateway Setup**: Implement User Authentication (JWT), PostgreSQL database schemas for session, user, and message persistence.
+- [x] **WebSocket API**: Stream LangGraph execution events (node updates) in real-time, handling async updates.
+- [x] **State Accumulator & Double-run Prevention**: Fix redundant graph execution by implementing event state accumulator and checking for None final state.
+- [x] **Database Migration & Docker Setup**: Configure PostgreSQL on port 5433 using Docker Compose for persistence.
+
+## Phase 6: Frontend Development & UI/UX (Future)
+- [ ] **UI/UX Design**: Build a frontend/interface using Next.js that visually exposes the Agent's Thought Process.
+- [ ] **Citations & Formatting**: Display source citations precisely and render Markdown, LaTeX, and Mermaid.
 
 ---
 **Usage Instructions:**
