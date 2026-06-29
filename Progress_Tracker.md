@@ -36,9 +36,9 @@ Based on the `Implementation_Plan.md` and the actual state of the codebase (upda
 - [x] **State Accumulator & Double-run Prevention**: Fix redundant graph execution by implementing event state accumulator and checking for None final state.
 - [x] **Database Migration & Docker Setup**: Configure PostgreSQL on port 5433 using Docker Compose for persistence.
 
-## Phase 6: Frontend Development & UI/UX (Future)
-- [ ] **UI/UX Design**: Build a frontend/interface using Next.js that visually exposes the Agent's Thought Process.
-- [ ] **Citations & Formatting**: Display source citations precisely and render Markdown, LaTeX, and Mermaid.
+## Phase 6: Frontend Development & UI/UX (Completed Design)
+- [x] **UI/UX Design**: Build and standardize the frontend interface designs on Stitch, exposing the Agent's Thought Process.
+- [x] **Citations & Formatting**: Display source citations precisely and render Markdown, LaTeX, and Mermaid.
 
 ---
 **Usage Instructions:**

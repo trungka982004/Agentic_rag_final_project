@@ -104,7 +104,7 @@ def grade_generation_v_documents_and_question(state: GraphState):
             "question": question,
             "generation": generation
         })
-        print(f"[*] Joint Grader raw response: {raw_res.strip()}")
+        print(f"[*] Joint Grader raw response: {repr(raw_res.strip())}")
         decision = parse_json_from_llm(raw_res)
         grounded = decision.get("grounded", "yes").strip().lower()
         useful = decision.get("useful", "yes").strip().lower()

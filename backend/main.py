@@ -1,6 +1,20 @@
+import sys
+import os
+# Force sys.stdout and sys.stderr to use UTF-8 to prevent cp1252/cp437 encoding errors on Windows
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# Add parent directory to sys.path to allow importing backend module when run directly
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from typing import List
 from uuid import UUID
-from fastapi import FastAPI, Depends, HTTPException, status
+from datetime import datetime
+import shutil
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -132,6 +146,88 @@ def delete_session(session_id: UUID, current_user: User = Depends(get_current_us
     db.delete(session)
     db.commit()
     return
+
+# --- DOCUMENT LIBRARY ENDPOINTS ---
+
+RAW_DATA_PATH = "data/raw"
+
+def get_all_documents():
+    docs = []
+    if not os.path.exists(RAW_DATA_PATH):
+        return docs
+        
+    # Walk through each domain folder
+    for domain in ["it", "math", "physics", "electronics"]:
+        domain_path = os.path.join(RAW_DATA_PATH, domain)
+        if not os.path.exists(domain_path):
+            continue
+            
+        for file in os.listdir(domain_path):
+            if file.endswith(".pdf"):
+                file_path = os.path.join(domain_path, file)
+                stat = os.stat(file_path)
+                size_mb = stat.st_size / (1024 * 1024)
+                
+                # Format creation/modified time
+                added_date = datetime.fromtimestamp(stat.st_mtime).strftime("%d/%m/%Y")
+                
+                # AI Status: check if index folder exists
+                domain_db_path = os.path.join("db/vector_stores", f"{domain}_index")
+                status = "done" if os.path.exists(domain_db_path) else "pending"
+                
+                docs.append({
+                    "id": file, # use filename as id
+                    "name": file,
+                    "author": domain.upper(), # Map domain as author/tag for SIS
+                    "year": datetime.fromtimestamp(stat.st_mtime).year,
+                    "date": added_date,
+                    "size": f"{size_mb:.1f} MB",
+                    "status": status
+                })
+    return docs
+
+def run_ingestion_background():
+    try:
+        from ingestion import ingest_docs
+        ingest_docs()
+    except Exception as e:
+        print(f"[Ingestion Background] Error: {e}")
+
+@app.get("/api/documents")
+def list_documents(current_user: User = Depends(get_current_user)):
+    try:
+        return get_all_documents()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/documents/upload")
+def upload_document(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    domain: str = Form("it"),
+    current_user: User = Depends(get_current_user)
+):
+    if domain not in ["it", "math", "physics", "electronics"]:
+        raise HTTPException(status_code=400, detail="Invalid domain")
+        
+    if not file.filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+        
+    domain_path = os.path.join(RAW_DATA_PATH, domain)
+    if not os.path.exists(domain_path):
+        os.makedirs(domain_path)
+        
+    file_path = os.path.join(domain_path, file.filename)
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        # Trigger background ingestion
+        background_tasks.add_task(run_ingestion_background)
+        
+        return {"message": f"Successfully uploaded {file.filename}. AI analysis started in background."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
