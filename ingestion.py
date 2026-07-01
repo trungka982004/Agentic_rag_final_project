@@ -9,7 +9,7 @@ from langchain_chroma import Chroma
 RAW_DATA_PATH = "data/raw"
 DB_BASE_PATH = "db/vector_stores"
 
-def ingest_docs():
+def ingest_docs(target_domain: str = None):
     # Initialize Embedding model (bge-m3) - Much faster and optimized for search
     embeddings = OllamaEmbeddings(model="bge-m3")
 
@@ -19,7 +19,10 @@ def ingest_docs():
         return
 
     # Iterate through each domain folder (it, math, physics, electronics)
-    domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d))]
+    if target_domain and target_domain in ["it", "math", "physics", "electronics"]:
+        domains = [target_domain]
+    else:
+        domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d))]
     
     for domain in domains:
         domain_input_path = os.path.join(RAW_DATA_PATH, domain)
@@ -34,10 +37,16 @@ def ingest_docs():
             continue
 
         # Save to separate ChromaDB for each domain
-        # Delete old DB to refresh with new embedding model
+        # Delete old DB to refresh with new embedding model.
+        # Handle Windows file lock permission errors gracefully.
+        cleared = False
         if os.path.exists(domain_db_path):
             print(f"Clearing old index: {domain_db_path}", flush=True)
-            shutil.rmtree(domain_db_path)
+            try:
+                shutil.rmtree(domain_db_path)
+                cleared = True
+            except Exception as e:
+                print(f"Could not remove directory {domain_db_path} due to file lock: {e}. Will clear collection inside database.", flush=True)
 
         # Initialize Chroma for the domain
         vectorstore = Chroma(
@@ -45,6 +54,19 @@ def ingest_docs():
             embedding_function=embeddings,
             collection_name=f"{domain}_collection"
         )
+
+        if os.path.exists(domain_db_path) and not cleared:
+            try:
+                vectorstore.delete_collection()
+                # Reinitialize empty vector store
+                vectorstore = Chroma(
+                    persist_directory=domain_db_path,
+                    embedding_function=embeddings,
+                    collection_name=f"{domain}_collection"
+                )
+                print(f"Successfully cleared collection '{domain}_collection' inside existing database.", flush=True)
+            except Exception as e:
+                print(f"Failed to clear collection: {e}. Proceeding anyway...", flush=True)
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=512, 

@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import re
 from typing import List, Optional
 
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -52,6 +53,14 @@ except Exception as e:
     llm = None
 
 _db_cache = {}
+_bm25_cache = {}
+
+def clear_rag_caches():
+    """Clears the DB cache and BM25 cache to force reloading from disk."""
+    global _db_cache, _bm25_cache
+    _db_cache.clear()
+    _bm25_cache.clear()
+    logger.info("[*] All RAG caches have been successfully invalidated.")
 
 def get_vector_db(domain: str) -> Optional[Chroma]:
     """Loads the specific ChromaDB for a given domain, using a memory cache to prevent recreation."""
@@ -108,8 +117,6 @@ def classify_domain(query: str) -> str:
         logger.error(f"Domain classification failed: {e}")
         return "physics"
 
-_bm25_cache = {}
-
 def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retriever]:
     """Creates a BM25 retriever from the documents stored in a ChromaDB instance, utilizing caching."""
     if domain in _bm25_cache:
@@ -145,6 +152,17 @@ def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retr
 
 def retrieve_context(query: str, domain: str, k: int = 5) -> str:
     """Retrieves context using Hybrid Search (BM25 + Vector) with dynamic weights and deduplication."""
+    # Detect target PDF filename in query to override domain routing
+    pdf_matches = re.findall(r"[\w\d_.-]+\.pdf", query, re.IGNORECASE)
+    if pdf_matches:
+        target_pdf = pdf_matches[0]
+        # Look for this PDF in raw data subfolders to find the actual domain it was ingested into
+        for d in Config.DOMAINS:
+            if os.path.exists(os.path.join("data/raw", d, target_pdf)):
+                logger.info(f"[*] Found target PDF '{target_pdf}' in domain '{d}' on disk. Overriding retrieval domain from '{domain}' to '{d}'.")
+                domain = d
+                break
+
     db = get_vector_db(domain)
     if not db:
         return "No database found for this domain."

@@ -72,6 +72,10 @@ export default function Sidebar({
 
   useEffect(() => {
     fetchDocs();
+    window.addEventListener('document-uploaded', fetchDocs);
+    return () => {
+      window.removeEventListener('document-uploaded', fetchDocs);
+    };
   }, [fetchDocs]);
 
   const handleNewSession = useCallback(async () => {

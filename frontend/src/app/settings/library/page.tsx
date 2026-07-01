@@ -227,7 +227,7 @@ export default function DocumentLibraryPage() {
               filtered.map((doc, i) => {
                 const st = AI_STATUS[doc.status] || AI_STATUS.pending;
                 return (
-                  <tr key={doc.id} style={{
+                  <tr key={`${doc.id}-${i}`} style={{
                     borderBottom: i < filtered.length - 1 ? '1px solid var(--surface-container-high)' : 'none',
                     transition: 'background 0.12s',
                   }}

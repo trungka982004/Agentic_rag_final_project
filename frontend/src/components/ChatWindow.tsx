@@ -5,6 +5,7 @@ import type { DisplayMessage, User, ExportLink } from '@/types';
 import MessageBubble from './MessageBubble';
 import AgentThoughtBar from './AgentThoughtBar';
 import ScientificConsole from './ScientificConsole';
+import { apiUploadDocument } from '@/services/api';
 
 const Icon = ({ path, size = 16 }: { path: string; size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -44,6 +45,38 @@ export default function ChatWindow({
   const [input, setInput] = useState('');
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<string | null>(null);
+
+  const handleChatFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (!file.name.endsWith('.pdf')) {
+      alert('Chỉ hỗ trợ tệp định dạng PDF.');
+      return;
+    }
+    setUploadingFile(true);
+    setAttachedFile(null);
+    try {
+      await apiUploadDocument(file, 'it');
+      setAttachedFile(file.name);
+      // Auto-populate chat input with a nice prompt asking to summarize this document
+      setInput(prev => {
+        const base = prev.trim();
+        if (base) return `${base} (liên quan đến tài liệu ${file.name})`;
+        return `Tóm tắt tài liệu ${file.name} giúp tôi.`;
+      });
+      // Trigger event to sync sidebar
+      window.dispatchEvent(new Event('document-uploaded'));
+    } catch (err) {
+      console.error(err);
+      alert('Tải lên tài liệu thất bại.');
+    } finally {
+      setUploadingFile(false);
+      e.target.value = '';
+    }
+  };
 
   useEffect(() => {
     setLocalMessages(messages);
@@ -70,7 +103,8 @@ export default function ChatWindow({
     if (!text || isThinking || !isConnected) return;
     onSend(text);
     setInput('');
-  }, [input, isThinking, isConnected, onSend]);
+    setAttachedFile(null);
+  }, [input, isThinking, isConnected, onSend, setAttachedFile]);
 
   const handleKey = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -279,12 +313,118 @@ export default function ChatWindow({
         width: '100%',
         boxSizing: 'border-box',
       }}>
+        {/* Upload status chips */}
+        {uploadingFile && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 12px',
+            background: 'var(--surface-container-low)',
+            border: '1px solid var(--outline-variant)',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: '8px',
+            fontSize: '12px',
+            color: 'var(--warning)',
+            width: 'fit-content',
+            fontFamily: 'var(--font-label)',
+          }}>
+            <div style={{
+              display: 'inline-block',
+              width: '10px', height: '10px',
+              border: '2px solid var(--warning)',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <span>Đang tải lên và phân tích tài liệu...</span>
+          </div>
+        )}
+
+        {attachedFile && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 12px',
+            background: 'var(--success-container)',
+            border: '1px solid var(--success)',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: '8px',
+            fontSize: '12px',
+            color: 'var(--success)',
+            width: 'fit-content',
+            fontFamily: 'var(--font-label)',
+          }}>
+            <span>📄 {attachedFile} (Đã tải lên và lập chỉ mục)</span>
+            <button
+              onClick={() => setAttachedFile(null)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--success)',
+                cursor: 'pointer',
+                fontSize: '14px',
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+                fontWeight: 'bold',
+              }}
+            >
+              &times;
+            </button>
+          </div>
+        )}
+
         <div className="chat-input-bar" style={{
           display: 'flex',
           alignItems: 'flex-end',
           gap: '8px',
           padding: '10px 12px 10px 16px',
         }}>
+          {/* Attachment button */}
+          <button
+            onClick={() => document.getElementById('chat-file-upload')?.click()}
+            disabled={uploadingFile || !isConnected}
+            title="Đính kèm tài liệu PDF"
+            style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'transparent',
+              color: 'var(--on-surface-variant)',
+              border: 'none',
+              cursor: uploadingFile || !isConnected ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              transition: 'background 0.15s, color 0.15s',
+              marginBottom: '3px',
+            }}
+            onMouseEnter={e => {
+              if (!uploadingFile && isConnected) {
+                e.currentTarget.style.background = 'var(--surface-container-high)';
+                e.currentTarget.style.color = 'var(--primary)';
+              }
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--on-surface-variant)';
+            }}
+          >
+            <Icon path="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" size={18} />
+          </button>
+
+          <input
+            id="chat-file-upload"
+            type="file"
+            accept=".pdf"
+            style={{ display: 'none' }}
+            disabled={uploadingFile || !isConnected}
+            onChange={handleChatFileUpload}
+          />
+
           <textarea
             id="chat-input"
             ref={textareaRef}

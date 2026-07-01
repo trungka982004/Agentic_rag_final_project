@@ -188,8 +188,11 @@ def get_all_documents():
 
 def run_ingestion_background():
     try:
+        from local_rag import clear_rag_caches
+        clear_rag_caches()
         from ingestion import ingest_docs
         ingest_docs()
+        clear_rag_caches()
     except Exception as e:
         print(f"[Ingestion Background] Error: {e}")
 

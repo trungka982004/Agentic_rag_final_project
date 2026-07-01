@@ -176,6 +176,7 @@ export default function ScientificCitationsPage() {
           padding: '10px 14px',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           fontSize: '13px', color: 'var(--primary-container)',
+          marginBottom: '12px',
         }}>
           <span>Đã chọn <strong>{selected.length}</strong> trích dẫn</span>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -188,6 +189,62 @@ export default function ScientificCitationsPage() {
           </div>
         </div>
       )}
+
+      {/* Bottom action bar — matches Stitch design */}
+      <div style={{
+        display: 'flex', gap: '8px', flexWrap: 'wrap',
+        paddingTop: '14px',
+        borderTop: '1px solid var(--outline-variant)',
+      }}>
+        <button
+          className="btn btn-secondary"
+          id="citations-copy-all-btn"
+          style={{ fontSize: '12.5px', gap: '6px' }}
+          onClick={() => {
+            const text = filtered.map(c =>
+              `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`
+            ).join('\n');
+            navigator.clipboard?.writeText(text);
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Sao chép toàn bộ
+        </button>
+        <button
+          className="btn btn-secondary"
+          id="citations-export-bibtex-btn"
+          style={{ fontSize: '12.5px', gap: '6px' }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Xuất file BibTeX
+        </button>
+        <button
+          className="btn btn-secondary"
+          id="citations-export-ris-btn"
+          style={{ fontSize: '12.5px', gap: '6px' }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Xuất file EndNote (RIS)
+        </button>
+        <button
+          className="btn btn-primary"
+          id="citations-save-btn"
+          style={{ fontSize: '12.5px', gap: '6px', marginLeft: 'auto' }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Lưu danh mục
+        </button>
+      </div>
     </div>
   );
 }
