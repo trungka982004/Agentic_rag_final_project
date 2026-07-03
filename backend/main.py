@@ -186,12 +186,12 @@ def get_all_documents():
                 })
     return docs
 
-def run_ingestion_background():
+def run_ingestion_background(domain: str):
     try:
         from local_rag import clear_rag_caches
         clear_rag_caches()
         from ingestion import ingest_docs
-        ingest_docs()
+        ingest_docs(target_domain=domain)
         clear_rag_caches()
     except Exception as e:
         print(f"[Ingestion Background] Error: {e}")
@@ -226,7 +226,7 @@ def upload_document(
             shutil.copyfileobj(file.file, buffer)
             
         # Trigger background ingestion
-        background_tasks.add_task(run_ingestion_background)
+        background_tasks.add_task(run_ingestion_background, domain)
         
         return {"message": f"Successfully uploaded {file.filename}. AI analysis started in background."}
     except Exception as e:
