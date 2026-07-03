@@ -58,7 +58,6 @@ export default function Sidebar({
   const [documents, setDocuments] = useState<DocumentInfo[]>([]);
   const [selectedDomain, setSelectedDomain] = useState('it');
   const [uploading, setUploading] = useState(false);
-  const [showAllDocs, setShowAllDocs] = useState(false);
   const [showAllChats, setShowAllChats] = useState(false);
 
   const fetchDocs = useCallback(async () => {
@@ -105,6 +104,10 @@ export default function Sidebar({
   }, [onSessionDeleted, pathname, router]);
 
   const currentSessionId = pathname.split('/chat/')[1];
+
+  const filteredDocs = documents.filter(
+    (doc) => doc.author.toLowerCase() === selectedDomain.toLowerCase()
+  );
 
   return (
     <aside style={{
@@ -201,40 +204,24 @@ export default function Sidebar({
           borderBottom: '1px solid var(--outline-variant)',
           marginBottom: '12px'
         }}>
-          <div className="sidebar-section-label" style={{ marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Thêm tài liệu nghiên cứu</span>
-            <select
-              value={selectedDomain}
-              onChange={e => setSelectedDomain(e.target.value)}
-              onClick={e => e.stopPropagation()}
-              style={{
-                fontSize: '11px',
-                padding: '2px 4px',
-                borderRadius: '3px',
-                border: '1px solid var(--outline-variant)',
-                background: 'var(--surface-container-low)',
-                color: 'var(--on-surface)',
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="it">CNTT</option>
-              <option value="math">Toán học</option>
-              <option value="physics">Vật lý</option>
-              <option value="electronics">Điện tử</option>
-            </select>
+          <div className="sidebar-section-label" style={{ marginBottom: '6px' }}>
+            Thêm tài liệu nghiên cứu
           </div>
           <div style={{
-            border: '1.5px dashed var(--outline-variant)',
+            border: '1.5px dashed rgba(0, 85, 212, 0.4)',
             borderRadius: 'var(--radius-sm)',
-            padding: '12px 8px',
-            textAlign: 'center',
+            padding: '16px 8px',
             fontSize: '11px',
             color: uploading ? 'var(--warning)' : 'var(--on-surface-variant)',
             background: 'var(--surface-container-lowest)',
             cursor: uploading ? 'not-allowed' : 'pointer',
             transition: 'background 0.15s, border-color 0.15s',
             opacity: uploading ? 0.7 : 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
           }}
             onMouseEnter={e => {
               if (!uploading) {
@@ -245,7 +232,7 @@ export default function Sidebar({
             onMouseLeave={e => {
               if (!uploading) {
                 e.currentTarget.style.background = 'var(--surface-container-lowest)';
-                e.currentTarget.style.borderColor = 'var(--outline-variant)';
+                e.currentTarget.style.borderColor = 'rgba(0, 85, 212, 0.4)';
               }
             }}
             onClick={() => {
@@ -255,16 +242,33 @@ export default function Sidebar({
             }}
           >
             {uploading ? (
-              <>
-                <div style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid var(--warning)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '4px' }} />
-                <div>Đang tải lên & phân tích...</div>
-              </>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
+                <div style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid var(--warning)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ fontWeight: 500 }}>Đang tải lên...</div>
+              </div>
             ) : (
               <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ margin: '0 auto 6px', color: 'var(--primary)' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--primary)', flexShrink: 0 }}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Kéo thả tài liệu hoặc <span style={{ textDecoration: 'underline', color: 'var(--primary)', fontWeight: 500 }}>Chọn tệp</span>
+                <div style={{
+                  background: 'var(--primary-container)',
+                  color: 'var(--on-primary)',
+                  padding: '5px 18px',
+                  borderRadius: '99px',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  boxShadow: 'var(--shadow-1)',
+                  marginTop: '2px',
+                }}>
+                  Browse
+                </div>
+                <div style={{ color: 'var(--on-surface-variant)', fontSize: '10.5px', opacity: 0.8 }}>
+                  hoặc kéo thả tệp vào đây
+                </div>
+                <div style={{ color: 'var(--error)', fontSize: '9px', fontWeight: 500, marginTop: '2px' }}>
+                  *Hỗ trợ định dạng .pdf
+                </div>
               </>
             )}
             <input
@@ -296,9 +300,35 @@ export default function Sidebar({
         </div>
 
         {/* ─── SECTION: Tủ sách khoa học (PDF files) ─── */}
-        <div className="sidebar-section-label" style={{ marginTop: '12px' }}>TỦ SÁCH KHOA HỌC</div>
+        <div className="sidebar-section-label" style={{ marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>TỦ SÁCH KHOA HỌC</span>
+          <select
+            value={selectedDomain}
+            onChange={async (e) => {
+              const val = e.target.value;
+              setSelectedDomain(val);
+              await fetchDocs();
+            }}
+            onClick={e => e.stopPropagation()}
+            style={{
+              fontSize: '11px',
+              padding: '2px 4px',
+              borderRadius: '3px',
+              border: '1px solid var(--outline-variant)',
+              background: 'var(--surface-container-low)',
+              color: 'var(--on-surface)',
+              outline: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="it">CNTT</option>
+            <option value="math">Toán học</option>
+            <option value="physics">Vật lý</option>
+            <option value="electronics">Điện tử</option>
+          </select>
+        </div>
 
-        {documents.length === 0 ? (
+        {filteredDocs.length === 0 ? (
           <div style={{
             padding: '10px',
             fontSize: '12px',
@@ -309,7 +339,7 @@ export default function Sidebar({
           </div>
         ) : (
           <div style={{ marginBottom: '12px' }}>
-            {(showAllDocs ? documents : documents.slice(0, 5)).map(doc => (
+            {filteredDocs.slice(0, 5).map(doc => (
               <div
                 key={doc.id}
                 style={{
@@ -352,10 +382,11 @@ export default function Sidebar({
                 </span>
               </div>
             ))}
-            {documents.length > 5 && (
-              <button
-                onClick={() => setShowAllDocs(prev => !prev)}
+            {filteredDocs.length > 5 && (
+              <Link
+                href="/settings/library"
                 style={{
+                  display: 'block',
                   width: '100%',
                   padding: '4px',
                   fontSize: '11.5px',
@@ -366,10 +397,11 @@ export default function Sidebar({
                   textAlign: 'center',
                   fontWeight: 600,
                   fontFamily: 'var(--font-label)',
+                  textDecoration: 'none',
                 }}
               >
-                {showAllDocs ? 'Thu gọn ▲' : `Xem thêm (${documents.length - 5}) ▼`}
-              </button>
+                Xem thêm ({filteredDocs.length - 5}) ▼
+              </Link>
             )}
           </div>
         )}

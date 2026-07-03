@@ -28,7 +28,8 @@ export function useWebSocket(sessionId: string | null) {
     content: string,
     nodes: ActiveNode[],
     links: ExportLink[],
-    done = false
+    done = false,
+    messageId?: string
   ) => {
     setMessages(prev => {
       const copy = [...prev];
@@ -36,6 +37,7 @@ export function useWebSocket(sessionId: string | null) {
       if (last && 'isStreaming' in last && last.isStreaming) {
         copy[copy.length - 1] = {
           ...last,
+          id: messageId ?? last.id,
           content,
           activeNodes: nodes,
           exportLinks: links,
@@ -106,7 +108,7 @@ export function useWebSocket(sessionId: string | null) {
             finalLinks = list;
           }
         }
-        patchStreaming(finalContent, [...streamNodesRef.current], finalLinks, true);
+        patchStreaming(finalContent, [...streamNodesRef.current], finalLinks, true, event.id);
         setIsThinking(false);
         resetStream();
         break;

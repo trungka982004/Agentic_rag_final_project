@@ -182,8 +182,14 @@ def get_all_documents():
                     "year": datetime.fromtimestamp(stat.st_mtime).year,
                     "date": added_date,
                     "size": f"{size_mb:.1f} MB",
-                    "status": status
+                    "status": status,
+                    "mtime": stat.st_mtime
                 })
+    # Sort by mtime descending (newest first)
+    docs.sort(key=lambda x: x["mtime"], reverse=True)
+    # Remove mtime key to match expected response shape
+    for d in docs:
+        d.pop("mtime", None)
     return docs
 
 def run_ingestion_background(domain: str):

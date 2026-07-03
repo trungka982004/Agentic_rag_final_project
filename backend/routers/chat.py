@@ -165,10 +165,12 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 db.add(session)
                 
             db.commit()
+            db.refresh(agent_msg)
 
             # Send final response to WebSocket
             await websocket.send_json({
                 "type": "final_answer",
+                "id": str(agent_msg.id),
                 "content": generation,
                 "export_links": export_links,
                 "flags": flags
