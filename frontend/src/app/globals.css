@@ -1,0 +1,636 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+/* ============================================================
+   SCHOLAR INTELLIGENCE SYSTEM — Design Tokens (Stitch v2)
+   Light mode, Professional Blue, Geist + Inter typography
+   ============================================================ */
+:root {
+  /* === Surfaces === */
+  --surface:                  #f7f9fb;
+  --surface-dim:              #d8dadc;
+  --surface-bright:           #f7f9fb;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low:    #f2f4f6;
+  --surface-container:        #eceef0;
+  --surface-container-high:   #e6e8ea;
+  --surface-container-highest:#e0e3e5;
+  --on-surface:               #191c1e;
+  --on-surface-variant:       #424654;
+  --inverse-surface:          #2d3133;
+  --inverse-on-surface:       #eff1f3;
+
+  /* === Brand Blue === */
+  --primary:                  #003fa3;
+  --primary-container:        #0055d4;
+  --on-primary:               #ffffff;
+  --on-primary-container:     #ccd7ff;
+  --primary-fixed:            #dae2ff;
+  --primary-fixed-dim:        #b2c5ff;
+  --inverse-primary:          #b2c5ff;
+
+  /* === Secondary / Navy === */
+  --secondary:                #565e74;
+  --secondary-container:      #dae2fd;
+  --on-secondary:             #ffffff;
+  --on-secondary-container:   #5c647a;
+
+  /* === Tertiary / Slate === */
+  --tertiary:                 #38485d;
+  --tertiary-container:       #4f5f75;
+  --on-tertiary:              #ffffff;
+  --on-tertiary-container:    #c9d9f4;
+
+  /* === Semantic === */
+  --error:                    #ba1a1a;
+  --error-container:          #ffdad6;
+  --on-error:                 #ffffff;
+  --outline:                  #737686;
+  --outline-variant:          #c3c6d7;
+  --surface-tint:             #0055d4;
+
+  /* === Success / Warning === */
+  --success:                  #1b6d3a;
+  --success-container:        #d3f0de;
+  --warning:                  #795900;
+  --warning-container:        #ffeebe;
+
+  /* === Layout === */
+  --sidebar-width:            260px;
+  --topbar-height:            52px;
+  --content-max:              1440px;
+  --gutter:                   24px;
+  --radius-sm:                4px;
+  --radius-md:                8px;
+  --radius-lg:                12px;
+  --radius-xl:                16px;
+
+  /* === Typography scale (from Stitch designMd) === */
+  --font-display:             'Geist', 'Inter', system-ui, sans-serif;
+  --font-body:                'Inter', system-ui, sans-serif;
+  --font-label:               'Geist', 'Inter', system-ui, sans-serif;
+  --font-serif:               'Source Serif 4', Georgia, serif;
+
+  /* === Elevation === */
+  --shadow-1: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-2: 0 4px 12px rgba(15,23,42,0.08);
+  --shadow-3: 0 8px 24px rgba(15,23,42,0.12);
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { height: 100%; color-scheme: light; }
+
+body {
+  height: 100%;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ============================================================
+   SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--outline-variant); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--outline); }
+
+/* ============================================================
+   FOCUS
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--primary-container);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse-dot {
+  0%, 80%, 100% { opacity: 0.4; transform: scale(0.8); }
+  40%            { opacity: 1;   transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400% 0; }
+  100% { background-position: 400% 0; }
+}
+
+.animate-fade-up { animation: fadeUp 0.25s ease both; }
+
+/* ============================================================
+   SKELETON
+   ============================================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-container) 25%,
+    var(--surface-container-high) 50%,
+    var(--surface-container) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+.display-lg {
+  font-family: var(--font-display);
+  font-size: 48px; font-weight: 700;
+  line-height: 56px; letter-spacing: -0.02em;
+}
+.headline-lg {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 600;
+  line-height: 40px; letter-spacing: -0.01em;
+}
+.headline-md {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 600;
+  line-height: 32px;
+}
+.body-lg {
+  font-family: var(--font-body);
+  font-size: 18px; font-weight: 400; line-height: 28px;
+}
+.body-md {
+  font-family: var(--font-body);
+  font-size: 16px; font-weight: 400; line-height: 24px;
+}
+.body-sm {
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 400; line-height: 20px;
+}
+.label-md {
+  font-family: var(--font-label);
+  font-size: 14px; font-weight: 500;
+  line-height: 20px; letter-spacing: 0.05em;
+}
+.reading-serif {
+  font-family: var(--font-serif);
+  font-size: 17px; font-weight: 400; line-height: 28px;
+}
+
+/* ============================================================
+   STATUS BADGE
+   ============================================================ */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.status-badge--active {
+  background: var(--success-container);
+  color: var(--success);
+}
+.status-badge--active::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.status-badge--online {
+  background: var(--success-container);
+  color: var(--success);
+}
+.status-badge--online::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Primary — Deep Navy */
+.btn-primary {
+  background: var(--primary-container);
+  color: var(--on-primary);
+  border-color: var(--primary-container);
+}
+.btn-primary:not(:disabled):hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-2);
+}
+
+/* Secondary — Ghost */
+.btn-secondary {
+  background: transparent;
+  color: var(--primary-container);
+  border-color: var(--outline-variant);
+}
+.btn-secondary:not(:disabled):hover {
+  background: var(--surface-container-low);
+  border-color: var(--outline);
+}
+
+/* Danger */
+.btn-danger {
+  background: var(--error-container);
+  color: var(--error);
+  border-color: rgba(186,26,26,0.2);
+}
+.btn-danger:not(:disabled):hover {
+  background: var(--error);
+  color: var(--on-error);
+}
+
+/* Icon button */
+.btn-icon {
+  width: 32px; height: 32px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.btn-icon:hover { background: var(--surface-container-high); }
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+.input {
+  width: 100%;
+  padding: 9px 14px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-sm);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 20px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input::placeholder { color: var(--on-surface-variant); opacity: 0.7; }
+.input:focus {
+  border-color: var(--primary-container);
+  box-shadow: 0 0 0 3px rgba(0,85,212,0.12);
+}
+
+/* Search input */
+.input-search {
+  padding-left: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737686' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+  background-size: 16px;
+}
+
+/* ============================================================
+   TOGGLE SWITCH (Stitch style)
+   ============================================================ */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toggle {
+  position: relative;
+  width: 42px; height: 24px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-container-high);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid var(--outline-variant);
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--on-surface-variant);
+  top: 2px; left: 2px;
+  transition: transform 0.2s, background 0.2s;
+}
+.toggle input:checked + .toggle-slider {
+  background: var(--primary-container);
+  border-color: var(--primary-container);
+}
+.toggle input:checked + .toggle-slider::before {
+  transform: translateX(18px);
+  background: var(--on-primary);
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.card {
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+}
+.card + .card { margin-top: 12px; }
+
+/* ============================================================
+   CHIPS / TAGS
+   ============================================================ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 4px;
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  cursor: default;
+}
+.chip--active {
+  background: var(--primary-fixed);
+  border-color: var(--primary-fixed-dim);
+  color: var(--primary);
+}
+
+/* ============================================================
+   NAV TABS (top bar)
+   ============================================================ */
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  align-items: flex-end;
+  height: 100%;
+}
+.nav-tab {
+  padding: 0 18px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--on-surface); }
+.nav-tab--active {
+  color: var(--primary-container);
+  border-bottom-color: var(--primary-container);
+}
+
+/* ============================================================
+   SIDEBAR NAV ITEM
+   ============================================================ */
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+.sidebar-nav-item:hover { background: var(--surface-container-high); color: var(--on-surface); }
+.sidebar-nav-item--active {
+  background: var(--primary-fixed);
+  color: var(--primary-container);
+  font-weight: 600;
+}
+.sidebar-nav-item--active svg { color: var(--primary-container); }
+
+.sidebar-section-label {
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  padding: 8px 12px 4px;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   MARKDOWN / PROSE
+   ============================================================ */
+.prose {
+  color: var(--on-surface);
+  line-height: 1.75;
+  font-size: 15px;
+}
+.prose h1 { font-family: var(--font-display); font-size: 1.5em; font-weight: 700; margin: 1.2em 0 0.5em; }
+.prose h2 { font-family: var(--font-display); font-size: 1.25em; font-weight: 600; margin: 1em 0 0.4em; }
+.prose h3 { font-family: var(--font-display); font-size: 1.1em; font-weight: 600; margin: 0.9em 0 0.3em; }
+.prose p  { margin: 0.6em 0; }
+.prose ul, .prose ol { padding-left: 1.5em; margin: 0.5em 0; }
+.prose li { margin: 0.25em 0; }
+.prose strong { font-weight: 600; color: var(--on-surface); }
+.prose em { color: var(--on-surface-variant); }
+.prose a  { color: var(--primary-container); text-decoration: none; border-bottom: 1px solid rgba(0,85,212,0.3); }
+.prose a:hover { border-color: var(--primary-container); }
+.prose blockquote {
+  border-left: 3px solid var(--primary-container);
+  padding: 6px 16px;
+  margin: 10px 0;
+  background: var(--primary-fixed);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--on-surface-variant);
+  font-family: var(--font-serif);
+}
+.prose code {
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  font-family: 'Fira Code', 'Fira Mono', monospace;
+  font-size: 0.875em;
+  color: var(--on-surface);
+}
+.prose pre {
+  background: var(--inverse-surface);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin: 10px 0;
+}
+.prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--inverse-on-surface);
+  font-size: 0.875em;
+}
+.prose table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin: 10px 0; }
+.prose th {
+  background: var(--surface-container);
+  color: var(--on-surface-variant);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.prose td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--surface-container-high);
+  color: var(--on-surface-variant);
+  font-family: var(--font-body);
+}
+.prose tr:hover td { background: var(--surface-container-low); }
+.prose hr { border: none; border-top: 1px solid var(--outline-variant); margin: 16px 0; }
+
+/* ============================================================
+   CITATION COMPONENT (Stitch spec)
+   ============================================================ */
+.citation {
+  padding: 10px 14px;
+  border-left: 3px solid var(--primary-container);
+  margin: 6px 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--on-surface-variant);
+  background: var(--primary-fixed);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.citation strong { color: var(--on-surface); }
+
+/* ============================================================
+   TYPING INDICATOR
+   ============================================================ */
+.typing-dot {
+  width: 6px; height: 6px;
+  background: var(--primary-container);
+  border-radius: 50%;
+  animation: pulse-dot 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ============================================================
+   WORKFLOW NODE BADGES (Stitch color tokens)
+   ============================================================ */
+.node-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 99px;
+  border: 1px solid;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.node-router       { background: rgba(121,89,0,0.1);  color: var(--warning);  border-color: rgba(121,89,0,0.2); }
+.node-retrieve     { background: var(--success-container); color: var(--success); border-color: rgba(27,109,58,0.2); }
+.node-grade        { background: var(--secondary-container); color: var(--secondary); border-color: var(--outline-variant); }
+.node-generate     { background: var(--primary-fixed); color: var(--primary-container); border-color: var(--primary-fixed-dim); }
+.node-web_search   { background: var(--tertiary-container); color: var(--on-tertiary-container); border-color: rgba(79,95,117,0.25); }
+.node-python_repl  { background: rgba(121,89,0,0.1);  color: var(--warning); border-color: rgba(121,89,0,0.2); }
+.node-export       { background: var(--success-container); color: var(--success); border-color: rgba(27,109,58,0.2); }
+.node-default      { background: var(--surface-container); color: var(--on-surface-variant); border-color: var(--outline-variant); }
+
+/* ============================================================
+   CHAT INPUT AREA (Scholar style)
+   ============================================================ */
+.chat-input-bar {
+  background: var(--surface-container-lowest);
+  border: 1.5px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.chat-input-bar:focus-within {
+  border-color: var(--primary-container);
+  box-shadow: 0 0 0 3px rgba(0,85,212,0.1);
+}
+
+/* ============================================================
+   UPGRADE BANNER (bottom of sidebar — Stitch "Nâng cấp Pro")
+   ============================================================ */
+.upgrade-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 14px;
+  background: var(--primary-container);
+  color: var(--on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.upgrade-btn:hover { background: var(--primary); }

@@ -26,8 +26,9 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive.file",
 ]
 
-CREDENTIALS_FILE = "credentials.json"
-TOKEN_FILE = "token.json"
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CREDENTIALS_FILE = os.path.join(PROJECT_ROOT, "credentials.json")
+TOKEN_FILE = os.path.join(PROJECT_ROOT, "token.json")
 
 
 # Fixed port - must match exactly the Authorized redirect URI in Google Cloud Console

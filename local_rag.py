@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import re
 from typing import List, Optional
 
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -52,6 +53,14 @@ except Exception as e:
     llm = None
 
 _db_cache = {}
+_bm25_cache = {}
+
+def clear_rag_caches():
+    """Clears the DB cache and BM25 cache to force reloading from disk."""
+    global _db_cache, _bm25_cache
+    _db_cache.clear()
+    _bm25_cache.clear()
+    logger.info("[*] All RAG caches have been successfully invalidated.")
 
 def get_vector_db(domain: str) -> Optional[Chroma]:
     """Loads the specific ChromaDB for a given domain, using a memory cache to prevent recreation."""
@@ -108,18 +117,36 @@ def classify_domain(query: str) -> str:
         logger.error(f"Domain classification failed: {e}")
         return "physics"
 
-_bm25_cache = {}
+def find_exact_source_path(db: Chroma, target_file: str) -> Optional[str]:
+    """Finds the exact source path string stored in ChromaDB that matches target_file."""
+    try:
+        db_data = db.get()
+        if db_data and db_data.get('metadatas'):
+            for meta in db_data['metadatas']:
+                if meta and 'source' in meta:
+                    source_val = meta['source']
+                    if os.path.basename(source_val).lower() == target_file.lower():
+                        return source_val
+    except Exception as e:
+        logger.error(f"Error finding exact source path: {e}")
+    return None
 
-def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retriever]:
+def get_bm25_retriever(db: Chroma, domain: str, k: int = 5, target_file: str = None) -> Optional[BM25Retriever]:
     """Creates a BM25 retriever from the documents stored in a ChromaDB instance, utilizing caching."""
-    if domain in _bm25_cache:
-        retriever = _bm25_cache[domain]
+    cache_key = f"{domain}_{target_file}" if target_file else domain
+    if cache_key in _bm25_cache:
+        retriever = _bm25_cache[cache_key]
         retriever.k = k
         return retriever
 
     try:
-        logger.info(f"Building BM25 retriever cache for domain '{domain}'...")
-        docs_data = db.get()
+        logger.info(f"Building BM25 retriever cache for key '{cache_key}'...")
+        if target_file:
+            target_path = find_exact_source_path(db, target_file) or os.path.join("data/raw", domain, target_file)
+            docs_data = db.get(where={"source": target_path})
+        else:
+            docs_data = db.get()
+            
         if not docs_data or not docs_data.get('documents'):
             return None
             
@@ -136,8 +163,8 @@ def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retr
             
         retriever = BM25Retriever.from_documents(documents)
         retriever.k = k
-        _bm25_cache[domain] = retriever
-        logger.info(f"Successfully cached BM25 retriever for domain '{domain}'.")
+        _bm25_cache[cache_key] = retriever
+        logger.info(f"Successfully cached BM25 retriever for key '{cache_key}'.")
         return retriever
     except Exception as e:
         logger.error(f"Failed to create BM25 retriever: {e}")
@@ -145,12 +172,72 @@ def get_bm25_retriever(db: Chroma, domain: str, k: int = 5) -> Optional[BM25Retr
 
 def retrieve_context(query: str, domain: str, k: int = 5) -> str:
     """Retrieves context using Hybrid Search (BM25 + Vector) with dynamic weights and deduplication."""
+    # Detect target PDF filename or name (with or without extension) in query to override domain routing
+    query_lower = query.lower()
+    found_override = False
+    target_file = None
+    for d in Config.DOMAINS:
+        domain_path = os.path.join("data/raw", d)
+        if os.path.exists(domain_path):
+            for file in os.listdir(domain_path):
+                if file.lower().endswith(".pdf"):
+                    # Check for full name or name without extension (minimum 5 chars to avoid tiny false matches)
+                    name_without_ext = file[:-4]
+                    if file.lower() in query_lower or (len(name_without_ext) > 5 and name_without_ext.lower() in query_lower):
+                        logger.info(f"[*] Found target PDF '{file}' in domain '{d}' on disk mentioned in query. Overriding retrieval domain from '{domain}' to '{d}'.")
+                        domain = d
+                        target_file = file
+                        found_override = True
+                        break
+            if found_override:
+                break
+
     db = get_vector_db(domain)
     if not db:
         return "No database found for this domain."
     
-    vector_retriever = db.as_retriever(search_kwargs={"k": k})
-    bm25_retriever = get_bm25_retriever(db, domain=domain, k=k)
+    # Construct metadata filter if target_file is specified
+    search_kwargs = {"k": k}
+    if target_file:
+        target_path = find_exact_source_path(db, target_file) or os.path.join("data/raw", domain, target_file)
+        search_kwargs["filter"] = {"source": target_path}
+        logger.info(f"[*] Restricting ChromaDB search to target PDF: {target_path}")
+        
+        # Check if the query is a summary/overview request
+        query_lower = query.lower()
+        summary_keywords = ["tóm tắt", "tóm lược", "sơ lược", "giới thiệu", "khái quát", "summarize", "summary", "overview", "introduction", "intro"]
+        is_summary_req = any(kw in query_lower for kw in summary_keywords)
+        
+        if is_summary_req:
+            logger.info(f"[*] Summary request detected for target PDF. Retrieving sorted pages directly.")
+            all_chunks_data = db.get(where={"source": target_path})
+            if all_chunks_data and all_chunks_data.get('documents'):
+                # Package them as Document objects
+                all_docs = [
+                    Document(
+                        page_content=content,
+                        metadata=all_chunks_data['metadatas'][i] if all_chunks_data.get('metadatas') else {}
+                    )
+                    for i, content in enumerate(all_chunks_data['documents'])
+                ]
+                # Sort documents by page number
+                all_docs.sort(key=lambda d: d.metadata.get('page', 0))
+                
+                # If total documents is small (e.g. <= 15), return all of them
+                selected_docs = all_docs if len(all_docs) <= 15 else all_docs[:k]
+                
+                # Format context string
+                formatted_chunks = []
+                for doc in selected_docs:
+                    src = doc.metadata.get('source', 'Unknown Source')
+                    page = doc.metadata.get('page', 'Unknown Page')
+                    formatted_chunks.append(f"--- Source: {src} (Page {page}) ---\n{doc.page_content}")
+                
+                logger.info(f"[*] Direct page retrieval selected {len(selected_docs)} chunks from target PDF.")
+                return "\n\n".join(formatted_chunks)
+    
+    vector_retriever = db.as_retriever(search_kwargs=search_kwargs)
+    bm25_retriever = get_bm25_retriever(db, domain=domain, k=k, target_file=target_file)
     
     try:
         if bm25_retriever and EnsembleRetriever:
