@@ -244,6 +244,10 @@ def upload_document(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+class ReassignDocumentRequest(BaseModel):
+    id: str
+    target_domain: str
+
 @app.delete("/api/documents/bulk")
 def bulk_delete_documents(
     payload: BulkDeleteRequest,
@@ -262,6 +266,18 @@ def bulk_delete_documents(
         
         if os.path.exists(file_path):
             try:
+                # Delete vectors from ChromaDB first
+                try:
+                    from local_rag import get_vector_db, find_exact_source_path
+                    db = get_vector_db(domain)
+                    if db:
+                        db_source_path = find_exact_source_path(db, filename)
+                        if db_source_path:
+                            db.delete(where={"source": db_source_path})
+                            print(f"[Bulk Delete] Deleted vectors for {filename} from ChromaDB '{domain}_collection'.")
+                except Exception as e:
+                    print(f"[Bulk Delete] Warning: Failed to delete vectors from ChromaDB: {e}")
+                
                 os.remove(file_path)
                 deleted_files.append(filename)
                 affected_domains.add(domain)
@@ -276,6 +292,61 @@ def bulk_delete_documents(
         "message": f"Successfully deleted {len(deleted_files)} file(s).",
         "deleted": deleted_files
     }
+
+@app.post("/api/documents/reassign")
+def reassign_document(
+    payload: ReassignDocumentRequest,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    if "::" not in payload.id:
+        raise HTTPException(status_code=400, detail="Invalid document ID format")
+        
+    source_domain, filename = payload.id.split("::", 1)
+    target_domain = payload.target_domain.lower()
+    
+    if source_domain == target_domain:
+        return {"message": "Document is already in the target domain"}
+        
+    source_path = os.path.join(RAW_DATA_PATH, source_domain, filename)
+    target_dir = os.path.join(RAW_DATA_PATH, target_domain)
+    target_path = os.path.join(target_dir, filename)
+    
+    if not os.path.exists(source_path):
+        raise HTTPException(status_code=404, detail=f"Source file not found: {filename}")
+        
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+        
+    if os.path.exists(target_path):
+        raise HTTPException(status_code=400, detail="A document with this name already exists in the target domain")
+        
+    try:
+        # 1. Delete vectors from old domain's ChromaDB
+        try:
+            from local_rag import get_vector_db, find_exact_source_path
+            db = get_vector_db(source_domain)
+            if db:
+                db_source_path = find_exact_source_path(db, filename)
+                if db_source_path:
+                    db.delete(where={"source": db_source_path})
+                    print(f"[Reassign] Deleted old vectors for {filename} from ChromaDB '{source_domain}_collection'.")
+        except Exception as e:
+            print(f"[Reassign] Warning: Failed to delete old vectors: {e}")
+            
+        # 2. Move file on disk
+        shutil.move(source_path, target_path)
+        
+        # 3. Rebuild indexes for both domains in background
+        background_tasks.add_task(run_ingestion_background, source_domain)
+        background_tasks.add_task(run_ingestion_background, target_domain)
+        
+        return {
+            "message": f"Successfully moved {filename} from {source_domain.upper()} to {target_domain.upper()}.",
+            "new_id": f"{target_domain}::{filename}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

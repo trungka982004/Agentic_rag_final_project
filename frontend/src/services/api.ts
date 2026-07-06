@@ -117,6 +117,11 @@ export async function apiDeleteDocumentsBulk(ids: string[]): Promise<any> {
   return res.data;
 }
 
+export async function apiReassignDocument(id: string, targetDomain: string): Promise<any> {
+  const res = await api.post('/api/documents/reassign', { id, target_domain: targetDomain });
+  return res.data;
+}
+
 // ============================================================
 // WEBSOCKET HELPERS
 // ============================================================

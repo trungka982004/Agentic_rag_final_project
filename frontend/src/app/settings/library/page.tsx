@@ -5,6 +5,7 @@ import {
   apiListDocuments, 
   apiUploadDocument, 
   apiDeleteDocumentsBulk, 
+  apiReassignDocument,
   type DocumentInfo 
 } from '@/services/api';
 
@@ -125,6 +126,20 @@ export default function DocumentLibraryPage() {
   const [isDragging, setIsDragging] = useState(false);
   // Upload status queue
   const [uploadQueue, setUploadQueue] = useState<{ name: string; size: string; status: 'uploading' | 'success' | 'error'; error?: string }[]>([]);
+
+  // Drag and Drop active states for target subject cards
+  const [dragOverDomain, setDragOverDomain] = useState<string | null>(null);
+
+  // Custom Deletion Confirmation Modal state
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    type: 'single' | 'bulk';
+    docId?: string;
+    filename?: string;
+  }>({
+    isOpen: false,
+    type: 'single',
+  });
 
   // Sync selectedDomain to localStorage
   useEffect(() => {
@@ -292,41 +307,43 @@ export default function DocumentLibraryPage() {
     }
   };
 
-  const handleSingleDelete = async (docId: string, filename: string) => {
-    if (!confirm(`Bạn có chắc chắn muốn xóa tài liệu "${filename}"?`)) {
-      return;
-    }
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccessMsg(null);
-      await apiDeleteDocumentsBulk([docId]);
-      setSuccessMsg(`Đã xóa tài liệu "${filename}" thành công.`);
-      await fetchDocs();
-    } catch (err: any) {
-      console.error(err);
-      setError('Lỗi khi xóa tài liệu.');
-    } finally {
-      setLoading(false);
-    }
+  const handleSingleDelete = (docId: string, filename: string) => {
+    setDeleteModal({
+      isOpen: true,
+      type: 'single',
+      docId,
+      filename,
+    });
   };
 
-  const handleBulkDelete = async () => {
+  const handleBulkDelete = () => {
     if (selectedDocIds.length === 0) return;
-    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedDocIds.length} tài liệu đã chọn?`)) {
-      return;
-    }
+    setDeleteModal({
+      isOpen: true,
+      type: 'bulk',
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const { type, docId, filename } = deleteModal;
+    setDeleteModal(prev => ({ ...prev, isOpen: false }));
+    
     try {
       setLoading(true);
       setError(null);
       setSuccessMsg(null);
-      await apiDeleteDocumentsBulk(selectedDocIds);
-      setSuccessMsg(`Đã xóa ${selectedDocIds.length} tài liệu thành công.`);
-      setSelectedDocIds([]);
+      if (type === 'single' && docId) {
+        await apiDeleteDocumentsBulk([docId]);
+        setSuccessMsg(`Đã xóa tài liệu "${filename}" thành công.`);
+      } else if (type === 'bulk') {
+        await apiDeleteDocumentsBulk(selectedDocIds);
+        setSuccessMsg(`Đã xóa ${selectedDocIds.length} tài liệu thành công.`);
+        setSelectedDocIds([]);
+      }
       await fetchDocs();
     } catch (err: any) {
       console.error(err);
-      setError('Lỗi khi xóa tài liệu hàng loạt.');
+      setError(type === 'single' ? 'Lỗi khi xóa tài liệu.' : 'Lỗi khi xóa tài liệu hàng loạt.');
     } finally {
       setLoading(false);
     }
@@ -488,15 +505,56 @@ export default function DocumentLibraryPage() {
               {allDomains.map(domain => {
                 const count = documents.filter(d => d.author.toLowerCase() === domain.id).length;
                 const isActive = selectedDomain === domain.id;
+                const isDragOver = dragOverDomain === domain.id;
                 
                 return (
                   <div
                     key={domain.id}
                     onClick={() => setSelectedDomain(domain.id)}
+                    onDragOver={e => {
+                      e.preventDefault();
+                      if (!isActive) {
+                        setDragOverDomain(domain.id);
+                      }
+                    }}
+                    onDragLeave={() => {
+                      setDragOverDomain(null);
+                    }}
+                    onDrop={async e => {
+                      e.preventDefault();
+                      setDragOverDomain(null);
+                      const docId = e.dataTransfer.getData('text/plain');
+                      const docName = e.dataTransfer.getData('docName') || 'tài liệu';
+                      if (!docId) return;
+                      const sourceDomain = docId.split('::')[0];
+                      if (sourceDomain.toLowerCase() === domain.id.toLowerCase()) return;
+                      
+                      try {
+                        setLoading(true);
+                        setError(null);
+                        setSuccessMsg(null);
+                        await apiReassignDocument(docId, domain.id);
+                        setSuccessMsg(`Đã di chuyển tài liệu "${docName}" sang chủ đề "${domain.label}" thành công.`);
+                        await fetchDocs();
+                      } catch (err: any) {
+                        console.error(err);
+                        setError('Lỗi khi di chuyển tài liệu sang chủ đề khác.');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
                     style={{
                       padding: '12px 14px',
-                      background: isActive ? 'var(--primary-fixed)' : 'transparent',
-                      border: isActive ? '2px solid var(--primary-container)' : '1px solid var(--outline-variant)',
+                      background: isActive 
+                        ? 'var(--primary-fixed)' 
+                        : isDragOver 
+                        ? 'rgba(0, 85, 212, 0.15)' 
+                        : 'transparent',
+                      border: isActive 
+                        ? '2px solid var(--primary-container)' 
+                        : isDragOver 
+                        ? '2px dashed var(--primary)' 
+                        : '1px solid var(--outline-variant)',
                       borderRadius: 'var(--radius-md)',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
@@ -506,13 +564,13 @@ export default function DocumentLibraryPage() {
                       position: 'relative',
                     }}
                     onMouseEnter={e => {
-                      if (!isActive) {
+                      if (!isActive && !isDragOver) {
                         e.currentTarget.style.borderColor = 'var(--outline)';
                         e.currentTarget.style.background = 'var(--surface-container-low)';
                       }
                     }}
                     onMouseLeave={e => {
-                      if (!isActive) {
+                      if (!isActive && !isDragOver) {
                         e.currentTarget.style.borderColor = 'var(--outline-variant)';
                         e.currentTarget.style.background = 'transparent';
                       }
@@ -1002,11 +1060,20 @@ export default function DocumentLibraryPage() {
                     const st = AI_STATUS[doc.status] || AI_STATUS.pending;
                     const isSelected = selectedDocIds.includes(doc.id);
                     return (
-                      <tr key={`${doc.id}-${i}`} style={{
-                        borderBottom: i < sortedAndFiltered.length - 1 ? '1px solid var(--surface-container-high)' : 'none',
-                        transition: 'background 0.12s',
-                        background: isSelected ? 'rgba(var(--primary-rgb), 0.05)' : ''
-                      }}
+                      <tr 
+                        key={`${doc.id}-${i}`} 
+                        draggable
+                        onDragStart={e => {
+                          e.dataTransfer.setData('text/plain', doc.id);
+                          e.dataTransfer.setData('docName', doc.name);
+                          e.dataTransfer.effectAllowed = 'move';
+                        }}
+                        style={{
+                          borderBottom: i < sortedAndFiltered.length - 1 ? '1px solid var(--surface-container-high)' : 'none',
+                          transition: 'background 0.12s',
+                          background: isSelected ? 'rgba(var(--primary-rgb), 0.05)' : '',
+                          cursor: 'grab'
+                        }}
                         onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--surface-container-low)')}
                         onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(var(--primary-rgb), 0.05)' : '')}
                       >
@@ -1128,6 +1195,107 @@ export default function DocumentLibraryPage() {
         </div>
 
       </div>
+
+      {/* Premium Deletion Confirmation Modal */}
+      {deleteModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          animation: 'fadeIn 0.2s ease',
+        }}>
+          <div style={{
+            background: 'var(--surface-container-lowest)',
+            border: '1px solid var(--outline-variant)',
+            borderRadius: 'var(--radius-lg)',
+            width: '420px',
+            maxWidth: '90%',
+            padding: '24px',
+            boxShadow: 'var(--shadow-3)',
+            animation: 'scaleIn 0.2s ease',
+          }}>
+            <h3 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '18px',
+              fontWeight: 700,
+              color: 'var(--error)',
+              margin: '0 0 12px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}>
+              <span>⚠️</span> Xác nhận xóa tài liệu
+            </h3>
+            <p style={{
+              fontSize: '14.5px',
+              color: 'var(--on-surface)',
+              lineHeight: '1.5',
+              margin: '0 0 20px 0',
+            }}>
+              {deleteModal.type === 'single' ? (
+                <>Bạn có chắc chắn muốn xóa vĩnh viễn tài liệu <strong>"{deleteModal.filename}"</strong>? Hành động này không thể hoàn tác.</>
+              ) : (
+                <>Bạn có chắc chắn muốn xóa vĩnh viễn <strong>{selectedDocIds.length}</strong> tài liệu đã chọn? Hành động này không thể hoàn tác.</>
+              )}
+            </p>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '10px',
+            }}>
+              <button
+                id="cancel-delete-btn"
+                onClick={() => setDeleteModal({ isOpen: false, type: 'single' })}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13.5px',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--surface-container-high)',
+                  color: 'var(--on-surface-variant)',
+                  border: '1px solid var(--outline-variant)',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-display)',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-container-highest)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--surface-container-high)'}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                id="confirm-delete-btn"
+                onClick={handleConfirmDelete}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13.5px',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--error)',
+                  color: 'var(--on-error)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-display)',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--error-hover, #a61c1c)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--error)'}
+              >
+                Xác nhận xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
