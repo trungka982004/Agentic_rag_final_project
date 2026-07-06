@@ -64,14 +64,23 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
 
     await websocket.accept()
 
+    async def safe_send(payload: dict) -> bool:
+        try:
+            await websocket.send_json(payload)
+            return True
+        except Exception:
+            return False
+
     try:
         while True:
             data = await websocket.receive_text()
             try:
                 payload = json.loads(data)
                 question = payload.get("question", "").strip()
+                preferred_domain = payload.get("domain", "").strip()
             except json.JSONDecodeError:
-                await websocket.send_json({"type": "error", "message": "Invalid JSON format"})
+                if not await safe_send({"type": "error", "message": "Invalid JSON format"}):
+                    break
                 continue
             
             if not question:
@@ -99,6 +108,7 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             inputs = {
                 "question": question,
                 "chat_history": chat_history,
+                "preferred_domain": preferred_domain,
                 "use_tavily": True,
                 "export_to_workspace": True,
                 "expert_required": True,
@@ -112,7 +122,8 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             config = {"configurable": {"thread_id": str(session.id)}, "recursion_limit": 10}
 
             # Send a processing start event
-            await websocket.send_json({"type": "status", "message": "Agent processing started..."})
+            if not await safe_send({"type": "status", "message": "Agent processing started..."}):
+                break
 
             state = {}
             # Stream events from LangGraph
@@ -121,18 +132,19 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                     # Event is a dictionary where keys are node names and values are the returned state updates
                     for node_name, node_state in event.items():
                         print(f"[WS Debug] node_name: {node_name}, type(node_state): {type(node_state)}, node_state: {repr(node_state)}")
-                        await websocket.send_json({
+                        if not await safe_send({
                             "type": "node_update",
                             "node": node_name,
                             "message": f"Completed node: {node_name}"
-                        })
+                        }):
+                            break
                         if node_state is not None:
                             state.update(node_state)
                 final_state = state
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                await websocket.send_json({"type": "error", "message": f"Error during processing: {str(e)}"})
+                await safe_send({"type": "error", "message": f"Error during processing: {str(e)}"})
                 continue
 
             if final_state is None:
@@ -168,13 +180,14 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             db.refresh(agent_msg)
 
             # Send final response to WebSocket
-            await websocket.send_json({
+            if not await safe_send({
                 "type": "final_answer",
                 "id": str(agent_msg.id),
                 "content": generation,
                 "export_links": export_links,
                 "flags": flags
-            })
+            }):
+                break
 
     except WebSocketDisconnect:
         print(f"Client disconnected from session: {session_id}")

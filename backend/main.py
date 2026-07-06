@@ -149,6 +149,11 @@ def delete_session(session_id: UUID, current_user: User = Depends(get_current_us
 
 # --- DOCUMENT LIBRARY ENDPOINTS ---
 
+from pydantic import BaseModel
+
+class BulkDeleteRequest(BaseModel):
+    ids: List[str]
+
 RAW_DATA_PATH = "data/raw"
 
 def get_all_documents():
@@ -156,12 +161,10 @@ def get_all_documents():
     if not os.path.exists(RAW_DATA_PATH):
         return docs
         
-    # Walk through each domain folder
-    for domain in ["it", "math", "physics", "electronics"]:
+    # Walk through each domain folder dynamically
+    domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d)) and not d.startswith(".")]
+    for domain in domains:
         domain_path = os.path.join(RAW_DATA_PATH, domain)
-        if not os.path.exists(domain_path):
-            continue
-            
         for file in os.listdir(domain_path):
             if file.endswith(".pdf"):
                 file_path = os.path.join(domain_path, file)
@@ -176,12 +179,13 @@ def get_all_documents():
                 status = "done" if os.path.exists(domain_db_path) else "pending"
                 
                 docs.append({
-                    "id": file, # use filename as id
+                    "id": f"{domain}::{file}", # Unique identifier combining domain and file name
                     "name": file,
                     "author": domain.upper(), # Map domain as author/tag for SIS
                     "year": datetime.fromtimestamp(stat.st_mtime).year,
                     "date": added_date,
                     "size": f"{size_mb:.1f} MB",
+                    "size_bytes": stat.st_size, # Add raw size in bytes for sorting
                     "status": status,
                     "mtime": stat.st_mtime
                 })
@@ -216,13 +220,15 @@ def upload_document(
     domain: str = Form("it"),
     current_user: User = Depends(get_current_user)
 ):
-    if domain not in ["it", "math", "physics", "electronics"]:
-        raise HTTPException(status_code=400, detail="Invalid domain")
+    # Sanitize and validate domain name
+    clean_domain = "".join(c for c in domain.lower() if c.isalnum() or c in ["-", "_"])
+    if not clean_domain:
+        raise HTTPException(status_code=400, detail="Invalid domain name")
         
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
         
-    domain_path = os.path.join(RAW_DATA_PATH, domain)
+    domain_path = os.path.join(RAW_DATA_PATH, clean_domain)
     if not os.path.exists(domain_path):
         os.makedirs(domain_path)
         
@@ -232,12 +238,46 @@ def upload_document(
             shutil.copyfileobj(file.file, buffer)
             
         # Trigger background ingestion
-        background_tasks.add_task(run_ingestion_background, domain)
+        background_tasks.add_task(run_ingestion_background, clean_domain)
         
         return {"message": f"Successfully uploaded {file.filename}. AI analysis started in background."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.delete("/api/documents/bulk")
+def bulk_delete_documents(
+    payload: BulkDeleteRequest,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    deleted_files = []
+    affected_domains = set()
+    
+    for doc_id in payload.ids:
+        if "::" not in doc_id:
+            continue
+        domain, filename = doc_id.split("::", 1)
+        domain_path = os.path.join(RAW_DATA_PATH, domain)
+        file_path = os.path.join(domain_path, filename)
+        
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                deleted_files.append(filename)
+                affected_domains.add(domain)
+            except Exception as e:
+                print(f"[Bulk Delete] Error deleting {file_path}: {e}")
+                
+    # Rebuild indexes for affected domains in background
+    for domain in affected_domains:
+        background_tasks.add_task(run_ingestion_background, domain)
+        
+    return {
+        "message": f"Successfully deleted {len(deleted_files)} file(s).",
+        "deleted": deleted_files
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+

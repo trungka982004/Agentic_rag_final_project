@@ -18,8 +18,8 @@ def ingest_docs(target_domain: str = None, force_rebuild: bool = False):
         print(f"Directory not found: {RAW_DATA_PATH}", flush=True)
         return
 
-    # Iterate through each domain folder (it, math, physics, electronics)
-    if target_domain and target_domain in ["it", "math", "physics", "electronics"]:
+    # Iterate through each domain folder
+    if target_domain:
         domains = [target_domain]
     else:
         domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d))]

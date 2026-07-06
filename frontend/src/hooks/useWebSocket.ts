@@ -123,25 +123,66 @@ export function useWebSocket(sessionId: string | null) {
     }
   }, [patchStreaming]);
 
-  // Connect / reconnect when sessionId changes
+  const [reconnectCount, setReconnectCount] = useState(0);
+
+  // Connect / reconnect when sessionId changes or reconnect count changes
   useEffect(() => {
     if (!sessionId) return;
+
+    let active = true;
+    let reconnectTimeoutId: any = null;
 
     const url = buildWsUrl(sessionId);
     const socket = new WebSocket(url);
     ws.current = socket;
 
-    socket.onopen = () => setIsConnected(true);
-    socket.onclose = () => setIsConnected(false);
-    socket.onerror = () => setIsConnected(false);
-    socket.onmessage = (e) => handleEvent(e.data);
+    socket.onopen = () => {
+      if (active) {
+        setIsConnected(true);
+      }
+    };
+
+    socket.onclose = (event) => {
+      if (active) {
+        setIsConnected(false);
+        // Code 1008 means Policy Violation (e.g. invalid/expired token)
+        if (event.code === 1008) {
+          console.warn('WebSocket unauthorized (1008). Redirecting to login.');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+          }
+          return;
+        }
+        // Auto-reconnect after 3 seconds for non-auth errors
+        reconnectTimeoutId = setTimeout(() => {
+          if (active) {
+            setReconnectCount(c => c + 1);
+          }
+        }, 3000);
+      }
+    };
+
+    socket.onerror = () => {
+      if (active) {
+        setIsConnected(false);
+      }
+    };
+
+    socket.onmessage = (e) => {
+      if (active) {
+        handleEvent(e.data);
+      }
+    };
 
     return () => {
+      active = false;
       socket.close();
       ws.current = null;
       setIsConnected(false);
+      if (reconnectTimeoutId) clearTimeout(reconnectTimeoutId);
     };
-  }, [sessionId, handleEvent]);
+  }, [sessionId, reconnectCount, handleEvent]);
 
   const sendMessage = useCallback((question: string) => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
@@ -168,7 +209,8 @@ export function useWebSocket(sessionId: string | null) {
     setIsThinking(true);
     resetStream();
 
-    ws.current.send(JSON.stringify({ question }));
+    const activeDomain = (typeof window !== 'undefined' ? localStorage.getItem('active_domain') : '') || 'it';
+    ws.current.send(JSON.stringify({ question, domain: activeDomain }));
   }, [sessionId]);
 
   const loadHistory = useCallback((history: DisplayMessage[]) => {

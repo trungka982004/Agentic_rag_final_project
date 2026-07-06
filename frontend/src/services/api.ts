@@ -91,6 +91,7 @@ export interface DocumentInfo {
   year: number;
   date: string;
   size: string;
+  size_bytes?: number;
   status: 'done' | 'indexing' | 'pending';
 }
 
@@ -105,6 +106,13 @@ export async function apiUploadDocument(file: File, domain: string): Promise<any
   formData.append('domain', domain);
   const res = await api.post('/api/documents/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+}
+
+export async function apiDeleteDocumentsBulk(ids: string[]): Promise<any> {
+  const res = await api.delete('/api/documents/bulk', {
+    data: { ids },
   });
   return res.data;
 }

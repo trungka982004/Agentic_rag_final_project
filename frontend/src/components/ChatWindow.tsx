@@ -59,7 +59,8 @@ export default function ChatWindow({
     setUploadingFile(true);
     setAttachedFile(null);
     try {
-      await apiUploadDocument(file, 'it');
+      const activeDomain = (typeof window !== 'undefined' ? localStorage.getItem('active_domain') : '') || 'it';
+      await apiUploadDocument(file, activeDomain);
       setAttachedFile(file.name);
       // Auto-populate chat input with a nice prompt asking to summarize this document
       setInput(prev => {

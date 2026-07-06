@@ -31,7 +31,11 @@ export default function ScientificCitationsPage() {
   );
 
   return (
-    <div style={{ maxWidth: '960px' }}>
+    <div style={{
+      maxWidth: '960px',
+      margin: '0 auto',
+      width: '100%',
+    }}>
       {/* Header */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',

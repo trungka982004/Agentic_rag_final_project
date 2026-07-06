@@ -56,14 +56,69 @@ export default function Sidebar({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const [documents, setDocuments] = useState<DocumentInfo[]>([]);
-  const [selectedDomain, setSelectedDomain] = useState('it');
+  const [selectedDomain, setSelectedDomain] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('active_domain') || 'it';
+    }
+    return 'it';
+  });
+  const [customDomains, setCustomDomains] = useState<{ id: string; label: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [showAllChats, setShowAllChats] = useState(false);
+
+  // Sync selectedDomain to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('active_domain', selectedDomain);
+    }
+  }, [selectedDomain]);
+
+  // Load custom domains from localStorage initially
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('custom_domains');
+      if (saved) {
+        setCustomDomains(JSON.parse(saved));
+      }
+    }
+  }, []);
 
   const fetchDocs = useCallback(async () => {
     try {
       const data = await apiListDocuments();
       setDocuments(data);
+
+      // Auto-discover domains present in documents but missing from categories
+      const defaults = ['it', 'math', 'physics', 'electronics'];
+      const detectedCustoms: { id: string; label: string }[] = [];
+      data.forEach(doc => {
+        const domainId = doc.author.toLowerCase();
+        const isDefault = defaults.includes(domainId);
+        if (!isDefault && !detectedCustoms.some(d => d.id === domainId)) {
+          const rawLabel = doc.author;
+          let label = rawLabel.charAt(0) + rawLabel.slice(1).toLowerCase();
+          label = label.replace(/_/g, ' ');
+          detectedCustoms.push({
+            id: domainId,
+            label,
+          });
+        }
+      });
+
+      if (detectedCustoms.length > 0) {
+        setCustomDomains(prev => {
+          const combined = [...prev];
+          detectedCustoms.forEach(dc => {
+            if (!combined.some(c => c.id === dc.id)) {
+              combined.push(dc);
+            }
+          });
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('custom_domains', JSON.stringify(combined));
+          }
+          return combined;
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -319,12 +374,16 @@ export default function Sidebar({
               color: 'var(--on-surface)',
               outline: 'none',
               cursor: 'pointer',
+              maxWidth: '120px',
             }}
           >
             <option value="it">CNTT</option>
             <option value="math">Toán học</option>
             <option value="physics">Vật lý</option>
             <option value="electronics">Điện tử</option>
+            {customDomains.map(d => (
+              <option key={d.id} value={d.id}>{d.label}</option>
+            ))}
           </select>
         </div>
 

@@ -71,7 +71,11 @@ export default function GeneralOverviewPage() {
   const emailPrefix = user?.email?.split('@')[0] ?? 'Người dùng';
 
   return (
-    <div style={{ maxWidth: '860px' }}>
+    <div style={{
+      maxWidth: '860px',
+      margin: '0 auto',
+      width: '100%',
+    }}>
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>

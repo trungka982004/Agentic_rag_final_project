@@ -27,11 +27,25 @@ class Config:
     DB_BASE_PATH = "db/vector_stores"
     EMBEDDING_MODEL = "bge-m3"
     LLM_MODEL = "qwen2.5:7b"
-    DOMAINS = ["it", "math", "physics", "electronics"]
     TEMPERATURE = 0
     CONTEXT_WINDOW = 4096
     MAX_TOKENS = 1024
     KEEP_ALIVE = "5m"
+
+def get_active_domains() -> List[str]:
+    """Retrieves all active domain folder names dynamically from disk."""
+    raw_path = "data/raw"
+    defaults = ["it", "math", "physics", "electronics"]
+    if not os.path.exists(raw_path):
+        return defaults
+    try:
+        domains = [d for d in os.listdir(raw_path) if os.path.isdir(os.path.join(raw_path, d)) and not d.startswith(".")]
+        for d in defaults:
+            if d not in domains:
+                domains.append(d)
+        return domains
+    except Exception:
+        return defaults
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -81,8 +95,9 @@ def get_vector_db(domain: str) -> Optional[Chroma]:
     return db
 
 def classify_domain(query: str) -> str:
-    """Classifies the user query into one of the pre-defined domains using fast routing and LLM fallback."""
+    """Classifies the user query into one of the pre-defined or custom domains using fast routing and LLM fallback."""
     query_lower = query.lower()
+    active_domains = get_active_domains()
     
     # Fast Keyword Routing
     if any(kw in query_lower for kw in ["it", "network", "code", "python", "programming", "algorithm", "software", "computer", "deep learning", "machine learning", "resnet", "bert", "mapreduce", "transformer"]):
@@ -93,23 +108,29 @@ def classify_domain(query: str) -> str:
         return "physics"
     if any(kw in query_lower for kw in ["electronics", "circuit", "transistor", "neuromorphic", "hardware", "sensor", "voltage", "neuronal"]):
         return "electronics"
+        
+    # Check custom domain name matching directly in query
+    for d in active_domains:
+        if d in query_lower or d.replace("_", " ") in query_lower or d.replace("-", " ") in query_lower:
+            return d
 
     if not llm:
         return "physics" # Fallback
 
-    prompt = ChatPromptTemplate.from_template("""
-    You are a professional router. Classify the following question into one of these 4 categories: 
-    'it', 'math', 'physics', 'electronics'.
+    categories_str = ", ".join(f"'{d}'" for d in active_domains)
+    prompt = ChatPromptTemplate.from_template(f"""
+    You are a professional router. Classify the following question into one of these categories: 
+    {categories_str}.
     If it doesn't fit any, choose the closest one.
     Answer ONLY with the category name in lowercase.
     
-    Question: {query}
+    Question: {{query}}
     Category:""")
     
     chain = prompt | llm | StrOutputParser()
     try:
         domain = chain.invoke({"query": query}).strip().lower()
-        if domain not in Config.DOMAINS:
+        if domain not in active_domains:
             logger.info(f"LLM returned unknown domain '{domain}'. Falling back to 'physics'.")
             return "physics"
         return domain
@@ -176,7 +197,7 @@ def retrieve_context(query: str, domain: str, k: int = 5) -> str:
     query_lower = query.lower()
     found_override = False
     target_file = None
-    for d in Config.DOMAINS:
+    for d in get_active_domains():
         domain_path = os.path.join("data/raw", d)
         if os.path.exists(domain_path):
             for file in os.listdir(domain_path):

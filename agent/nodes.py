@@ -81,12 +81,17 @@ def router_node(state: GraphState):
     logger.info("--- ROUTER NODE ---")
     question = state["question"]
     chat_history = state.get("chat_history", [])
+    preferred_domain = state.get("preferred_domain")
     
     # Condense the question using conversation history
     question = condense_question(question, chat_history)
-    domain = classify_domain(question)
     
-    logger.info(f"[*] Classified Domain: {domain.upper()}")
+    if preferred_domain and preferred_domain != 'all':
+        domain = preferred_domain.strip().lower()
+        logger.info(f"[*] Bypassing classification. Using user preferred domain: {domain.upper()}")
+    else:
+        domain = classify_domain(question)
+        logger.info(f"[*] Classified Domain: {domain.upper()}")
     
     # Keyword-based configurations (All default to ON)
     expert_required = True
