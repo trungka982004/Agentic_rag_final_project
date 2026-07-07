@@ -78,6 +78,7 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 payload = json.loads(data)
                 question = payload.get("question", "").strip()
                 preferred_domain = payload.get("domain", "").strip()
+                selected_doc = payload.get("selected_doc", "").strip() or None
             except json.JSONDecodeError:
                 if not await safe_send({"type": "error", "message": "Invalid JSON format"}):
                     break
@@ -116,7 +117,8 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 "web_fallback": True,
                 "documents": [],           
                 "generation": "",          
-                "structured_data": None    
+                "structured_data": None,
+                "selected_doc": selected_doc
             }
 
             config = {"configurable": {"thread_id": str(session.id)}, "recursion_limit": 10}
@@ -170,16 +172,15 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 flags=flags
             )
             db.add(agent_msg)
-            
-            # Update session title if it's the first message
-            if session.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]:
-                session.title = generate_chat_summary(question, generation)
-                db.add(session)
-                
+
+            # Update session title if it's the first message – done ASYNCHRONOUSLY
+            # so the WebSocket response is never delayed by the title-generation LLM call.
+            is_first_message = session.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]
+
             db.commit()
             db.refresh(agent_msg)
 
-            # Send final response to WebSocket
+            # Send final response to WebSocket immediately (before title update)
             if not await safe_send({
                 "type": "final_answer",
                 "id": str(agent_msg.id),
@@ -188,6 +189,28 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 "flags": flags
             }):
                 break
+
+            # Now generate & persist the session title in the background (non-blocking)
+            if is_first_message:
+                import asyncio
+                from backend.database import get_db as _get_db_factory
+                async def _update_title_bg(q: str, ans: str, sess_id):
+                    try:
+                        title = generate_chat_summary(q, ans)
+                        # Open a fresh DB session for the background task
+                        bg_db = next(_get_db_factory())
+                        try:
+                            from backend.models import ChatSession as _CS
+                            bg_sess = bg_db.query(_CS).filter(_CS.id == sess_id).first()
+                            if bg_sess and bg_sess.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]:
+                                bg_sess.title = title
+                                bg_db.add(bg_sess)
+                                bg_db.commit()
+                        finally:
+                            bg_db.close()
+                    except Exception as _e:
+                        print(f"[Background Title] Error: {_e}")
+                asyncio.create_task(_update_title_bg(question, generation, session.id))
 
     except WebSocketDisconnect:
         print(f"Client disconnected from session: {session_id}")

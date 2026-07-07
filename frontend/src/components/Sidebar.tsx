@@ -401,6 +401,19 @@ export default function Sidebar({
             {filteredDocs.slice(0, 5).map(doc => (
               <div
                 key={doc.id}
+                draggable={doc.status === 'done'}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', doc.name);
+                  e.dataTransfer.effectAllowed = 'copy';
+                }}
+                onClick={() => {
+                  if (doc.status === 'done') {
+                    window.dispatchEvent(new CustomEvent('attach-document-to-chat', { detail: { name: doc.name } }));
+                  } else {
+                    alert('Tài liệu đang trong quá trình lập chỉ mục, vui lòng đợi.');
+                  }
+                }}
+                title={doc.status === 'done' ? "Kéo thả vào Chat hoặc click để đính kèm sử dụng" : "Đang xử lý tài liệu..."}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -411,10 +424,13 @@ export default function Sidebar({
                   color: 'var(--on-surface)',
                   fontFamily: 'var(--font-body)',
                   marginBottom: '2px',
-                  transition: 'background 0.1s',
+                  transition: 'background 0.1s, border-color 0.1s',
                   background: 'var(--surface-container-lowest)',
                   border: '1px solid var(--outline-variant)',
+                  cursor: doc.status === 'done' ? 'grab' : 'wait',
+                  userSelect: 'none',
                 }}
+                className="sidebar-bookcase-item"
               >
                 <div style={{
                   width: '20px', height: '20px',
@@ -425,7 +441,7 @@ export default function Sidebar({
                   color: 'var(--error)',
                   flexShrink: 0,
                 }}>PDF</div>
-                <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.name}>
+                <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {doc.name}
                 </div>
                 <span style={{

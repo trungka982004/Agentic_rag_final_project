@@ -15,3 +15,4 @@ class GraphState(TypedDict):
     structured_data: Optional[List[List]] # Data for Google Sheets
     retry_count: int             # Number of retries for generation loops
     export_links: Optional[dict] # URLs of exported documents (e.g. docs, sheets)
+    selected_doc: Optional[str]  # Explicitly selected target PDF filename

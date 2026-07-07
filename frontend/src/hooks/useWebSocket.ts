@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { buildWsUrl } from '@/services/api';
 import type { WSEvent, ActiveNode, ExportLink, DisplayMessage } from '@/types';
 
-export type ChatSendFn = (question: string) => void;
+export type ChatSendFn = (question: string, selectedDoc?: string | null) => void;
 
 export function useWebSocket(sessionId: string | null) {
   const ws = useRef<WebSocket | null>(null);
@@ -184,7 +184,7 @@ export function useWebSocket(sessionId: string | null) {
     };
   }, [sessionId, reconnectCount, handleEvent]);
 
-  const sendMessage = useCallback((question: string) => {
+  const sendMessage = useCallback((question: string, selectedDoc?: string | null) => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
 
     // Append user bubble
@@ -210,7 +210,11 @@ export function useWebSocket(sessionId: string | null) {
     resetStream();
 
     const activeDomain = (typeof window !== 'undefined' ? localStorage.getItem('active_domain') : '') || 'it';
-    ws.current.send(JSON.stringify({ question, domain: activeDomain }));
+    ws.current.send(JSON.stringify({ 
+      question, 
+      domain: activeDomain,
+      selected_doc: selectedDoc || null
+    }));
   }, [sessionId]);
 
   const loadHistory = useCallback((history: DisplayMessage[]) => {
