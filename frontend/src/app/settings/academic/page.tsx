@@ -120,7 +120,11 @@ export default function AcademicIntegrationPage() {
   const [orcid, setOrcid] = useState('');
 
   return (
-    <div style={{ maxWidth: '880px' }}>
+    <div style={{
+      maxWidth: '880px',
+      margin: '0 auto',
+      width: '100%',
+    }}>
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>

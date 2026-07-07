@@ -56,14 +56,69 @@ export default function Sidebar({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const [documents, setDocuments] = useState<DocumentInfo[]>([]);
-  const [selectedDomain, setSelectedDomain] = useState('it');
+  const [selectedDomain, setSelectedDomain] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('active_domain') || 'it';
+    }
+    return 'it';
+  });
+  const [customDomains, setCustomDomains] = useState<{ id: string; label: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [showAllChats, setShowAllChats] = useState(false);
+
+  // Sync selectedDomain to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('active_domain', selectedDomain);
+    }
+  }, [selectedDomain]);
+
+  // Load custom domains from localStorage initially
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('custom_domains');
+      if (saved) {
+        setCustomDomains(JSON.parse(saved));
+      }
+    }
+  }, []);
 
   const fetchDocs = useCallback(async () => {
     try {
       const data = await apiListDocuments();
       setDocuments(data);
+
+      // Auto-discover domains present in documents but missing from categories
+      const defaults = ['it', 'math', 'physics', 'electronics'];
+      const detectedCustoms: { id: string; label: string }[] = [];
+      data.forEach(doc => {
+        const domainId = doc.author.toLowerCase();
+        const isDefault = defaults.includes(domainId);
+        if (!isDefault && !detectedCustoms.some(d => d.id === domainId)) {
+          const rawLabel = doc.author;
+          let label = rawLabel.charAt(0) + rawLabel.slice(1).toLowerCase();
+          label = label.replace(/_/g, ' ');
+          detectedCustoms.push({
+            id: domainId,
+            label,
+          });
+        }
+      });
+
+      if (detectedCustoms.length > 0) {
+        setCustomDomains(prev => {
+          const combined = [...prev];
+          detectedCustoms.forEach(dc => {
+            if (!combined.some(c => c.id === dc.id)) {
+              combined.push(dc);
+            }
+          });
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('custom_domains', JSON.stringify(combined));
+          }
+          return combined;
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -319,12 +374,16 @@ export default function Sidebar({
               color: 'var(--on-surface)',
               outline: 'none',
               cursor: 'pointer',
+              maxWidth: '120px',
             }}
           >
             <option value="it">CNTT</option>
             <option value="math">Toán học</option>
             <option value="physics">Vật lý</option>
             <option value="electronics">Điện tử</option>
+            {customDomains.map(d => (
+              <option key={d.id} value={d.id}>{d.label}</option>
+            ))}
           </select>
         </div>
 
@@ -342,6 +401,19 @@ export default function Sidebar({
             {filteredDocs.slice(0, 5).map(doc => (
               <div
                 key={doc.id}
+                draggable={doc.status === 'done'}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', doc.name);
+                  e.dataTransfer.effectAllowed = 'copy';
+                }}
+                onClick={() => {
+                  if (doc.status === 'done') {
+                    window.dispatchEvent(new CustomEvent('attach-document-to-chat', { detail: { name: doc.name } }));
+                  } else {
+                    alert('Tài liệu đang trong quá trình lập chỉ mục, vui lòng đợi.');
+                  }
+                }}
+                title={doc.status === 'done' ? "Kéo thả vào Chat hoặc click để đính kèm sử dụng" : "Đang xử lý tài liệu..."}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -352,10 +424,13 @@ export default function Sidebar({
                   color: 'var(--on-surface)',
                   fontFamily: 'var(--font-body)',
                   marginBottom: '2px',
-                  transition: 'background 0.1s',
+                  transition: 'background 0.1s, border-color 0.1s',
                   background: 'var(--surface-container-lowest)',
                   border: '1px solid var(--outline-variant)',
+                  cursor: doc.status === 'done' ? 'grab' : 'wait',
+                  userSelect: 'none',
                 }}
+                className="sidebar-bookcase-item"
               >
                 <div style={{
                   width: '20px', height: '20px',
@@ -366,7 +441,7 @@ export default function Sidebar({
                   color: 'var(--error)',
                   flexShrink: 0,
                 }}>PDF</div>
-                <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.name}>
+                <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {doc.name}
                 </div>
                 <span style={{

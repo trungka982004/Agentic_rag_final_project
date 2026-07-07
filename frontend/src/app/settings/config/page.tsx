@@ -33,7 +33,11 @@ export default function SystemConfigPage() {
   const [clearConfirm, setClearConfirm] = useState(false);
 
   return (
-    <div style={{ maxWidth: '900px' }}>
+    <div style={{
+      maxWidth: '900px',
+      margin: '0 auto',
+      width: '100%',
+    }}>
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>

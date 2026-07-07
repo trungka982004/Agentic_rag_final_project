@@ -1,0 +1,72 @@
+14:07:16 | INFO     | 
+╔══════════════════════════════════════════════════════════════════════╗
+║          AGENTIC RAG – Optimization Benchmark Suite                 ║
+║          Run: 2026-07-07 14:07:16                             ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+14:07:16 | INFO     | Log (text)   : D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\benchmark_20260707_140716.txt
+14:07:16 | INFO     | Log (jsonl)  : D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\benchmark_20260707_140716.jsonl
+14:07:16 | INFO     | Report (json): D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\report_20260707_140716.json
+14:07:16 | INFO     | 
+14:07:16 | INFO     | 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+14:07:16 | INFO     |   [1/4] Domain List TTL Cache
+14:07:16 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+14:07:23 | INFO     | ======================================================================
+14:07:23 | INFO     | BENCHMARK: get_active_domains()  (BEFORE disk read vs AFTER TTL cache)
+14:07:23 | INFO     | ======================================================================
+14:07:23 | INFO     | 
+  ── DC-01: Cold-start (cache empty)
+14:07:23 | INFO     |   [PASS] get_active_domains[cold] | DC-01 cold-start | 0.0001s
+14:07:23 | INFO     |     Domains found  : ['electronics', 'it', 'kinh_t', 'math', 'physics']
+14:07:23 | INFO     |     Avg cold time  : 0.105 ms
+14:07:23 | INFO     |     Domains > 0    : ✓ PASS
+14:07:23 | INFO     | 
+  ── DC-02: Warm cache (repeated calls within TTL)
+14:07:23 | INFO     |   [PASS] get_active_domains[warm] | DC-02 warm-cache | 0.0000s
+14:07:23 | INFO     |     Avg warm time  : 0.000241 ms
+14:07:23 | INFO     |     Max warm time  : 0.002900 ms
+14:07:23 | INFO     |     Speedup vs cold: 438.4×
+14:07:23 | INFO     |     Data consistent: True
+14:07:23 | INFO     |     < 1 ms gate: ✓ PASS
+14:07:23 | INFO     |     Overall        : ✓ PASS
+14:07:23 | INFO     | 
+  ── DC-03: Cache invalidation via clear_rag_caches()
+14:07:23 | INFO     |   [PASS] get_active_domains[invalidate] | DC-03 cache invalidation | 0.0001s
+14:07:23 | INFO     |     Cache cleared         : True
+14:07:23 | INFO     |     Domains after re-read : ['electronics', 'it', 'kinh_t', 'math', 'physics']
+14:07:23 | INFO     |     Consistent with cold  : True
+14:07:23 | INFO     |     Overall               : ✓ PASS
+14:07:23 | INFO     | 
+  ── DC-04: Thread-safety (10 concurrent readers)
+14:07:23 | INFO     |   [PASS] get_active_domains[concurrent] | DC-04 thread-safety | 0.0016s
+14:07:23 | INFO     |     Threads completed: 10/10
+14:07:23 | INFO     |     All returned same: True
+14:07:23 | INFO     |     Errors           : none
+14:07:23 | INFO     |     Overall          : ✓ PASS
+14:07:23 | INFO     | 
+──────────────────────────────────────────────────────────────────────
+14:07:23 | INFO     |   domain_cache SUMMARY
+14:07:23 | INFO     |   Tests passed      : 4/4
+14:07:23 | INFO     |   Cold read avg     : 0.105 ms
+14:07:23 | INFO     |   Warm cache avg    : 0.000241 ms  (200 reps)
+14:07:23 | INFO     |   Speedup           : 438×
+14:07:23 | INFO     | ──────────────────────────────────────────────────────────────────────
+14:07:23 | INFO     | 
+══════════════════════════════════════════════════════════════════════
+14:07:23 | INFO     |   ███  FINAL SUMMARY  ███
+14:07:23 | INFO     | ══════════════════════════════════════════════════════════════════════
+14:07:23 | INFO     |   Total tests  : 4
+14:07:23 | INFO     |   ✓ Passed     : 4
+14:07:23 | INFO     |   ✗ Failed     : 0
+14:07:23 | INFO     |   ◎ Skipped    : 0  (LLM unavailable)
+14:07:23 | INFO     |   Pass rate    : 100.0%
+14:07:23 | INFO     | 
+14:07:23 | INFO     |   Speedup Summary:
+14:07:23 | INFO     |     Domain cache    : cold 0.105 ms → warm 0.000241 ms  (438.0× speedup)
+14:07:23 | INFO     | ══════════════════════════════════════════════════════════════════════
+14:07:23 | INFO     | 
+  Full report → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\report_20260707_140716.json
+14:07:23 | INFO     |   Human log   → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\benchmark_20260707_140716.txt
+14:07:23 | INFO     |   Report saved → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\report_20260707_140716.json
+14:07:23 | INFO     |   Latest copy → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\LATEST_REPORT.json

@@ -81,12 +81,17 @@ def router_node(state: GraphState):
     logger.info("--- ROUTER NODE ---")
     question = state["question"]
     chat_history = state.get("chat_history", [])
+    preferred_domain = state.get("preferred_domain")
     
     # Condense the question using conversation history
     question = condense_question(question, chat_history)
-    domain = classify_domain(question)
     
-    logger.info(f"[*] Classified Domain: {domain.upper()}")
+    if preferred_domain and preferred_domain != 'all':
+        domain = preferred_domain.strip().lower()
+        logger.info(f"[*] Bypassing classification. Using user preferred domain: {domain.upper()}")
+    else:
+        domain = classify_domain(question)
+        logger.info(f"[*] Classified Domain: {domain.upper()}")
     
     # Keyword-based configurations (All default to ON)
     expert_required = True
@@ -122,8 +127,9 @@ def retrieve_local_node(state: GraphState):
     logger.info("--- RETRIEVE LOCAL NODE ---")
     question = state["question"]
     domain = state["domain"]
+    selected_doc = state.get("selected_doc")
     
-    context = retrieve_context(question, domain)
+    context = retrieve_context(question, domain, target_file=selected_doc)
     
     # Check for failure messages in context
     if any(msg in context for msg in ["No database found", "No relevant information", "Error occurred"]):
@@ -134,33 +140,38 @@ def retrieve_local_node(state: GraphState):
     return {"documents": docs}
 
 def grade_documents_node(state: GraphState):
-    """Grades the retrieved documents for relevance."""
+    """Grades the retrieved documents for relevance using fast keyword overlap (no LLM call)."""
     logger.info("--- GRADE DOCUMENTS NODE ---")
     question = state["question"]
     documents = state.get("documents", [])
-    
+    selected_doc = state.get("selected_doc")
+
     if not documents:
         logger.info("[*] No local documents found. Falling back to Web Search.")
         return {"web_fallback": True}
-        
-    prompt = ChatPromptTemplate.from_template(
-        "You are a grader assessing relevance of a retrieved document to a user question.\n"
-        "Here is the retrieved document: \n\n {document} \n\n"
-        "Here is the user question: {question}\n"
-        "If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant.\n"
-        "Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question."
-    )
-    
-    chain = prompt | llm | StrOutputParser()
-    try:
-        score = chain.invoke({"question": question, "document": documents[0]}).strip().lower()
-        if "yes" in score:
-            logger.info("[*] Local documents are RELEVANT.")
+
+    # If user explicitly pinned a document, trust the retrieval unconditionally
+    if selected_doc:
+        logger.info(f"[*] Explicit document selected ('{selected_doc}'). Skipping relevance check.")
+        return {"web_fallback": False}
+
+    # Fast keyword overlap check – avoids an entire LLM round-trip (~5-8s)
+    context_text = documents[0].lower()
+    # Tokenise question into meaningful words (length > 2) and check overlap
+    question_tokens = [t for t in re.split(r"\W+", question.lower()) if len(t) > 2]
+    if question_tokens:
+        hits = sum(1 for tok in question_tokens if tok in context_text)
+        overlap_ratio = hits / len(question_tokens)
+        is_relevant = overlap_ratio >= 0.25  # At least 25 % of question terms appear
+        logger.info(f"[*] Keyword overlap: {hits}/{len(question_tokens)} tokens matched (ratio={overlap_ratio:.2f}). Relevant={is_relevant}")
+        if is_relevant:
             return {"web_fallback": False}
-    except Exception as e:
-        logger.error(f"Grading failed: {e}")
-    
-    logger.info("[*] Local documents are NOT relevant. Falling back to Web Search.")
+    else:
+        # Edge-case: single-char or no tokens – just accept the local result
+        logger.info("[*] No meaningful tokens in question. Accepting local documents.")
+        return {"web_fallback": False}
+
+    logger.info("[*] Low keyword overlap. Falling back to Web Search.")
     return {"web_fallback": True}
 
 def web_search_node(state: GraphState):

@@ -67,6 +67,7 @@ export type WSEventType =
 
 export interface WSEvent {
   type: WSEventType;
+  id?: string;
   // for node_update
   node?: string;
   // for token / final_answer

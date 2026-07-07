@@ -59,16 +59,28 @@ def parse_json_from_llm(raw_output: str) -> dict:
 def grade_generation_v_documents_and_question(state: GraphState):
     """
     Determines whether the generation is grounded in the document and answers question
-    using a unified Joint Grader to minimize latency (saving 1 LLM call).
+    using a unified Joint Grader. Skips LLM evaluation on retry ≥ 1 or when a
+    specific document was selected (context is trusted) to minimise latency.
     """
     print("--- JOINT EVALUATION (HALLUCINATION & RELEVANCE GRADER) ---")
     question = state["question"]
     documents = state.get("documents", [])
     generation = state["generation"]
     retry_count = state.get("retry_count", 0)
+    selected_doc = state.get("selected_doc")
     max_retries = 2
 
-    # 1. Joint Grader Prompt
+    # Fast-path: if user pinned a document OR we've already retried once, accept the answer.
+    # This eliminates the expensive grader LLM call in the most common paths.
+    if selected_doc:
+        print(f"[*] Selected-doc mode: trusting generation without LLM grader.")
+        return "useful"
+
+    if retry_count >= 1:
+        print(f"[*] retry_count={retry_count}: accepting generation to avoid runaway retries.")
+        return "useful"
+
+    # 1. Joint Grader Prompt (only executed on the very first attempt, no selected_doc)
     joint_grader_prompt = ChatPromptTemplate.from_template(
         "You are an expert evaluator assessing the quality of an assistant's answer.\n"
         "Here is the retrieved context/facts:\n"
