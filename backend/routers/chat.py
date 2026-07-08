@@ -76,9 +76,17 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             data = await websocket.receive_text()
             try:
                 payload = json.loads(data)
-                question = payload.get("question", "").strip()
-                preferred_domain = payload.get("domain", "").strip()
-                selected_doc = payload.get("selected_doc", "").strip() or None
+                
+                raw_question = payload.get("question")
+                question = raw_question.strip() if isinstance(raw_question, str) else ""
+                
+                raw_domain = payload.get("domain")
+                preferred_domain = raw_domain.strip() if isinstance(raw_domain, str) else ""
+                
+                raw_selected_doc = payload.get("selected_doc")
+                selected_doc = raw_selected_doc.strip() if isinstance(raw_selected_doc, str) else ""
+                if not selected_doc:
+                    selected_doc = None
             except json.JSONDecodeError:
                 if not await safe_send({"type": "error", "message": "Invalid JSON format"}):
                     break

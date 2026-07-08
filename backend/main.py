@@ -54,7 +54,85 @@ app.add_middleware(
 def read_root():
     return {"message": "Agentic RAG Backend is running successfully!"}
 
+@app.get("/api/health")
+def health_check():
+    """Docker / load-balancer health check endpoint."""
+    return {"status": "ok"}
+
 app.include_router(chat.router)
+
+# ---------------------------------------------------------------------------
+# CHAT EXPORTS DASHBOARD ENDPOINT
+# Returns all agent messages that have export_links so the Library /
+# Settings dashboards can display them without re-fetching each session.
+# ---------------------------------------------------------------------------
+@app.get("/api/chat-exports")
+def list_chat_exports(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Returns a flat list of all agent messages that contain Google Workspace
+    export links (docs / sheets), belonging to the current user.
+    Used to sync the Library / Academic dashboard with the chat history.
+    """
+    # Fetch all sessions owned by the user
+    sessions = db.query(ChatSession).filter(ChatSession.user_id == current_user.id).all()
+    session_ids = [s.id for s in sessions]
+
+    if not session_ids:
+        return []
+
+    # Fetch agent messages with non-null export_links across all user sessions
+    msgs = (
+        db.query(Message)
+        .filter(
+            Message.session_id.in_(session_ids),
+            Message.role == "agent",
+            Message.export_links.isnot(None),
+        )
+        .order_by(Message.created_at.desc())
+        .limit(100)
+        .all()
+    )
+
+    result = []
+    for msg in msgs:
+        links = msg.export_links or {}
+        # Only include messages that actually have at least one link
+        if not links.get("docs") and not links.get("sheets"):
+            continue
+
+        # Find the preceding user question for context
+        preceding = (
+            db.query(Message)
+            .filter(
+                Message.session_id == msg.session_id,
+                Message.created_at < msg.created_at,
+                Message.role == "user",
+            )
+            .order_by(Message.created_at.desc())
+            .first()
+        )
+        question_preview = ""
+        if preceding:
+            q = preceding.content
+            question_preview = q[:120] + "..." if len(q) > 120 else q
+
+        # Resolve session title
+        sess = next((s for s in sessions if s.id == msg.session_id), None)
+        session_title = sess.title if sess else "Unknown Session"
+
+        result.append({
+            "message_id": str(msg.id),
+            "session_id": str(msg.session_id),
+            "session_title": session_title,
+            "question_preview": question_preview,
+            "export_links": links,
+            "created_at": msg.created_at.isoformat(),
+        })
+
+    return result
 
 # --- AUTHENTICATION ENDPOINTS ---
 

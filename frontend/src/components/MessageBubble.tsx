@@ -221,6 +221,9 @@ export default function MessageBubble({ message, isSelected, onSelect }: Props) 
                   </div>
                 );
               },
+              pre({ children }) {
+                return <>{children}</>;
+              },
             }}
           >
             {message.content || ''}

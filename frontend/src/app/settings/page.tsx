@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import { apiListChatExports, type ChatExport } from '@/services/api';
 
 // ── Icon helper ──────────────────────────────────────────────────────────────
 const Icon = ({ path, size = 15 }: { path: string; size?: number }) => (
@@ -59,6 +61,113 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
     }}>
       <span style={{ color: 'var(--on-surface-variant)', minWidth: '160px' }}>{label}</span>
       <span style={{ color: 'var(--on-surface)', fontWeight: 500, textAlign: 'right' }}>{value}</span>
+    </div>
+  );
+}
+
+// ── Chat Exports Panel ───────────────────────────────────────────────────────
+function ChatExportsPanel() {
+  const [exports, setExports] = useState<ChatExport[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const data = await apiListChatExports();
+        if (!cancelled) setExports(data);
+      } catch { /* silent */ } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    // Poll every 30 s so the panel stays in sync after new exports
+    const interval = setInterval(load, 30_000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
+
+  return (
+    <div className="card" style={{ marginTop: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '30px', height: '30px',
+            background: 'var(--primary-fixed)',
+            borderRadius: 'var(--radius-sm)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon path="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" size={14} />
+          </div>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
+            Tài liệu đã xuất từ Chat
+          </span>
+        </div>
+        <span style={{ fontSize: '11px', color: 'var(--on-surface-variant)' }}>
+          {loading ? 'Đang tải...' : `${exports.length} mục`}
+        </span>
+      </div>
+
+      {!loading && exports.length === 0 && (
+        <div style={{ padding: '16px 0', textAlign: 'center', fontSize: '13px', color: 'var(--on-surface-variant)' }}>
+          Chưa có tài liệu nào được xuất từ chat.
+        </div>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }}>
+        {exports.map(exp => (
+          <div key={exp.message_id} style={{
+            padding: '10px 12px',
+            background: 'var(--surface-container-low)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--outline-variant)',
+            display: 'flex', alignItems: 'flex-start', gap: '10px',
+          }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {exp.session_title}
+              </div>
+              {exp.question_preview && (
+                <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {exp.question_preview}
+                </div>
+              )}
+              <div style={{ fontSize: '10.5px', color: 'var(--on-surface-variant)', marginTop: '4px' }}>
+                {new Date(exp.created_at).toLocaleString('vi-VN')}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+              {exp.export_links.docs && (
+                <a href={exp.export_links.docs} target="_blank" rel="noreferrer" style={{
+                  fontSize: '11px', fontWeight: 600, padding: '4px 10px',
+                  background: 'var(--primary-fixed)', color: 'var(--primary-container)',
+                  borderRadius: 'var(--radius-sm)', textDecoration: 'none',
+                  border: '1px solid var(--primary-fixed-dim)',
+                  transition: 'filter 0.15s',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.93)')}
+                  onMouseLeave={e => (e.currentTarget.style.filter = '')}
+                >
+                  Docs
+                </a>
+              )}
+              {exp.export_links.sheets && (
+                <a href={exp.export_links.sheets} target="_blank" rel="noreferrer" style={{
+                  fontSize: '11px', fontWeight: 600, padding: '4px 10px',
+                  background: 'var(--success-container)', color: 'var(--success)',
+                  borderRadius: 'var(--radius-sm)', textDecoration: 'none',
+                  border: '1px solid rgba(27,109,58,0.2)',
+                  transition: 'filter 0.15s',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.93)')}
+                  onMouseLeave={e => (e.currentTarget.style.filter = '')}
+                >
+                  Sheets
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -126,6 +235,9 @@ export default function GeneralOverviewPage() {
           </button>
         </Link>
       </div>
+
+      {/* ── Chat Exports Panel (full width) ── */}
+      <ChatExportsPanel />
 
       {/* ── 2-column grid ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>

@@ -624,6 +624,7 @@ export default function ChatWindow({
       <ScientificConsole
         selectedMessage={selectedMessage}
         onUpdateMessageLinks={handleUpdateMessageLinks}
+        allMessages={localMessages}
       />
     </div>
   </div>

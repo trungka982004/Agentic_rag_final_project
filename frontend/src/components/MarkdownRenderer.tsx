@@ -192,6 +192,12 @@ const components: Components = {
       </blockquote>
     );
   },
+
+  // Override pre to avoid wrapping everything in a prose styled pre tag,
+  // since our custom code component already provides its own <pre> wrapping.
+  pre({ children }) {
+    return <>{children}</>;
+  },
 };
 
 const MarkdownRenderer = memo(function MarkdownRenderer({

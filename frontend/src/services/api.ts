@@ -131,4 +131,21 @@ export function buildWsUrl(sessionId: string): string {
   return `${wsBase}/api/ws/chat/${sessionId}?token=${token}`;
 }
 
+// ============================================================
+// CHAT EXPORTS  (sync with Library / Academic dashboards)
+// ============================================================
+export interface ChatExport {
+  message_id: string;
+  session_id: string;
+  session_title: string;
+  question_preview: string;
+  export_links: { docs?: string; sheets?: string };
+  created_at: string;
+}
+
+export async function apiListChatExports(): Promise<ChatExport[]> {
+  const res = await api.get<ChatExport[]>('/api/chat-exports');
+  return res.data;
+}
+
 export default api;
