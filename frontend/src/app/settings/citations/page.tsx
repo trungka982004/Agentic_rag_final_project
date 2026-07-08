@@ -20,6 +20,13 @@ export default function ScientificCitationsPage() {
   const [search, setSearch] = useState('');
   const [format, setFormat] = useState('APA');
   const [selected, setSelected] = useState<number[]>([]);
+  
+  const [showToast, setShowToast] = useState('');
+
+  const showNotification = (msg: string) => {
+    setShowToast(msg);
+    setTimeout(() => setShowToast(''), 3000);
+  };
 
   const toggleSelect = (id: number) =>
     setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
@@ -30,12 +37,72 @@ export default function ScientificCitationsPage() {
     c.authors.toLowerCase().includes(search.toLowerCase())
   );
 
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = (exportFormat: string, items = filtered) => {
+    if (items.length === 0) {
+      showNotification('Không có dữ liệu để xuất');
+      return;
+    }
+
+    let content = '';
+    let filename = '';
+    const type = 'text/plain';
+
+    if (exportFormat === 'BibTeX') {
+      content = items.map(c => `@article{ref${c.id},
+  title={${c.title}},
+  author={${c.authors}},
+  journal={${c.journal}},
+  year={${c.year}}
+}`).join('\n\n');
+      filename = 'citations.bib';
+    } else if (exportFormat === 'RIS') {
+      content = items.map(c => `TY  - JOUR\nTI  - ${c.title}\nAU  - ${c.authors}\nJO  - ${c.journal}\nPY  - ${c.year}\nER  - `).join('\n\n');
+      filename = 'citations.ris';
+    } else {
+      content = items.map(c => `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`).join('\n');
+      filename = `citations_${exportFormat.toLowerCase()}.txt`;
+    }
+
+    downloadFile(content, filename, type);
+    showNotification(`Đã tải xuống ${filename}`);
+  };
+
   return (
     <div style={{
       maxWidth: '960px',
       margin: '0 auto',
       width: '100%',
+      position: 'relative',
     }}>
+      {/* Toast Notification */}
+      {showToast && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--success-container)', color: 'var(--success)',
+          padding: '12px 24px', borderRadius: 'var(--radius-md)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          display: 'flex', alignItems: 'center', gap: '8px', zIndex: 100,
+          fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-display)'
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {showToast}
+        </div>
+      )}
+
       {/* Header */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
@@ -66,7 +133,12 @@ export default function ScientificCitationsPage() {
               </button>
             ))}
           </div>
-          <button className="btn btn-primary" id="citations-export-btn" style={{ gap: '6px', fontSize: '13px' }}>
+          <button 
+            className="btn btn-primary" 
+            id="citations-export-btn" 
+            style={{ gap: '6px', fontSize: '13px' }}
+            onClick={() => handleExport(format, filtered)}
+          >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -99,7 +171,7 @@ export default function ScientificCitationsPage() {
               <th style={{ width: '36px', padding: '10px 12px', textAlign: 'center' }}>
                 <input type="checkbox"
                   onChange={e => setSelected(e.target.checked ? CITATIONS.map(c => c.id) : [])}
-                  checked={selected.length === CITATIONS.length}
+                  checked={selected.length === CITATIONS.length && CITATIONS.length > 0}
                 />
               </th>
               {['#', 'TÁC GIẢ', 'TIÊU ĐỀ', 'TẠP CHÍ', 'NĂM', 'ĐƯỢC TRÍCH DẪN', ''].map((h, i) => (
@@ -153,12 +225,27 @@ export default function ScientificCitationsPage() {
                 </td>
                 <td style={{ padding: '10px 8px' }}>
                   <div style={{ display: 'flex', gap: '2px' }}>
-                    <button className="btn-icon" title="Sao chép trích dẫn" id={`cite-copy-${c.id}`}>
+                    <button 
+                      className="btn-icon" 
+                      title="Sao chép trích dẫn" 
+                      id={`cite-copy-${c.id}`}
+                      onClick={() => {
+                        const text = `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`;
+                        navigator.clipboard?.writeText(text);
+                        showNotification(`Đã sao chép trích dẫn [${c.id}]`);
+                      }}
+                    >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
-                    <button className="btn-icon" title="Xoá" id={`cite-delete-${c.id}`} style={{ color: 'var(--error)' }}>
+                    <button 
+                      className="btn-icon" 
+                      title="Xoá" 
+                      id={`cite-delete-${c.id}`} 
+                      style={{ color: 'var(--error)' }}
+                      onClick={() => showNotification(`Đã xóa trích dẫn [${c.id}]`)}
+                    >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
@@ -184,10 +271,26 @@ export default function ScientificCitationsPage() {
         }}>
           <span>Đã chọn <strong>{selected.length}</strong> trích dẫn</span>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '5px 12px' }}>
+            <button 
+              className="btn btn-secondary" 
+              style={{ fontSize: '12px', padding: '5px 12px' }}
+              onClick={() => {
+                const selectedItems = CITATIONS.filter(c => selected.includes(c.id));
+                const text = selectedItems.map(c => `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`).join('\n');
+                navigator.clipboard?.writeText(text);
+                showNotification(`Đã sao chép ${selected.length} trích dẫn theo định dạng ${format}`);
+              }}
+            >
               Sao chép {format}
             </button>
-            <button className="btn btn-primary" style={{ fontSize: '12px', padding: '5px 12px' }}>
+            <button 
+              className="btn btn-primary" 
+              style={{ fontSize: '12px', padding: '5px 12px' }}
+              onClick={() => {
+                const selectedItems = CITATIONS.filter(c => selected.includes(c.id));
+                handleExport(format, selectedItems);
+              }}
+            >
               Xuất lựa chọn
             </button>
           </div>
@@ -209,6 +312,7 @@ export default function ScientificCitationsPage() {
               `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`
             ).join('\n');
             navigator.clipboard?.writeText(text);
+            showNotification(`Đã sao chép toàn bộ ${filtered.length} trích dẫn`);
           }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -220,6 +324,7 @@ export default function ScientificCitationsPage() {
           className="btn btn-secondary"
           id="citations-export-bibtex-btn"
           style={{ fontSize: '12.5px', gap: '6px' }}
+          onClick={() => handleExport('BibTeX')}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
@@ -230,6 +335,7 @@ export default function ScientificCitationsPage() {
           className="btn btn-secondary"
           id="citations-export-ris-btn"
           style={{ fontSize: '12.5px', gap: '6px' }}
+          onClick={() => handleExport('RIS')}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
@@ -240,6 +346,7 @@ export default function ScientificCitationsPage() {
           className="btn btn-primary"
           id="citations-save-btn"
           style={{ fontSize: '12.5px', gap: '6px', marginLeft: 'auto' }}
+          onClick={() => showNotification('Đã lưu danh mục vào hệ thống')}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round" />

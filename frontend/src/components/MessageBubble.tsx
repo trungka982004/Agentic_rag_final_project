@@ -135,6 +135,7 @@ export default function MessageBubble({ message, isSelected, onSelect }: Props) 
           </div>
         )}
 
+
         {/* Markdown content */}
         <div className="prose" style={{ fontSize: '14px' }}>
           <ReactMarkdown

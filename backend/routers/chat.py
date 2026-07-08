@@ -116,6 +116,7 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             # Prepare graph inputs
             inputs = {
                 "question": question,
+                "original_question": None,
                 "chat_history": chat_history,
                 "preferred_domain": preferred_domain,
                 "use_tavily": True,
@@ -164,6 +165,8 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             # Get final outputs
             generation = final_state.get("generation", "No answer generated.")
             export_links = final_state.get("export_links", {})
+            original_question = final_state.get("original_question")  # Non-None if query was corrected
+            corrected_question = final_state.get("question") if original_question else None
             flags = {
                 "expert_required": final_state.get("expert_required"),
                 "python_repl": final_state.get("python_repl"),
@@ -194,7 +197,10 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 "id": str(agent_msg.id),
                 "content": generation,
                 "export_links": export_links,
-                "flags": flags
+                "flags": flags,
+                # Correction metadata — frontend can use this for "Did you mean?" UI
+                "original_question": original_question,
+                "corrected_question": corrected_question,
             }):
                 break
 

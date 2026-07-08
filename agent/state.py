@@ -1,7 +1,8 @@
 from typing import TypedDict, List, Optional
 
 class GraphState(TypedDict):
-    question: str                # User query
+    question: str                # User query (may be normalized/corrected)
+    original_question: Optional[str] # Raw user input before normalization (None if unchanged)
     chat_history: List[dict]     # Conversation history: [{"user": "...", "agent": "..."}]
     preferred_domain: Optional[str] # Preferred domain sent by user
     domain: str                  # Classified domain

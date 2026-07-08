@@ -87,7 +87,7 @@ export function useWebSocket(sessionId: string | null) {
       case 'final_answer': {
         const finalContent = event.content ?? streamContentRef.current;
         let finalLinks = [...streamLinksRef.current];
-        const rawLinks = (event as any).export_links;
+        const rawLinks = event.export_links;
         if (rawLinks) {
           if (typeof rawLinks === 'object' && !Array.isArray(rawLinks)) {
             const list: ExportLink[] = [];
@@ -108,7 +108,30 @@ export function useWebSocket(sessionId: string | null) {
             finalLinks = list;
           }
         }
-        patchStreaming(finalContent, [...streamNodesRef.current], finalLinks, true, event.id);
+
+        // Forward correction metadata so MessageBubble can show "Did you mean?" hint
+        const correctionMeta = {
+          original_question: event.original_question ?? null,
+          corrected_question: event.corrected_question ?? null,
+        };
+
+        setMessages(prev => {
+          const copy = [...prev];
+          const last = copy[copy.length - 1];
+          if (last && 'isStreaming' in last && last.isStreaming) {
+            copy[copy.length - 1] = {
+              ...last,
+              id: event.id ?? last.id,
+              content: finalContent,
+              activeNodes: [...streamNodesRef.current],
+              exportLinks: finalLinks,
+              isStreaming: false,
+              ...correctionMeta,
+            } as DisplayMessage;
+          }
+          return copy;
+        });
+
         setIsThinking(false);
         resetStream();
         break;

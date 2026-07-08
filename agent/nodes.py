@@ -4,6 +4,7 @@ from tools.expert_search import get_expert_answer
 from tools.google_workspace import export_to_google_docs, export_to_google_sheets, upload_image_to_drive
 from tools.mermaid_renderer import render_mermaid_to_image
 from tools.formatter import format_agent_output
+from tools.query_normalizer import normalize_query
 import re
 import os
 
@@ -82,7 +83,15 @@ def router_node(state: GraphState):
     question = state["question"]
     chat_history = state.get("chat_history", [])
     preferred_domain = state.get("preferred_domain")
-    
+
+    # ── Step 0: Normalize / fix typos / infer intent from malformed Vietnamese ──
+    original_question = None
+    normalized_q, was_corrected = normalize_query(question, llm)
+    if was_corrected:
+        original_question = question      # Save raw input for UI feedback
+        question = normalized_q
+        logger.info(f"[Router] Query corrected: '{original_question}' → '{question}'")
+
     # Condense the question using conversation history
     question = condense_question(question, chat_history)
     
@@ -111,10 +120,11 @@ def router_node(state: GraphState):
     if not any(kw in question.lower() for kw in export_keywords):
         export_to_workspace = False
         
-    logger.info(f"[*] Decided Flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
+    logger.info(f"[*] Decided Flags → expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
         
     return {
         "question": question,
+        "original_question": original_question,
         "domain": domain, 
         "expert_required": expert_required, 
         "python_repl": python_repl,
@@ -226,14 +236,15 @@ def generate_node(state: GraphState):
     You are a professional technical assistant. Answer the [QUESTION] based on the provided [CONTEXT] and the past [CONVERSATION HISTORY] (if any).
     
     MANDATORY RULES:
-    1. BE CONCISE. Do not explain your plan or describe how you will do things. Just provide the final result.
+    1. BE DETAILED AND COMPREHENSIVE. You MUST provide a long, fully developed, and rich textual explanation answering the question in detail first. Do not just give a brief summary.
     2. NEVER mention "Google Forms", "API", or "environment details".
     3. If calculation results are present in [CONTEXT], use them as the primary answer.
     4. If a Python code execution result is present in [CONTEXT], focus on explaining the result and output. DO NOT repeat or rewrite the raw Python code block (```python ... ```) in your answer.
-    5. If the user asked for a diagram, you MUST provide BOTH a detailed, well-structured textual report/explanation answering the question first, and then append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. Do not output only the diagram.
-    6. Do not repeat information.
-    7. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
-    8. Return ONLY the final report content.
+    5. You MUST ALWAYS provide the detailed textual report first. If a diagram is requested or appropriate, append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. The Mermaid diagram MUST act ONLY as a visual summary of the detailed text you already provided above. Do not rely on the diagram to convey new information.
+    6. ABSOLUTELY NO TEXT OR EXPLANATION should be generated after the Mermaid code block. The Mermaid block MUST be the absolute final element of your response.
+    7. Do not repeat information redundantly, but ensure the topic is thoroughly explained.
+    8. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
+    9. Return ONLY the final report content.
  
     [CONVERSATION HISTORY]:
     {history}

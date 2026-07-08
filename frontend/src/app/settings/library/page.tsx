@@ -93,6 +93,13 @@ const TrashIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+const EyeIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+    <circle cx="12" cy="12" r="3"></circle>
+  </svg>
+);
+
 interface CustomDomain {
   id: string;
   label: string;
@@ -139,6 +146,14 @@ export default function DocumentLibraryPage() {
   }>({
     isOpen: false,
     type: 'single',
+  });
+
+  // Simulated PDF Viewer Modal
+  const [viewModal, setViewModal] = useState<{
+    isOpen: boolean;
+    docName?: string;
+  }>({
+    isOpen: false,
   });
 
   // Sync selectedDomain to localStorage
@@ -214,6 +229,24 @@ export default function DocumentLibraryPage() {
     return () => {
       window.removeEventListener('document-uploaded', fetchDocs);
     };
+  }, []);
+
+  // Simulate snippet flow from Settings
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const action = params.get('action');
+      const highlightDoc = params.get('highlight_doc');
+
+      if (action === 'add_snippet') {
+        setSuccessMsg('Chế độ tạo đoạn trích mới: Kéo chọn bất kỳ văn bản nào trong PDF để lưu thành đoạn trích.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (highlightDoc) {
+        setSuccessMsg(`Đang hiển thị ngữ cảnh đầy đủ cho tài liệu "${highlightDoc}". Các đoạn trích đã được highlight.`);
+        setSearch(highlightDoc.replace('.pdf', '')); // Filter list for simulated context
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
   }, []);
 
   // Clear checkboxes when filters or search change
@@ -1097,7 +1130,10 @@ export default function DocumentLibraryPage() {
                           />
                         </td>
                         <td style={{ padding: '10px 14px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div 
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                            onClick={() => setViewModal({ isOpen: true, docName: doc.name })}
+                          >
                             <div style={{
                               width: '24px', height: '24px',
                               background: 'var(--error-container)',
@@ -1108,7 +1144,7 @@ export default function DocumentLibraryPage() {
                               flexShrink: 0,
                               fontFamily: 'var(--font-label)',
                             }}>PDF</div>
-                            <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--on-surface)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '220px' }} title={doc.name}>
+                            <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '220px', textDecoration: 'underline', textUnderlineOffset: '2px' }} title={doc.name}>
                               {doc.name}
                             </span>
                           </div>
@@ -1147,26 +1183,48 @@ export default function DocumentLibraryPage() {
                           </span>
                         </td>
                         <td style={{ padding: '10px 14px' }}>
-                          <button 
-                            onClick={() => handleSingleDelete(doc.id, doc.name)}
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              color: 'var(--error)',
-                              cursor: 'pointer',
-                              padding: '4px',
-                              borderRadius: '4px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              transition: 'background 0.15s',
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'var(--error-container)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                            title="Xóa tài liệu"
-                          >
-                            <TrashIcon size={14} />
-                          </button>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <button 
+                              onClick={() => setViewModal({ isOpen: true, docName: doc.name })}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--primary)',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                borderRadius: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'background 0.15s',
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'var(--primary-container)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                              title="Xem tài liệu"
+                            >
+                              <EyeIcon size={14} />
+                            </button>
+                            <button 
+                              onClick={() => handleSingleDelete(doc.id, doc.name)}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--error)',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                borderRadius: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'background 0.15s',
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'var(--error-container)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                              title="Xóa tài liệu"
+                            >
+                              <TrashIcon size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1291,6 +1349,162 @@ export default function DocumentLibraryPage() {
               >
                 Xác nhận xóa
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Simulated PDF Viewer Modal */}
+      {viewModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          animation: 'fadeIn 0.2s ease',
+        }}>
+          <div style={{
+            background: 'var(--surface-container-lowest)',
+            border: '1px solid var(--outline-variant)',
+            borderRadius: 'var(--radius-lg)',
+            width: '900px',
+            maxWidth: '95%',
+            height: '80vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: 'var(--shadow-4)',
+            animation: 'scaleIn 0.2s ease',
+            overflow: 'hidden',
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '16px 24px',
+              borderBottom: '1px solid var(--outline-variant)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: 'var(--surface-container-low)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '28px', height: '28px',
+                  background: 'var(--error-container)',
+                  borderRadius: '4px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '10px', fontWeight: 700,
+                  color: 'var(--error)',
+                  fontFamily: 'var(--font-label)',
+                }}>PDF</div>
+                <h3 style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  color: 'var(--on-surface)',
+                  margin: 0,
+                }}>
+                  {viewModal.docName}
+                </h3>
+              </div>
+              <button
+                onClick={() => setViewModal({ isOpen: false })}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  lineHeight: 1,
+                  color: 'var(--on-surface-variant)',
+                  cursor: 'pointer',
+                }}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Modal Body: Fake PDF Content & Selection Simulation */}
+            <div style={{
+              flex: 1,
+              padding: '32px 64px',
+              overflowY: 'auto',
+              background: '#f8f9fa',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px',
+              fontFamily: 'var(--font-serif)',
+              color: '#333',
+              lineHeight: 1.8,
+              fontSize: '15px'
+            }}>
+              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', marginBottom: '8px' }}>Mô phỏng nội dung tài liệu</h1>
+                <p style={{ color: '#666', fontStyle: 'italic' }}>Kéo chọn văn bản dưới đây để tạo đoạn trích (Snippet)</p>
+              </div>
+
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+
+              <div style={{
+                position: 'relative',
+                background: 'rgba(255, 235, 59, 0.3)',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                borderLeft: '3px solid var(--primary)',
+                cursor: 'text'
+              }}>
+                <strong>Đoạn văn bản được highlight (Mô phỏng thao tác chọn chuột của người dùng).</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                
+                {/* Simulated Context Menu for Snippet Saving */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-40px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'var(--surface-container-highest)',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  boxShadow: 'var(--shadow-2)',
+                  display: 'flex',
+                  gap: '8px',
+                  zIndex: 10,
+                }}>
+                  <button 
+                    onClick={() => {
+                      setSuccessMsg('Đã lưu đoạn trích thành công vào danh sách "Đoạn trích đã lưu"!');
+                      setViewModal({ isOpen: false });
+                    }}
+                    style={{
+                      background: 'var(--primary)',
+                      color: 'var(--on-primary)',
+                      border: 'none',
+                      padding: '4px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round" />
+                      <polyline points="17 21 17 13 7 13 7 21" />
+                      <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                    Lưu đoạn trích
+                  </button>
+                </div>
+              </div>
+
+              <p>
+                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+              </p>
             </div>
           </div>
         </div>

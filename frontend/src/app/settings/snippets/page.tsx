@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Stitch screen: "Đoạn trích đã lưu — Saved Snippets"
 // Card grid with: quoted text (reading-serif), source, tags, "Xem ngữ cảnh đầy đủ" link, copy/delete actions
@@ -29,8 +30,16 @@ const SAMPLE_SNIPPETS = [
 ];
 
 export default function SavedSnippetsPage() {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('Tất cả');
+
+  const [showToast, setShowToast] = useState('');
+
+  const showNotification = (msg: string) => {
+    setShowToast(msg);
+    setTimeout(() => setShowToast(''), 3000);
+  };
 
   const filtered = SAMPLE_SNIPPETS.filter(s =>
     activeFilter === 'Tất cả' || s.tags.includes(activeFilter)
@@ -44,7 +53,25 @@ export default function SavedSnippetsPage() {
       maxWidth: '960px',
       margin: '0 auto',
       width: '100%',
+      position: 'relative'
     }}>
+      {/* Toast Notification */}
+      {showToast && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--success-container)', color: 'var(--success)',
+          padding: '12px 24px', borderRadius: 'var(--radius-md)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          display: 'flex', alignItems: 'center', gap: '8px', zIndex: 100,
+          fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-display)'
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {showToast}
+        </div>
+      )}
+
       {/* Header */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
@@ -58,7 +85,12 @@ export default function SavedSnippetsPage() {
             Quản lý và tổ chức các đoạn trích quan trọng từ tài liệu nghiên cứu của bạn.
           </p>
         </div>
-        <button className="btn btn-secondary" id="snippets-export-btn" style={{ gap: '6px' }}>
+        <button 
+          className="btn btn-secondary" 
+          id="snippets-export-btn" 
+          style={{ gap: '6px' }}
+          onClick={() => showNotification('Đã xuất toàn bộ dữ liệu đoạn trích thành công')}
+        >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -107,13 +139,26 @@ export default function SavedSnippetsPage() {
           <div key={snippet.id} className="card">
             {/* Actions */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px', marginBottom: '10px' }}>
-              <button className="btn-icon" title="Sao chép" id={`snippet-copy-${snippet.id}`}>
+              <button 
+                className="btn-icon" 
+                title="Sao chép" 
+                id={`snippet-copy-${snippet.id}`}
+                onClick={() => {
+                  navigator.clipboard?.writeText(snippet.quote);
+                  showNotification('Đã sao chép nội dung đoạn trích');
+                }}
+              >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
-              <button className="btn-icon" title="Xoá" id={`snippet-delete-${snippet.id}`}
-                style={{ color: 'var(--error)' }}>
+              <button 
+                className="btn-icon" 
+                title="Xoá" 
+                id={`snippet-delete-${snippet.id}`}
+                style={{ color: 'var(--error)' }}
+                onClick={() => showNotification('Đã xóa đoạn trích khỏi thư viện')}
+              >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -163,14 +208,17 @@ export default function SavedSnippetsPage() {
                   <span key={tag} className="chip">{tag}</span>
                 ))}
               </div>
-              <button style={{
-                background: 'none', border: 'none',
-                color: 'var(--primary-container)',
-                fontSize: '12px', cursor: 'pointer',
-                fontFamily: 'var(--font-label)', fontWeight: 500,
-                textDecoration: 'underline', textUnderlineOffset: '2px',
-                whiteSpace: 'nowrap',
-              }}>
+              <button 
+                style={{
+                  background: 'none', border: 'none',
+                  color: 'var(--primary-container)',
+                  fontSize: '12px', cursor: 'pointer',
+                  fontFamily: 'var(--font-label)', fontWeight: 500,
+                  textDecoration: 'underline', textUnderlineOffset: '2px',
+                  whiteSpace: 'nowrap',
+                }}
+                onClick={() => router.push(`/settings/library?highlight_doc=${encodeURIComponent(snippet.source)}`)}
+              >
                 Xem ngữ cảnh đầy đủ ›
               </button>
             </div>
@@ -214,7 +262,11 @@ export default function SavedSnippetsPage() {
               Bạn có thể kéo và chọn văn bản trong quá trình đọc tài liệu để thêm tiếp vào đây.
             </div>
           </div>
-          <button className="btn btn-primary" id="snippets-open-library-btn">
+          <button 
+            className="btn btn-primary" 
+            id="snippets-open-library-btn"
+            onClick={() => router.push('/settings/library?action=add_snippet')}
+          >
             Mở Thư viện tài liệu
           </button>
         </div>
