@@ -76,7 +76,7 @@ def grade_generation_v_documents_and_question(state: GraphState):
         print(f"[*] Selected-doc mode: trusting generation without LLM grader.")
         return "useful"
 
-    if retry_count >= 1:
+    if retry_count > max_retries:
         print(f"[*] retry_count={retry_count}: accepting generation to avoid runaway retries.")
         return "useful"
 

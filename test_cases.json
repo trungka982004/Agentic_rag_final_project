@@ -1,752 +1,1530 @@
 [
     {
-        "id": 1,
-        "domain": "it",
-        "question": "How does the system or methodology of 'An Analysis of Attention Mechanisms The Case of' enhance performance in IT applications?"
-    },
-    {
-        "id": 2,
-        "domain": "it",
-        "question": "What are the hardware design methodologies and challenges described in 'Applications of Natural Language Processing in Software Engineering A Systematic Mapping Study'?"
-    },
-    {
-        "id": 3,
-        "domain": "it",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'A Comprehensive Survey on Word Representation Models From Classical to State-Of-The-Art Word Representation Language Models'?"
-    },
-    {
-        "id": 4,
-        "domain": "it",
-        "question": "How is reinforcement learning utilized in the context of 'A Real-Time Energy Management Strategy for Fuel Cell Hybrid Electric Vehicles Based on Deep Reinforcement Learning'?"
-    },
-    {
-        "id": 5,
-        "domain": "it",
-        "question": "How does bidirectional pre-training improve transformer-based language representations?"
-    },
-    {
-        "id": 6,
-        "domain": "it",
-        "question": "How does the network or graph structure in 'Bridging the Gap Between Spectral and Spatial Domains in Graph Neural Networks' optimize overall performance?"
-    },
-    {
-        "id": 7,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Comparative Evaluation of Embedding Representations for Financial News Sentiment Analysis' enhance performance in IT applications?"
-    },
-    {
-        "id": 8,
-        "domain": "it",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Comprehensive Survey on Graph Neural Networks'?"
-    },
-    {
-        "id": 9,
-        "domain": "it",
-        "question": "How is reinforcement learning utilized in the context of 'Continuous Control with Deep Reinforcement Learning'?"
-    },
-    {
-        "id": 10,
-        "domain": "it",
-        "question": "How does the network or graph structure in 'Convolutional Neural Networks Based Object' optimize overall performance?"
-    },
-    {
-        "id": 11,
-        "domain": "it",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'DEEPREINFORCEMENT LEARNING ANOVERVIEW Yuxi Li (yuxili@gmail.com)'?"
-    },
-    {
-        "id": 12,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Deep Learning and Machine Learning Object Detection' enhance performance in IT applications?"
-    },
-    {
-        "id": 13,
-        "domain": "it",
-        "question": "Explain the architecture of Deep Residual Learning (ResNet) and how it addresses the vanishing gradient problem."
-    },
-    {
-        "id": 14,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Doubly Attentive Decoder for Multi modal Neural Machine Translation' enhance performance in IT applications?"
-    },
-    {
-        "id": 15,
-        "domain": "it",
-        "question": "How does the proposed Effective Approaches to Attention based Neural Machine Translation improve performance and efficiency?"
-    },
-    {
-        "id": 16,
-        "domain": "it",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Evaluating Word Embeddings for Sentiment Analysis in E-Commerce A Case Study on MercadoLibre Reviews'?"
-    },
-    {
-        "id": 17,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Fast YOLO A Fast You Only Look Once System for Real time Embedded Object Detection in Video' enhance performance in IT applications?"
-    },
-    {
-        "id": 18,
-        "domain": "it",
-        "question": "How do Generative Adversarial Nets (GANs) utilize a minimax game to train generative models?"
-    },
-    {
-        "id": 19,
-        "domain": "it",
-        "question": "How does the network or graph structure in 'Graph Networks with Spectral Message Passing Kimberly L. Stachenfeld' optimize overall performance?"
-    },
-    {
-        "id": 20,
-        "domain": "it",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Graph neural networks A review of methods and applications'?"
-    },
-    {
-        "id": 21,
-        "domain": "it",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Image Segmentation with transformers An Overview, Challenges and Future'?"
-    },
-    {
-        "id": 22,
-        "domain": "it",
-        "question": "How is the system improving the Accuracy of Pre-trained Word Embeddings for Sentiment Analysis in this paper?"
-    },
-    {
-        "id": 23,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Interactive Attention for Neural Machine Translation' enhance performance in IT applications?"
-    },
-    {
-        "id": 24,
-        "domain": "it",
-        "question": "What is MapReduce and how is it used for large-scale data processing on distributed clusters?"
-    },
-    {
-        "id": 25,
-        "domain": "it",
-        "question": "What are the hardware design methodologies and challenges described in 'MaskPlus Improving Mask Generation for Instance Segmentation Shichao Xu'?"
-    },
-    {
-        "id": 26,
-        "domain": "it",
-        "question": "What are the hardware design methodologies and challenges described in 'Mask R-CNN Kaiming He Georgia Gkioxari Piotr Doll ´ar Ross Girshick'?"
-    },
-    {
-        "id": 27,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Parallel Attention Mechanisms in Neural Machine' enhance performance in IT applications?"
-    },
-    {
-        "id": 28,
-        "domain": "it",
-        "question": "What is the Transformer architecture and why is the attention mechanism crucial for sequence-to-sequence tasks?"
-    },
-    {
-        "id": 29,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Recent Advances in Deep Learning for Object Detection' enhance performance in IT applications?"
-    },
-    {
-        "id": 30,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Sentiment Analysis by Joint Learning of Word Embeddings and Classifier Prathusha Kameswar Sarma and Bill Sethares' enhance performance in IT applications?"
-    },
-    {
-        "id": 31,
-        "domain": "it",
-        "question": "How does the network or graph structure in 'Spectral GNN via Two-dimensional (2-D) Graph Convolution' optimize overall performance?"
-    },
-    {
-        "id": 32,
-        "domain": "it",
-        "question": "What are the hardware design methodologies and challenges described in 'Text Classification based on Multiple Block Convolutional Highways'?"
-    },
-    {
-        "id": 33,
-        "domain": "it",
-        "question": "How does the proposed Definitive Guide to Policy Gradients in Deep Reinforcement Learning Theory, Algorithms and Implementations improve performance and efficiency?"
-    },
-    {
-        "id": 34,
-        "domain": "it",
-        "question": "How does the system or methodology of 'Tree to Sequence Attentional Neural Machine Translation' enhance performance in IT applications?"
-    },
-    {
-        "id": 35,
-        "domain": "it",
-        "question": "What are the hardware design methodologies and challenges described in 'U-Net Convolutional Networks for Biomedical Image Segmentation'?"
-    },
-    {
-        "id": 36,
-        "domain": "it",
-        "question": "How does YOLOv10 achieve real-time end-to-end object detection without relying on non-maximum suppression?"
-    },
-    {
-        "id": 37,
-        "domain": "it",
-        "question": "What are the key architectural enhancements introduced in YOLOv11 for advanced real-time object detection?"
-    },
-    {
-        "id": 38,
-        "domain": "it",
-        "question": "Explain the unified, real-time object detection paradigm introduced by the original YOLO model."
-    },
-    {
-        "id": 39,
-        "domain": "math",
-        "question": "What are the mathematical properties and algebraic problems related to '(Deep) Learning about Elliptic Curve'?"
-    },
-    {
-        "id": 40,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Abstract Sheaf Theory'?"
-    },
-    {
-        "id": 41,
-        "domain": "math",
-        "question": "How is reinforcement learning utilized in the context of 'Actor Critic Reinforcement Learning'?"
-    },
-    {
-        "id": 42,
-        "domain": "math",
-        "question": "What are the hardware design methodologies and challenges described in 'ALMOST PRIME VALUES OF THE ORDER OF ELLIPTIC'?"
-    },
-    {
-        "id": 43,
-        "domain": "math",
-        "question": "What are the mathematical properties and algebraic problems related to 'ANALYTIC PROBLEMS FOR ELLIPTIC CURVES'?"
-    },
-    {
-        "id": 44,
-        "domain": "math",
-        "question": "What are the fundamental principles of information theory established in Shannon's 'A Mathematical Theory of Communication'?"
-    },
-    {
-        "id": 45,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'A PRIMER ON SHEAF THEORY AND SHEAF COHOMOLOGY SAAD SLAOUI'?"
-    },
-    {
-        "id": 46,
-        "domain": "math",
-        "question": "How does the proposed SPECTRAL ELEMENT METHOD FOR MESHES WITH SKINNY ELEMENTS improve performance and efficiency?"
-    },
-    {
-        "id": 47,
-        "domain": "math",
-        "question": "What are the hardware design methodologies and challenges described in 'Categorification of sheaf theory'?"
-    },
-    {
-        "id": 48,
-        "domain": "math",
-        "question": "How is reinforcement learning utilized in the context of 'Combining Policy Gradient and Q-Learning'?"
-    },
-    {
-        "id": 49,
-        "domain": "math",
-        "question": "How is the process of CONSTRUCTING ELLIPTIC CURVES achieved in this research?"
-    },
-    {
-        "id": 50,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'CUT AND PASTE INVARIANTS OF MODULI SPACES OF'?"
-    },
-    {
-        "id": 51,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'DEFORMATION OF PAIRS OF P3 AND HYPERSURFACES'?"
-    },
-    {
-        "id": 52,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Divide and Pair Faster subgroup membership'?"
-    },
-    {
-        "id": 53,
-        "domain": "math",
-        "question": "How does the proposed Efficient Q-Learning and Actor-Critic Methods for Robust Average Reward Reinforcement Learning improve performance and efficiency?"
-    },
-    {
-        "id": 54,
-        "domain": "math",
-        "question": "What are the mathematical properties and algebraic problems related to 'ELLIPTIC CURVES OF UNBOUNDED RANK AND CHEBYSHEV'S'?"
-    },
-    {
-        "id": 55,
-        "domain": "math",
-        "question": "How does the proposed Fast global spectral methods for three-dimensional partial diﬀerential equations improve performance and efficiency?"
-    },
-    {
-        "id": 56,
-        "domain": "math",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Field Theoretic Aspects of Condensed Matter Physics An Overview'?"
-    },
-    {
-        "id": 57,
-        "domain": "math",
-        "question": "How does the proposed Finite Expression Method for Solving High-Dimensional Partial Differential Equations improve performance and efficiency?"
-    },
-    {
-        "id": 58,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'GENERALIZED ESTERMANN PROBLEM FOR NON INTEGER POWERS WITH'?"
-    },
-    {
-        "id": 59,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Going Beyond the Data as the Patching (Sheaving) of Local Knowledge'?"
-    },
-    {
-        "id": 60,
-        "domain": "math",
-        "question": "How does the proposed Grothendieck Topologies and Sheaf Theory for Data and Graphs An Approach Through Cech Closure Spaces improve performance and efficiency?"
-    },
-    {
-        "id": 61,
-        "domain": "math",
-        "question": "What are the hardware design methodologies and challenges described in 'Homological Support of Big Objects in Tensor-Triangulated Categories'?"
-    },
-    {
-        "id": 62,
-        "domain": "math",
-        "question": "How does the proposed Numerical Methods for Solving Partial Differential Equations improve performance and efficiency?"
-    },
-    {
-        "id": 63,
-        "domain": "math",
-        "question": "What are the primary findings and theoretical analysis presented in 'On Sheaf Cohomology and Natural Expansions'?"
-    },
-    {
-        "id": 64,
-        "domain": "math",
-        "question": "What are the primary findings and theoretical analysis presented in 'ON THE AUTOMORPHISMS'?"
-    },
-    {
-        "id": 65,
-        "domain": "math",
-        "question": "How does Bernhard Riemann's work establish the relationship between prime distribution and the zeros of the zeta function?"
-    },
-    {
-        "id": 66,
-        "domain": "math",
-        "question": "How does the proposed Partial Differential Equations in the Age of Machine Learning A Critical Synthesis of Classical, Machine Learning, and Hybrid Methods improve performance and efficiency?"
-    },
-    {
-        "id": 67,
-        "domain": "math",
-        "question": "What is the Riemann Hypothesis and why is it considered one of the Millennium Prize Problems in mathematics?"
-    },
-    {
-        "id": 68,
-        "domain": "math",
-        "question": "What are the mathematical properties and algebraic problems related to 'PSEUDOPRIME REDUCTIONS OF ELLIPTIC CURVES'?"
-    },
-    {
-        "id": 69,
-        "domain": "math",
-        "question": "What are the hardware design methodologies and challenges described in 'SHEAF COHOMOLOGY AND ALGEBRAIC DE RHAM THEOREM'?"
-    },
-    {
-        "id": 70,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Sheaf theory from deep geometry to deep learning Anton Ayzenberg German Magai'?"
-    },
-    {
-        "id": 71,
-        "domain": "math",
-        "question": "How does the network or graph structure in 'Spectral-based Graph Convolutional Network for Directed Graphs' optimize overall performance?"
-    },
-    {
-        "id": 72,
-        "domain": "math",
-        "question": "How is reinforcement learning utilized in the context of 'Supervised Reinforcement Learning with Recurrent Neural Network for Dynamic Treatment Recommendation'?"
-    },
-    {
-        "id": 73,
-        "domain": "math",
-        "question": "How does the proposed AUTOMATIC SOLUTION OF PARTIAL DIFFERENTIAL EQUATIONS USING A GLOBAL SPECTRAL METHOD improve performance and efficiency?"
-    },
-    {
-        "id": 74,
-        "domain": "math",
-        "question": "Explain the historical context, current state, and mathematical significance of the Riemann Hypothesis."
-    },
-    {
-        "id": 75,
-        "domain": "math",
-        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'WEIGHTED LINEARIZATION OF VECTOR FIELDS'?"
-    },
-    {
-        "id": 76,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'Anomalous Transport and Explicit Symmetry'?"
-    },
-    {
-        "id": 77,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'A Simple Symmetry as a Guide Towards New Physics'?"
-    },
-    {
-        "id": 78,
-        "domain": "physics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?"
-    },
-    {
-        "id": 79,
-        "domain": "physics",
-        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Deep Reinforcement Learning for Intelligent Transportation Systems A Survey'?"
-    },
-    {
-        "id": 80,
-        "domain": "physics",
-        "question": "What are the physical principles, experimental observations, and models described in 'Einstein Fields A Neural Perspective To Computational General Relativity'?"
-    },
-    {
-        "id": 81,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'Energy Dependent Polarization Angle Variability as a Robust Diagnostic for Blazar Flaring'?"
-    },
-    {
-        "id": 82,
-        "domain": "physics",
-        "question": "What are the physical principles, experimental observations, and models described in 'EUROPEAN ORGANISATION FOR NUCLEAR RESEARCH (CERN)'?"
-    },
-    {
-        "id": 83,
-        "domain": "physics",
-        "question": "What are the physical principles, experimental observations, and models described in 'Flavour changing charged current decays at LHCb'?"
-    },
-    {
-        "id": 84,
-        "domain": "physics",
-        "question": "What are the astrophysical implications and general relativity aspects of 'Gravitational Lensing by Black Holes in Einstein Quartic Gravity H. Khodabakhshi1;2;3, Robert B. Mann3;4'?"
-    },
-    {
-        "id": 85,
-        "domain": "physics",
-        "question": "What are the astrophysical implications and general relativity aspects of 'Gravitational lensing by Einstein-Born-Infeld black holes'?"
-    },
-    {
-        "id": 86,
-        "domain": "physics",
-        "question": "How does the research on 'Integrated Photonics for Quantum Communications and Metrology' contribute to quantum information or technology?"
-    },
-    {
-        "id": 87,
-        "domain": "physics",
-        "question": "How does the research on 'Large quantum dot energy level shifts in anomalous photon assisted tunneling' contribute to quantum information or technology?"
-    },
-    {
-        "id": 88,
-        "domain": "physics",
-        "question": "What are cosmological perturbations and what role do they play in the large-scale structure of the universe?"
-    },
-    {
-        "id": 89,
-        "domain": "physics",
-        "question": "What are the astrophysical implications and general relativity aspects of 'Learning Null Geodesics for Gravitational Lensing Rendering in General Relativity'?"
-    },
-    {
-        "id": 90,
-        "domain": "physics",
-        "question": "What are the astrophysical implications and general relativity aspects of 'Master field equations for spherically symmetric gravitational fields beyond general relativity'?"
-    },
-    {
-        "id": 91,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'Neutrino Physics at the LHC Status and Prospects'?"
-    },
-    {
-        "id": 92,
-        "domain": "physics",
-        "question": "What are gravitational waves and what was the significance of the first binary black hole merger observation by LIGO?"
-    },
-    {
-        "id": 93,
-        "domain": "physics",
-        "question": "What are the primary findings and theoretical analysis presented in 'ON ENUMERATION OF b ANGULATIONS OF SURFACES FROM AN'?"
-    },
-    {
-        "id": 94,
-        "domain": "physics",
-        "question": "What are the primary findings and theoretical analysis presented in 'On the Geometry of Cotton Gravity'?"
-    },
-    {
-        "id": 95,
-        "domain": "physics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'OPTICAL COMMUNICATION CIRCUTS'?"
-    },
-    {
-        "id": 96,
-        "domain": "physics",
-        "question": "How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?"
-    },
-    {
-        "id": 97,
-        "domain": "physics",
-        "question": "What are the key results and methodology used in the 'Quantitative comparison of heat flow, guarded-heater and AC Harman methods for thermoelectric module efficiency'?"
-    },
-    {
-        "id": 98,
-        "domain": "physics",
-        "question": "How does the proposed Quantum Graph Convolutional Networks Based on Spectral Methods improve performance and efficiency?"
-    },
-    {
-        "id": 99,
-        "domain": "physics",
-        "question": "What are the core mathematical and physical principles underlying Quantum Information Theory?"
-    },
-    {
-        "id": 100,
-        "domain": "physics",
-        "question": "How does the research on 'Quantum Probe to the Higher Dimensional Yang Mills' contribute to quantum information or technology?"
-    },
-    {
-        "id": 101,
-        "domain": "physics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Research on Optical Communication Technologies and'?"
-    },
-    {
-        "id": 102,
-        "domain": "physics",
-        "question": "How does the research on 'Scalable Measurement-Based Quantum Simulation Patterns for Benchmarking' contribute to quantum information or technology?"
-    },
-    {
-        "id": 103,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'Simulating dynamics of RLC circuits with a'?"
-    },
-    {
-        "id": 104,
-        "domain": "physics",
-        "question": "What are the physical principles, experimental observations, and models described in 'Solid inflation'?"
-    },
-    {
-        "id": 105,
-        "domain": "physics",
-        "question": "What are the astrophysical implications and general relativity aspects of 'Spacetime Perspective of Gravitational Lensing in Perturbed Cosmologies'?"
-    },
-    {
-        "id": 106,
-        "domain": "physics",
-        "question": "How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?"
-    },
-    {
-        "id": 107,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'Thermal and geometric normal modes of spectral fluctuations in heavy ion collisions'?"
-    },
-    {
-        "id": 108,
-        "domain": "physics",
-        "question": "Describe the historical origins and physical experiments that led to the birth of quantum mechanics."
-    },
-    {
-        "id": 109,
-        "domain": "physics",
-        "question": "What are the astrophysical implications and general relativity aspects of 'The particle gravity frontier'?"
-    },
-    {
-        "id": 110,
-        "domain": "physics",
-        "question": "What are the physical principles, limitations, and future outlook of optical computing as described by Peter McMahon?"
-    },
-    {
-        "id": 111,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'The Standard Model of Particle Physics. Neutrino Oscillations'?"
-    },
-    {
-        "id": 112,
-        "domain": "physics",
-        "question": "What are the hardware design methodologies and challenges described in 'Topical Collection Testing the Kerr spacetime with'?"
-    },
-    {
-        "id": 113,
-        "domain": "physics",
-        "question": "What are the physical principles, experimental observations, and models described in 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?"
-    },
-    {
-        "id": 114,
-        "domain": "electronics",
-        "question": "What are the key design methodologies for an Advanced Integrated Audio and Power Conversion IC?"
-    },
-    {
-        "id": 115,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'Analog Front-End ASIC for Compact Silicon Photomultiplier Sensor Interfaces in Mixed-Signal Systems'?"
-    },
-    {
-        "id": 116,
-        "domain": "electronics",
-        "question": "What are the key results and methodology used in the 'Analysis and Application of Analog Electronic'?"
-    },
-    {
-        "id": 117,
-        "domain": "electronics",
-        "question": "Explain the design, operation, and advantages of the LIF (Leaky Integrate-and-Fire) neuronal network model."
-    },
-    {
-        "id": 118,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'An Energy-Efficient ASIC for Wireless Body'?"
-    },
-    {
-        "id": 119,
-        "domain": "electronics",
-        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'arXiv2407.09166v1 [eess.SP] 12 Jul 202468-Channel Highly-Integrated Neural Signal Processing PSoC with On-Chip Feature'?"
-    },
-    {
-        "id": 120,
-        "domain": "electronics",
-        "question": "How does a high-performance Lock-In Amplifier (LIA) based interface benefit battery-powered systems?"
-    },
-    {
-        "id": 121,
-        "domain": "electronics",
-        "question": "What is neuromorphic computing and how does it mimic the structure and function of the human brain?"
-    },
-    {
-        "id": 122,
-        "domain": "electronics",
-        "question": "What are the frontiers of high-performance design regimes beyond sole parametric optimization in electronics?"
-    },
-    {
-        "id": 123,
-        "domain": "electronics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?"
-    },
-    {
-        "id": 124,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'CSI Transactions on ICT manuscript No. (will be inserted by the editor)'?"
-    },
-    {
-        "id": 125,
-        "domain": "electronics",
-        "question": "How is the process of Design and Comparative analysis of a Two Stage achieved in this research?"
-    },
-    {
-        "id": 126,
-        "domain": "electronics",
-        "question": "How is the process of Design of Analog CMOS Circuits for Bateryless achieved in this research?"
-    },
-    {
-        "id": 127,
-        "domain": "electronics",
-        "question": "How is the process of Design of a fault free Inverter Circuit using Minimum achieved in this research?"
-    },
-    {
-        "id": 128,
-        "domain": "electronics",
-        "question": "How is the system enabling AI-Native Mobility in 6G A Real-World Dataset for Handover, Beam Management, and Timing Advance in this paper?"
-    },
-    {
-        "id": 129,
-        "domain": "electronics",
-        "question": "How does the proposed General and concise operator approach to the dyadic Green's function of layered media improve performance and efficiency?"
-    },
-    {
-        "id": 130,
-        "domain": "electronics",
-        "question": "How does the proposed Implantable Medical Electronic Devices Sensing Mechanisms, Communication Methods, and the Biodegradable Future improve performance and efficiency?"
-    },
-    {
-        "id": 131,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'Integrated Circuit Audio Amplifier Design'?"
-    },
-    {
-        "id": 132,
-        "domain": "electronics",
-        "question": "How are Learnable Quantum Efficiency Filters used to improve accuracy in urban hyperspectral segmentation?"
-    },
-    {
-        "id": 133,
-        "domain": "electronics",
-        "question": "What are the primary challenges and design approaches for developing low-power neuromorphic hardware?"
-    },
-    {
-        "id": 134,
-        "domain": "electronics",
-        "question": "How does the network or graph structure in 'Massive MIMO CSI Feedback with Spiking Neural Networks' optimize overall performance?"
-    },
-    {
-        "id": 135,
-        "domain": "electronics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Optical Communication Circuits'?"
-    },
-    {
-        "id": 136,
-        "domain": "electronics",
-        "question": "How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?"
-    },
-    {
-        "id": 137,
-        "domain": "electronics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Photonic and Optoelectronic Devices and Systems, Second Edition'?"
-    },
-    {
-        "id": 138,
-        "domain": "electronics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Photonic Integrated Circuits for Communication Systems'?"
-    },
-    {
-        "id": 139,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'Power Electronics Revolutionized A Comprehensive Analysis'?"
-    },
-    {
-        "id": 140,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'Power Management IC for a Dual Input Triple Output'?"
-    },
-    {
-        "id": 141,
-        "domain": "electronics",
-        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Real Time Minimum Energy Operating Point'?"
-    },
-    {
-        "id": 142,
-        "domain": "electronics",
-        "question": "What are the operation principles and design characteristics of the proposed semiconductor device?"
-    },
-    {
-        "id": 143,
-        "domain": "electronics",
-        "question": "What are the hardware design methodologies and challenges described in 'Signal Processing Semiconductors and Devices'?"
-    },
-    {
-        "id": 144,
-        "domain": "electronics",
-        "question": "Explain the role of optical communication and signal transmission discussed in 'Silicon photonic devices and integrated circuits'?"
-    },
-    {
-        "id": 145,
-        "domain": "electronics",
-        "question": "How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?"
-    },
-    {
-        "id": 146,
-        "domain": "electronics",
-        "question": "What are the physical principles, limitations, and future outlook of optical computing as described by Peter McMahon?"
-    },
-    {
-        "id": 147,
-        "domain": "electronics",
-        "question": "What advancements are proposed in the paper 'Towards Closed-loop Stability of Nonlinear Receding Horizon Games'?"
-    },
-    {
-        "id": 148,
-        "domain": "electronics",
-        "question": "How is reinforcement learning utilized in the context of 'Traffic aware Multi Agent Reinforcement Learning based Distributed Routing for Low Earth Orbit Satel'?"
-    },
-    {
-        "id": 149,
-        "domain": "electronics",
-        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?"
-    },
-    {
-        "id": 150,
-        "domain": "electronics",
-        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Ultrafast Time Compressive CMOS Image Sensors Based on Multitap Charge Modulators for Filming Light'?"
+        "test_case_id": "TC_SIM_001",
+        "type": "Simple RAG",
+        "question": "How does the system or methodology of 'An Analysis of Attention Mechanisms The Case of' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, (2015), in order to improve the performance of\nNMT. However, attention mechanisms are differ-\nent from the traditional word alignment in SMT\nwhich learns the hard alignment between source\nand target tokens. Attention mechanisms learn to\nextract features from all the source tokens when\ngenerating ...",
+        "expected_source_document": [
+            "An_Analysis_of_Attention_Mechanisms_The_Case_of.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file An_Analysis_of_Attention_Mechanisms_The_Case_of.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_002",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'Applications of Natural Language Processing in Software Engineering A Systematic Mapping Study'?",
+        "ground_truth": "Based on academic resources, 1 \nAbstract \nApplications of Natural Language \nProcessing (NLP) are plentiful, from \nsentiment analysis to text classification. Practitioners rely on  static word \nembeddings (e.g. Word2V ec or GloV e) or \nstatic word representation from contextual \nmodels (e.g.",
+        "expected_source_document": [
+            "Applications_of_Natural_Language_Processing_in_Software_Engineering_A_Systematic_Mapping_Study.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Applications_of_Natural_Language_Processing_in_Software_Engineering_A_Systematic_Mapping_Study.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_003",
+        "type": "Simple RAG",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'A Comprehensive Survey on Word Representation Models From Classical to State-Of-The-Art Word Representation Language Models'?",
+        "ground_truth": "Based on academic resources, A Comprehensive Survey on Word Representation\nModels: From Classical to State-Of-The-Art Word\nRepresentation Language Models\nUSMAN NASEEM∗, School of Computer Science, The University of Sydney, Australia\nIMRAN RAZZAK, School of Information Technology, Deakin University, Australia\nSHAH KHALID KHAN...",
+        "expected_source_document": [
+            "A_Comprehensive_Survey_on_Word_Representation_Models_From_Classical_to_State-Of-The-Art_Word_Representation_Language_Models.pdf",
+            "Comprehensive_Survey_on_Graph_Neural_Networks..pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file A_Comprehensive_Survey_on_Word_Representation_Models_From_Classical_to_State-Of-The-Art_Word_Representation_Language_Models.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_004",
+        "type": "Agentic Reflection",
+        "question": "How is reinforcement learning utilized in the context of 'A Real-Time Energy Management Strategy for Fuel Cell Hybrid Electric Vehicles Based on Deep Reinforcement Learning'?",
+        "ground_truth": "Based on academic resources, 2.3.9 D EEP REINFORCEMENT LEARNING\nWe obtain deep reinforcement learning (deep RL) methods when we use deep neural networks to\napproximate any of the following components of reinforcement learning: value function, ˆv(s;θ)\nor ˆq(s,a ;θ), policyπ(a|s;θ), and model (state transition function and rew...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_005",
+        "type": "Simple RAG",
+        "question": "How does bidirectional pre-training improve transformer-based language representations?",
+        "ground_truth": "Based on academic resources, • We demonstrate the importance of bidirectional\npre-training for language representations. Un-\nlike Radford et al. (2018), which uses unidirec-\ntional language models for pre-training, BERT\nuses masked language models to enable pre-\ntrained deep bidirectional representations.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_006",
+        "type": "Agentic Reflection",
+        "question": "How does the network or graph structure in 'Bridging the Gap Between Spectral and Spatial Domains in Graph Neural Networks' optimize overall performance?",
+        "ground_truth": "Based on academic resources, Bridging the Gap Between Spectral and Spatial Domains in\nGraph Neural Networks\nMuhammet Balcilar∗, Guillaume Renton, Pierre Héroux, Benoit Gaüzère, Sébastien Adam, Paul Honeine\nLITIS Lab, University of Rouen Normandy\nRouen, FRANCE\nAbstract\nThis paper aims at revisiting Graph Convolutional Neural ...",
+        "expected_source_document": [
+            "Bridging_the_Gap_Between_Spectral_and_Spatial_Domains_in_Graph_Neural_Networks.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Bridging_the_Gap_Between_Spectral_and_Spatial_Domains_in_Graph_Neural_Networks.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_007",
+        "type": "Simple RAG",
+        "question": "How does the system or methodology of 'Comparative Evaluation of Embedding Representations for Financial News Sentiment Analysis' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, Comparative Evaluation of Embedding\nRepresentations for Financial News Sentiment\nAnalysis\n1st Joyjit Roy\nIEEE Member\nAustin, Texas, USA\njoyjit.roy.tech@gmail.com\n2nd Samaresh Kumar Singh\nIEEE Senior Member\nLeander, Texas, USA\nssam3003@gmail.com\nAbstract—Financial sentiment analysis enhances marke...",
+        "expected_source_document": [
+            "Comparative_Evaluation_of_Embedding_Representations_for_Financial_News_Sentiment_Analysis.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Comparative_Evaluation_of_Embedding_Representations_for_Financial_News_Sentiment_Analysis.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_008",
+        "type": "Agentic Reflection",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Comprehensive Survey on Graph Neural Networks'?",
+        "ground_truth": "Based on academic resources, JOURNAL OF LATEX CLASS FILES, VOL. XX, NO. XX, AUGUST 2019 1\nA Comprehensive Survey on Graph Neural\nNetworks\nZonghan Wu, Shirui Pan, Member, IEEE, Fengwen Chen, Guodong Long,\nChengqi Zhang, Senior Member, IEEE, Philip S. Yu, Fellow, IEEE\nAbstract—Deep learning has revolutionized many machine\nlear...",
+        "expected_source_document": [
+            "Comprehensive_Survey_on_Graph_Neural_Networks..pdf",
+            "Graph_neural_networks_A_review_of_methods_and_applications.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Comprehensive_Survey_on_Graph_Neural_Networks..pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_009",
+        "type": "Simple RAG",
+        "question": "How is reinforcement learning utilized in the context of 'Continuous Control with Deep Reinforcement Learning'?",
+        "ground_truth": "Based on academic resources, ings of the 14th International Conference on Artiﬁcial Intelligence and Statistics. JMLR W&CP\nVolume, volume 15, pp. 315–323, 2011. Hafner, Roland and Riedmiller, Martin. Reinforcement learning in feedback control. Machine\nlearning, 84(1-2):137–169, 2011. Hasselt, Hado V .",
+        "expected_source_document": [
+            "Continuous_Control_with_Deep_Reinforcement_Learning.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Continuous_Control_with_Deep_Reinforcement_Learning.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_010",
+        "type": "Agentic Reflection",
+        "question": "How does the network or graph structure in 'Convolutional Neural Networks Based Object' optimize overall performance?",
+        "ground_truth": "Based on academic resources, feature map passes through an hourglass structur e. The subsampled structure of the hourglass \nstructure is used to extract multi-scale features, and the up-sampling structure is used to integrate \nmulti-scale features to generate advanced features with rich semantic information.",
+        "expected_source_document": [
+            "Convolutional_Neural_Networks_Based_Object.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Convolutional_Neural_Networks_Based_Object.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_011",
+        "type": "Simple RAG",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'DEEPREINFORCEMENT LEARNING ANOVERVIEW Yuxi Li (yuxili@gmail.com)'?",
+        "ground_truth": "Based on academic resources, DEEP REINFORCEMENT LEARNING : A N OVERVIEW\nYuxi Li (yuxili@gmail.com)\nABSTRACT\nWe give an overview of recent exciting achievements of deep reinforcement learn-\ning (RL). We discuss six core elements, six important mechanisms, and twelve\napplications. We start with background of machine learning, ...",
+        "expected_source_document": [
+            "DEEPREINFORCEMENT_LEARNING_ANOVERVIEW_Yuxi_Li_(yuxili@gmail.com).pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file DEEPREINFORCEMENT_LEARNING_ANOVERVIEW_Yuxi_Li_(yuxili@gmail.com).pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_012",
+        "type": "Agentic Reflection",
+        "question": "How does the system or methodology of 'Deep Learning and Machine Learning Object Detection' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, Deep Learning and Machine Learning - Object Detection\nand Semantic Segmentation: From Theory to Applications\nJintao Ren*\nAarhus University\njintaoren@clin.au.dk\nZiqian Bi*†\nIndiana University\nbizi@iu.edu\nQian Niu\nKyoto University\nniu.qian.f44@kyoto-u.jp\nXinyuan Song\nEmory University\nxsong30@emory....",
+        "expected_source_document": [
+            "Deep_Learning_and_Machine_Learning_Object_Detection.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Deep_Learning_and_Machine_Learning_Object_Detection.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_013",
+        "type": "Simple RAG",
+        "question": "Explain the architecture of Deep Residual Learning (ResNet) and how it addresses the vanishing gradient problem.",
+        "ground_truth": "Based on academic resources, identity\nweight layer\nweight layer\nrelu\nreluF(x)\u0001+\u0001x\nx\nF(x) x\nFigure 2. Residual learning: a building block. are comparably good or better than the constructed solution\n(or unable to do so in feasible time). In this paper, we address the degradation problem by\nintroducing a deep residual learning...",
+        "expected_source_document": [
+            "Deep_Residual_Learning_for_Image_Recognition.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Deep_Residual_Learning_for_Image_Recognition.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_014",
+        "type": "Agentic Reflection",
+        "question": "How does the system or methodology of 'Doubly Attentive Decoder for Multi modal Neural Machine Translation' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, Doubly-Attentive Decoder for Multi-modal Neural Machine Translation\nIacer Calixto\nADAPT Centre\nSchool of Computing\nDublin City University\nDublin, Ireland\niacer.calixto@adaptcentre.ie\nQun Liu\nADAPT Centre\nSchool of Computing\nDublin City University\nDublin, Ireland\nNick Campbell\nADAPT Centre\nSpeech ...",
+        "expected_source_document": [
+            "Doubly_Attentive_Decoder_for_Multi_modal_Neural_Machine_Translation.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Doubly_Attentive_Decoder_for_Multi_modal_Neural_Machine_Translation.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_015",
+        "type": "Simple RAG",
+        "question": "How does the proposed Effective Approaches to Attention based Neural Machine Translation improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, arXiv:1508.04025v5  [cs.CL]  20 Sep 2015\nEffective Approaches to Attention-based Neural Machine Translation\nMinh-Thang Luong Hieu Pham Christopher D. Manning\nComputer Science Department, Stanford University, Stanford, CA 94305\n{lmthang,hyhieu,manning}@stanford.edu\nAbstract\nAn attentional mechanis...",
+        "expected_source_document": [
+            "Effective_Approaches_to_Attention_based_Neural_Machine_Translation.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Effective_Approaches_to_Attention_based_Neural_Machine_Translation.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_016",
+        "type": "Agentic Reflection",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Evaluating Word Embeddings for Sentiment Analysis in E-Commerce A Case Study on MercadoLibre Reviews'?",
+        "ground_truth": "Based on academic resources, Evaluating Word Embeddings for Sentiment Analysis in\nE-Commerce: A Case Study on MercadoLibre Reviews\nLarry Steward Tibaduiza-Mahecha, Ixent Galpin *\nUniversidad de Bogotá-Jorge Tadeo Lozano, Bogotá, Colombia\nAbstract\nThis study evaluates the effectiveness of various word embedding techniques – W...",
+        "expected_source_document": [
+            "Evaluating_Word_Embeddings_for_Sentiment_Analysis_in_E-Commerce_A_Case_Study_on_MercadoLibre_Reviews.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Evaluating_Word_Embeddings_for_Sentiment_Analysis_in_E-Commerce_A_Case_Study_on_MercadoLibre_Reviews.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_017",
+        "type": "Simple RAG",
+        "question": "How does the system or methodology of 'Fast YOLO A Fast You Only Look Once System for Real time Embedded Object Detection in Video' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, mains very challenging for leveraging this approach for rea l-time\nobject detection in video on embedded computing devices wit h\nlimited computational power and limited memory . In this pap er,\nwe propose a new framework called Fast YOLO, a fast Y ou Only\nLook Once framework which accelerates YOL...",
+        "expected_source_document": [
+            "Fast_YOLO_A_Fast_You_Only_Look_Once_System_for_Real_time_Embedded_Object_Detection_in_Video.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Fast_YOLO_A_Fast_You_Only_Look_Once_System_for_Real_time_Embedded_Object_Detection_in_Video.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_018",
+        "type": "Agentic Reflection",
+        "question": "How do Generative Adversarial Nets (GANs) utilize a minimax game to train generative models?",
+        "ground_truth": "Based on academic resources, In other words,D andG play the following two-player minimax game with value functionV (G,D ):\nmin\nG\nmax\nD\nV (D,G ) = Ex∼pdata(x)[logD(x)] + Ez∼pz(z)[log(1−D(G(z)))]. (1)\nIn the next section, we present a theoretical analysis of adversarial nets, essentially showing that\nthe training criterion all...",
+        "expected_source_document": [
+            "Generative_Adversarial_Nets.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Generative_Adversarial_Nets.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_019",
+        "type": "Simple RAG",
+        "question": "How does the network or graph structure in 'Graph Networks with Spectral Message Passing Kimberly L. Stachenfeld' optimize overall performance?",
+        "ground_truth": "Based on academic resources, To overcome this limitation, our Spectral Graph Network (GN) architecture performs message-passing\nover the input graph’s structure—the “spatial graph”—as well as message-passing in a high-level\n“spectral graph”. This allows long-range information to be pooled, processed, and transmitted between\n...",
+        "expected_source_document": [
+            "Graph_Networks_with_Spectral_Message_Passing_Kimberly_L._Stachenfeld.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Graph_Networks_with_Spectral_Message_Passing_Kimberly_L._Stachenfeld.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_020",
+        "type": "Agentic Reflection",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Graph neural networks A review of methods and applications'?",
+        "ground_truth": "Based on academic resources, Graph neural networks: A review of methods and applications\nJie Zhou a, 1, Ganqu Cui a,1, Shengding Hu a, Zhengyan Zhang a, Cheng Yang b, Zhiyuan Liu a, *,\nLifeng Wang c, Changcheng Li c, Maosong Sun a\na Department of Computer Science and Technology, Tsinghua University, Beijing, China\nb School o...",
+        "expected_source_document": [
+            "Graph_neural_networks_A_review_of_methods_and_applications.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Graph_neural_networks_A_review_of_methods_and_applications.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_021",
+        "type": "Simple RAG",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Image Segmentation with transformers An Overview, Challenges and Future'?",
+        "ground_truth": "Based on academic resources, Image Segmentation with transformers:  \nAn Overview, Challenges and Future \n \nDeepjyoti Chetia*, Debasish Dutta2, Sanjib Kr Kalita3 \n1,2,3Dept. of Computer Science, Gauhati University, Assam, India. *Corresponding Author: Deepjyoti Chetia                      Email:deepjyotichetia@gauhati.ac.in \n...",
+        "expected_source_document": [
+            "Image_Segmentation_with_transformers_An_Overview,_Challenges_and_Future.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Image_Segmentation_with_transformers_An_Overview,_Challenges_and_Future.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_022",
+        "type": "Agentic Reflection",
+        "question": "How is the system improving the Accuracy of Pre-trained Word Embeddings for Sentiment Analysis in this paper?",
+        "ground_truth": "Based on academic resources, 4, respectively. 5. Conclusion  \n \nIn this paper, we proposed a new method to improve the accuracy of well -known pre- trained word \nembeddings for sentiment analysis . Our method has improved the accuracy of pre- trained word \nembeddings based on the combination of three approaches such as lexic...",
+        "expected_source_document": [
+            "Improving_the_Accuracy_of_Pre-trained_Word_Embeddings_for_Sentiment_Analysis.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Improving_the_Accuracy_of_Pre-trained_Word_Embeddings_for_Sentiment_Analysis.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_023",
+        "type": "Simple RAG",
+        "question": "How does the system or methodology of 'Interactive Attention for Neural Machine Translation' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, more powerful model for machine translation. We also provide some actual translation examples (see Appendix) to show that our I NTERACTIVE\nATTENTION can get better performance then baselines, especially on so lving under-translation prob-\nlem. We think the interactive mechanism of NMTIA is helpfu...",
+        "expected_source_document": [
+            "Interactive_Attention_for_Neural_Machine_Translation.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Interactive_Attention_for_Neural_Machine_Translation.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_024",
+        "type": "Agentic Reflection",
+        "question": "What is MapReduce and how is it used for large-scale data processing on distributed clusters?",
+        "ground_truth": "Based on academic resources, experience with parallel and distributed systems to eas-\nily utilize the resources of a large distributed system. Our implementation of MapReduce runs on a large\ncluster of commodity machines and is highly scalable:\na typical MapReduce computation processes many ter-\nabytes of data on thousands o...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_025",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'MaskPlus Improving Mask Generation for Instance Segmentation Shichao Xu'?",
+        "ground_truth": "Based on academic resources, MaskPlus: Improving Mask Generation for Instance Segmentation\nShichao Xu\nNorthwestern University\nShichaoXu2023@u.northwestern.edu\nShuyue Lan\nNorthwestern University\nshuyuelan2018@u.northwestern.edu\nQi Zhu\nNorthwestern University\nqzhu@northwestern.edu\nAbstract\nInstance segmentation is a promising ...",
+        "expected_source_document": [
+            "MaskPlus_Improving_Mask_Generation_for_Instance_Segmentation_Shichao_Xu.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file MaskPlus_Improving_Mask_Generation_for_Instance_Segmentation_Shichao_Xu.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_026",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'Mask R-CNN Kaiming He Georgia Gkioxari Piotr Doll ´ar Ross Girshick'?",
+        "ground_truth": "Based on academic resources, 12269, 2021. [23] Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. Mask r-cnn. In Proceedings of\nthe IEEE international conference on computer vision, pages 2961–2969, 2017. [24] Jan Hosang, Rodrigo Benenson, and Bernt Schiele. Learning non-maximum suppression.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_027",
+        "type": "Simple RAG",
+        "question": "How does the system or methodology of 'Parallel Attention Mechanisms in Neural Machine' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, and\n• Attended Additive Parallel Attention (AAPA). B. Model V ariations\nAdditive Parallel Attention (APA) : We replace the entire\nstack of (multi-head attention, add and normalize, feed for-\nward, add and normalize) repeated N times on the original\nTransformer architecture on the left column, on ...",
+        "expected_source_document": [
+            "Parallel_Attention_Mechanisms_in_Neural_Machine.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Parallel_Attention_Mechanisms_in_Neural_Machine.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_028",
+        "type": "Agentic Reflection",
+        "question": "What is the Transformer architecture and why is the attention mechanism crucial for sequence-to-sequence tasks?",
+        "ground_truth": "Based on academic resources, tion models in various tasks, allowing modeling of dependencies without regard to their distance in\nthe input or output sequences [2, 19]. In all but a few cases [27], however, such attention mechanisms\nare used in conjunction with a recurrent network.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_029",
+        "type": "Simple RAG",
+        "question": "How does the system or methodology of 'Recent Advances in Deep Learning for Object Detection' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, Recent Advances in Deep Learning for Object Detection\nXiongwei Wua,∗, Doyen Sahooa, Steven C.H. Hoia,b\naSchool of Information System, Singapore Management University\nbSalesforce Research Asia\nAbstract\nObject detection is a fundamental visual recognition problem in computer vision and has been wid...",
+        "expected_source_document": [
+            "Recent_Advances_in_Deep_Learning_for_Object_Detection.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Recent_Advances_in_Deep_Learning_for_Object_Detection.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_030",
+        "type": "Agentic Reflection",
+        "question": "How does the system or methodology of 'Sentiment Analysis by Joint Learning of Word Embeddings and Classifier Prathusha Kameswar Sarma and Bill Sethares' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, Sentiment Analysis by Joint Learning of Word Embeddings and Classiﬁer\nPrathusha Kameswar Sarma and Bill Sethares\nUniversity of Wisconsin - Madison\nAbstract\nWord embeddings are representations of\nindividual words of a text document in\na vector space and they are often use-\nful for performing natur...",
+        "expected_source_document": [
+            "Sentiment_Analysis_by_Joint_Learning_of_Word_Embeddings_and_Classiﬁer_Prathusha_Kameswar_Sarma_and_Bill_Sethares.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Sentiment_Analysis_by_Joint_Learning_of_Word_Embeddings_and_Classiﬁer_Prathusha_Kameswar_Sarma_and_Bill_Sethares.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_031",
+        "type": "Simple RAG",
+        "question": "How does the network or graph structure in 'Spectral GNN via Two-dimensional (2-D) Graph Convolution' optimize overall performance?",
+        "ground_truth": "Based on academic resources, arXiv:2404.04559v1  [cs.LG]  6 Apr 2024\nSpectral GNN via Two-dimensional (2-D) Graph Convolution\nGuoming Li 1 2 Jian Yang 3 Shangsong Liang 2 Dongsheng Luo 4\nAbstract\nSpectral Graph Neural Networks (GNNs) have\nachieved tremendous success in graph learning.",
+        "expected_source_document": [
+            "Spectral_GNN_via_Two-dimensional_(2-D)_Graph_Convolution.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Spectral_GNN_via_Two-dimensional_(2-D)_Graph_Convolution.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_032",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'Text Classification based on Multiple Block Convolutional Highways'?",
+        "ground_truth": "Based on academic resources, [28,34,27]. Also, word vector calculations of the two methods that are used to represent a document do not \nconsider the context of the document [35]. In this paper, we make use of recent advances in CNN ’s [22,36,37,18] and propose a novel architecture, \nMultiple Block Convolutional Highways (MB...",
+        "expected_source_document": [
+            "Text_Classification_based_on_Multiple_Block_Convolutional_Highways.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Text_Classification_based_on_Multiple_Block_Convolutional_Highways.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_033",
+        "type": "Simple RAG",
+        "question": "How does the proposed Definitive Guide to Policy Gradients in Deep Reinforcement Learning Theory, Algorithms and Implementations improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, The Definitive Guide to Policy Gradients in Deep Reinforcement\nLearning:\nTheory, Algorithms and Implementations\nMatthias Lehmann\nUniversity of Cologne\nABSTRACT\nIn recent years, various powerful policy gradient algorithms have been proposed in deep reinforcement\nlearning.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_034",
+        "type": "Agentic Reflection",
+        "question": "How does the system or methodology of 'Tree to Sequence Attentional Neural Machine Translation' enhance performance in IT applications?",
+        "ground_truth": "Based on academic resources, Tree-to-Sequence Attentional Neural Machine Translation\nAkiko Eriguchi, Kazuma Hashimoto, and Y oshimasa Tsuruoka\nThe University of Tokyo, 3-7-1 Hongo, Bunkyo-ku, Tokyo, Japan\n{eriguchi, hassy, tsuruoka }@logos.t.u-tokyo.ac.jp\nAbstract\nMost of the existing Neural Machine\nTranslation (NMT) models ...",
+        "expected_source_document": [
+            "Tree_to_Sequence_Attentional_Neural_Machine_Translation.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Tree_to_Sequence_Attentional_Neural_Machine_Translation.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_035",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'U-Net Convolutional Networks for Biomedical Image Segmentation'?",
+        "ground_truth": "Based on academic resources, In Proceedings of the European Conference on Computer Vision (ECCV), Amsterdam, The Netherlands,\n8–16 October 2016. 42. Ronneberger, O.; Fischer, P .; Brox, T. U-Net: Convolutional Networks for Biomedical Image Segmentation. In Proceedings of the IEEE Conference on Medical Image Computing and Com...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_036",
+        "type": "Agentic Reflection",
+        "question": "How does YOLOv10 achieve real-time end-to-end object detection without relying on non-maximum suppression?",
+        "ground_truth": "Based on academic resources, 3. Based on the above approaches, we introduce YOLOv10, a new real-time end-to-end object\ndetector. Extensive experiments demonstrate that our YOLOv10 achieves the state-of-the-art\nperformance and efficiency trade-offs compared with other advanced detectors.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_037",
+        "type": "Simple RAG",
+        "question": "What are the key architectural enhancements introduced in YOLOv11 for advanced real-time object detection?",
+        "ground_truth": "Based on academic resources, the YOLO Vision 2024 (YV24) conference, YOLOv11 represents a significant leap forward in real-time object detection\ntechnology. This new version introduces substantial enhancements in both architecture and training methodologies,\npushing the boundaries of accuracy, speed, and efficiency.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_AGT_038",
+        "type": "Agentic Reflection",
+        "question": "Explain the unified, real-time object detection paradigm introduced by the original YOLO model.",
+        "ground_truth": "Based on academic resources, demo of the system and the source code can be found on\nour project website: http://pjreddie.com/yolo/. 6. Conclusion\nWe introduce YOLO, a uniﬁed model for object detec-\ntion. Our model is simple to construct and can be trained\ndirectly on full images. Unlike classiﬁer-based approaches,\nYOLO is tr...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "it"
+    },
+    {
+        "test_case_id": "TC_SIM_039",
+        "type": "Simple RAG",
+        "question": "What are the mathematical properties and algebraic problems related to '(Deep) Learning about Elliptic Curve'?",
+        "ground_truth": "Based on academic resources, operations) are inserted between sheaf diffusion layers to make the resulting function class\nof the network more expressive. Remark 2.43. Sheaf-type neural networks are related to the mathematical theory of\nheat diffusion in a similar manner to how transformer networks are related to dynamical\npr...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_040",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Abstract Sheaf Theory'?",
+        "ground_truth": "Based on academic resources, wrote it down in the summer of 2014. We have tried to present the\nmaterial in the way that an undergraduate student could be able to\nread them. Obviously, an advanced reader does not require to fol-\nlow all of the material line-by-line while who can prove many proofs\nby himself/herself.",
+        "expected_source_document": [
+            "Abstract_Sheaf_Theory.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Abstract_Sheaf_Theory.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_041",
+        "type": "Simple RAG",
+        "question": "How is reinforcement learning utilized in the context of 'Actor Critic Reinforcement Learning'?",
+        "ground_truth": "Based on academic resources, 1\nActor-Critic Reinforcement Learning\nwith Phased Actor\nRuofan Wu, Junmin Zhong, and Jennie Si, Fellow, IEEE\nAbstract—Policy gradient methods in actor-critic reinforce-\nment learning (RL) have become perhaps the most promising\napproaches to solving continuous optimal control problems.",
+        "expected_source_document": [
+            "Actor_Critic_Reinforcement_Learning.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Actor_Critic_Reinforcement_Learning.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_042",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'ALMOST PRIME VALUES OF THE ORDER OF ELLIPTIC'?",
+        "ground_truth": "Based on academic resources, ALMOST PRIME V ALUES OF THE ORDER OF ELLIPTIC CUR VES 7\ncorresponds to Hecke L-functions, and are then analytic functions of the complex\nplane. In general, we have\nConjecture 3.3 (Artin’s conjecture) . Let χ be an irreducible non-trivial character\nof G.",
+        "expected_source_document": [
+            "ALMOST_PRIME_VALUES_OF_THE_ORDER_OF_ELLIPTIC.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file ALMOST_PRIME_VALUES_OF_THE_ORDER_OF_ELLIPTIC.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_043",
+        "type": "Simple RAG",
+        "question": "What are the mathematical properties and algebraic problems related to 'ANALYTIC PROBLEMS FOR ELLIPTIC CURVES'?",
+        "ground_truth": "Based on academic resources, arXiv:math/0510197v1  [math.NT]  10 Oct 2005\nANAL YTIC PROBLEMS FOR ELLIPTIC CUR VES\nE. KOW ALSKI\nAbstract. We consider some problems of analytic number theory for elli ptic curves which can\nbe considered as analogues of classical questions around th e distribution of primes in arithmetic\nprogres...",
+        "expected_source_document": [
+            "ANALYTIC_PROBLEMS_FOR_ELLIPTIC_CURVES.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file ANALYTIC_PROBLEMS_FOR_ELLIPTIC_CURVES.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_044",
+        "type": "Agentic Reflection",
+        "question": "What are the fundamental principles of information theory established in Shannon's 'A Mathematical Theory of Communication'?",
+        "ground_truth": "Based on academic resources, Reprinted with corrections from The Bell System Technical Journal,\nV ol. 27, pp. 379–423, 623–656, July, October, 1948. A Mathematical Theory of Communication\nBy C. E. SHANNON\nINTRODUCTION\nT\nHE recent development of various methods of modulation such as PCM and PPM which exchange\nbandwidth for si...",
+        "expected_source_document": [
+            "A_Mathematical_Theory_of_Communication.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file A_Mathematical_Theory_of_Communication.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_045",
+        "type": "Simple RAG",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'A PRIMER ON SHEAF THEORY AND SHEAF COHOMOLOGY SAAD SLAOUI'?",
+        "ground_truth": "Based on academic resources, A PRIMER ON SHEAF THEORY AND SHEAF COHOMOLOGY\nSAAD SLAOUI\nAbstract. These notes are intended to provide an introduction to basic sheaf\ntheory and sheaf cohomology. The ﬁrst few sections introduce some key deﬁ-\nnitions and technical tools leading to the deﬁnition of sheaf cohomology in the\nlanguag...",
+        "expected_source_document": [
+            "A_PRIMER_ON_SHEAF_THEORY_AND_SHEAF_COHOMOLOGY_SAAD_SLAOUI.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file A_PRIMER_ON_SHEAF_THEORY_AND_SHEAF_COHOMOLOGY_SAAD_SLAOUI.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_046",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed SPECTRAL ELEMENT METHOD FOR MESHES WITH SKINNY ELEMENTS improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, A SPECTRAL ELEMENT METHOD FOR MESHES WITH SKINNY\nELEMENTS\nAARON YEISER\nMIT, CAMBRIDGE, MA 02139, US ( ayeiser@mit.edu)\nADVISOR: ALEX TOWNSEND\nDEPARTMENT OF MATHEMATICS, CORNELL UNIVERSITY, ITHACA, NY 14853. Abstract. When numerically solving partial diﬀerential equations (PDEs), the ﬁrst step is\n...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_047",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Categorification of sheaf theory'?",
+        "ground_truth": "Based on academic resources, satisfies all the design criteria for our theorem 1.5 except for the existence of colimits: every\ncell in Sh! nCorrenh(C) is geometric. The desired categorifications are finally obtained by\nadding colimits. 4.Descent and affineness\nWe close this note with a discussion of the fundamental tools for...",
+        "expected_source_document": [
+            "Categorification_of_sheaf_theory.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Categorification_of_sheaf_theory.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_048",
+        "type": "Agentic Reflection",
+        "question": "How is reinforcement learning utilized in the context of 'Combining Policy Gradient and Q-Learning'?",
+        "ground_truth": "Based on academic resources, Published as a conference paper at ICLR 2017\nCOMBINING POLICY GRADIENT AND Q- LEARNING\nBrendan O’Donoghue, R ´emi Munos, Koray Kavukcuoglu & V olodymyr Mnih\nDeepmind\n{bodonoghue,munos,korayk,vmnih}@google.com\nABSTRACT\nPolicy gradient is an efﬁcient technique for improving a policy in a reinforcem...",
+        "expected_source_document": [
+            "Combining_Policy_Gradient_and_Q-Learning.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Combining_Policy_Gradient_and_Q-Learning.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_049",
+        "type": "Simple RAG",
+        "question": "How is the process of CONSTRUCTING ELLIPTIC CURVES achieved in this research?",
+        "ground_truth": "Based on academic resources, arXiv:math/0511729v1  [math.NT]  30 Nov 2005\nCONSTRUCTING ELLIPTIC CUR VES\nIN ALMOST POL YNOMIAL TIME\nReinier Br ¨oker, Peter Stevenhagen\nAbstract. We present an algorithm that, on input of an integer N ≥ 1 together\nwith its prime factorization, constructs a ﬁnite ﬁeld F and an elliptic curve E o...",
+        "expected_source_document": [
+            "CONSTRUCTING_ELLIPTIC_CURVES.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file CONSTRUCTING_ELLIPTIC_CURVES.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_050",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'CUT AND PASTE INVARIANTS OF MODULI SPACES OF'?",
+        "ground_truth": "Based on academic resources, CUT AND PASTE INVARIANTS OF MODULI SPACES OF STABLE MAPS TO TORIC SURFACES 5\nMexp\n• (XΣ,α)\nM•(XΣ,α) Mexp\n• (G2\nlog,α)\nM•(G2\nlog,α)\nFigure 2.A diagram of relationships between spaces of stable maps. Here,•\ndenotes either rigid or rubber. Each arrow is a subdivision.",
+        "expected_source_document": [
+            "CUT_AND_PASTE_INVARIANTS_OF_MODULI_SPACES_OF.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file CUT_AND_PASTE_INVARIANTS_OF_MODULI_SPACES_OF.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_051",
+        "type": "Simple RAG",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'DEFORMATION OF PAIRS OF P3 AND HYPERSURFACES'?",
+        "ground_truth": "Based on academic resources, DEFORMATION OF PAIRS OFP 3 AND HYPERSURFACES 9\nStep 3a (Computation of the cohomology ofT Y ′).By the description in [10],Y ′ is a complete\ntoric variety whose fan has 6 rays. Their generators are described in the following table. generator ofρ (1,0,2) (0,1,2) (−1,0,0) (0,−1,0) (0,0,1) (0,0,−1)\nd...",
+        "expected_source_document": [
+            "DEFORMATION_OF_PAIRS_OF_P3_AND_HYPERSURFACES.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file DEFORMATION_OF_PAIRS_OF_P3_AND_HYPERSURFACES.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_052",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Divide and Pair Faster subgroup membership'?",
+        "ground_truth": "Based on academic resources, 8 Divide-and-Pair: Faster subgroup membership testing for elliptic curves\nCurve448 and GC256A.Curve448 is the so-calledGoldilocks curveinvented by Hamburg\n[Ham15b] and also standardized by NIST [CMR+23, Section 3.2], while GC256A is the\nunique256-bit 2 twisted Edwards/Montgomery curve accepted in...",
+        "expected_source_document": [
+            "Divide_and_Pair_Faster_subgroup_membership.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Divide_and_Pair_Faster_subgroup_membership.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_053",
+        "type": "Simple RAG",
+        "question": "How does the proposed Efficient Q-Learning and Actor-Critic Methods for Robust Average Reward Reinforcement Learning improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, 1\nActor-Critic Reinforcement Learning\nwith Phased Actor\nRuofan Wu, Junmin Zhong, and Jennie Si, Fellow, IEEE\nAbstract—Policy gradient methods in actor-critic reinforce-\nment learning (RL) have become perhaps the most promising\napproaches to solving continuous optimal control problems.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_054",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical properties and algebraic problems related to 'ELLIPTIC CURVES OF UNBOUNDED RANK AND CHEBYSHEV'S'?",
+        "ground_truth": "Based on academic resources, arXiv:1304.8011v1  [math.NT]  30 Apr 2013\nELLIPTIC CUR VES OF UNBOUNDED RANK AND CHEBYSHEV’S\nBIAS\nDANIEL FIORILLI\nAbstract. We establish a conditional equivalence between quantitati ve unboundedness\nof the analytic rank of elliptic curves over Q and the existence of highly biased elliptic\ncurve p...",
+        "expected_source_document": [
+            "ELLIPTIC_CURVES_OF_UNBOUNDED_RANK_AND_CHEBYSHEV’S.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file ELLIPTIC_CURVES_OF_UNBOUNDED_RANK_AND_CHEBYSHEV’S.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_055",
+        "type": "Simple RAG",
+        "question": "How does the proposed Fast global spectral methods for three-dimensional partial diﬀerential equations improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, Fast global spectral methods for three-dimensional partial\ndiﬀerential equations\nChristoph Strössner 1 and Daniel Kressner 2\n1Institute of Mathematics, EPF Lausanne, Switzerland, christoph.stroessner@epfl.ch. 2Institute of Mathematics, EPF Lausanne, Switzerland, daniel.kressner@epfl.ch.",
+        "expected_source_document": [
+            "Fast_global_spectral_methods_for_three-dimensional_partial_diﬀerential_equations.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Fast_global_spectral_methods_for_three-dimensional_partial_diﬀerential_equations.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_056",
+        "type": "Agentic Reflection",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Field Theoretic Aspects of Condensed Matter Physics An Overview'?",
+        "ground_truth": "Based on academic resources, arXiv:2301.13234v2  [cond-mat.str-el]  28 Mar 2023\nField Theoretic Aspects of Condensed Matter Physics: An\nOverview⋆\nEduardo Fradkin\nDepartment of Physics and Institute for Condensed Matter Th eory,\nUniversity of Illinois at Urbana-Champaign, 1110 W est Green St, Urbana Illinois 61801-3080, U.S.A.",
+        "expected_source_document": [
+            "Field_Theoretic_Aspects_of_Condensed_Matter_Physics_An_Overview.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Field_Theoretic_Aspects_of_Condensed_Matter_Physics_An_Overview.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_057",
+        "type": "Simple RAG",
+        "question": "How does the proposed Finite Expression Method for Solving High-Dimensional Partial Differential Equations improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, Finite Expression Method for Solving High-Dimensional\nPartial Differential Equations\nSenwei Liang senwei.liang@ttu.edu\nDepartment of Mathematics and Statistics\nTexas Tech University\nLubbock, TX 79409, USA\nHaizhao Yang hzyang@umd.edu\nDepartment of Mathematics and Department of Computer Science\nUni...",
+        "expected_source_document": [
+            "Finite_Expression_Method_for_Solving_High-Dimensional_Partial_Differential_Equations.pdf",
+            "Partial_Differential_Equations_in_the_Age_of_Machine_Learning_A_Critical_Synthesis_of_Classical,_Machine_Learning,_and_Hybrid_Methods.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Finite_Expression_Method_for_Solving_High-Dimensional_Partial_Differential_Equations.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_058",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'GENERALIZED ESTERMANN PROBLEM FOR NON INTEGER POWERS WITH'?",
+        "ground_truth": "Based on academic resources, GENERALIZED ESTERMANN PROBLEM FOR NON-INTEGER POWERS WITH ALMOST PROPORTIONAL SUMMANDS 9\nFrom this and from (19), we obtain\nJc(N,H) =\n∫ 0.5\n−0.5\nF(α)e(−αN)dα+O\n( H 2\nN 1−1\nc L 3\n)\n,\nF(α) =S1(α;N1,2H)S 1(α;N2,2H)Sc(α;N3,H 3). We divide the interval of integration[−0,5,0,5]into points of two classes.",
+        "expected_source_document": [
+            "GENERALIZED_ESTERMANN_PROBLEM_FOR_NON_INTEGER_POWERS_WITH.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file GENERALIZED_ESTERMANN_PROBLEM_FOR_NON_INTEGER_POWERS_WITH.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_059",
+        "type": "Simple RAG",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Going Beyond the Data as the Patching (Sheaving) of Local Knowledge'?",
+        "ground_truth": "Based on academic resources, Theoretical and Philosophical\nPsychology,\na section of the journal\nFrontiers in Psychology\nReceived: 07 June 2018\nAccepted: 19 September 2018\nPublished: 09 October 2018\nCitation:\nPhillips S (2018) Going Beyond the\nData as the Patching (Sheaving) of\nLocal Knowledge.",
+        "expected_source_document": [
+            "Going_Beyond_the_Data_as_the_Patching_(Sheaving)_of_Local_Knowledge.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Going_Beyond_the_Data_as_the_Patching_(Sheaving)_of_Local_Knowledge.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_060",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Grothendieck Topologies and Sheaf Theory for Data and Graphs An Approach Through Cech Closure Spaces improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, SHEAF THEORY FOR DATA AND GRAPHS: AN APPROACH THROUGH ˇCECH CLOSURE SPACES 2\nvertices and edges are given compatible closure structures), and metric spaces decorated with a\nprivileged, non-zero scale, which induces a special class of semi-pseudometric spaces of interest to\ntopological data analysis.",
+        "expected_source_document": [
+            "Grothendieck_Topologies_and_Sheaf_Theory_for_Data_and_Graphs_An_Approach_Through_Cech_Closure_Spaces.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Grothendieck_Topologies_and_Sheaf_Theory_for_Data_and_Graphs_An_Approach_Through_Cech_Closure_Spaces.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_061",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Homological Support of Big Objects in Tensor-Triangulated Categories'?",
+        "ground_truth": "Based on academic resources, arXiv:2001.00284v1  [math.CT]  2 Jan 2020\nHOMOLOGICAL SUPPORT OF BIG OBJECTS\nIN TENSOR-TRIANGULA TED CA TEGORIES\nPAUL BALMER\nAbstract. Using homological residue ﬁelds, we deﬁne supports for big o bjects\nin tensor-triangulated categories and prove a tensor-prod uct formula.",
+        "expected_source_document": [
+            "Homological_Support_of_Big_Objects_in_Tensor-Triangulated_Categories..pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Homological_Support_of_Big_Objects_in_Tensor-Triangulated_Categories..pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_062",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Numerical Methods for Solving Partial Differential Equations improve performance and efficiency?",
+        "ground_truth": "Ground truth answer regarding: How does the proposed Numerical Methods for Solving Partial Differential Equations improve performance and efficiency?",
+        "expected_source_document": [
+            "Numerical_Methods_for_Solving_Partial_Differential_Equations.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Numerical_Methods_for_Solving_Partial_Differential_Equations.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_063",
+        "type": "Simple RAG",
+        "question": "What are the primary findings and theoretical analysis presented in 'On Sheaf Cohomology and Natural Expansions'?",
+        "ground_truth": "Based on academic resources, made in Cartan’s seminars, and it is a fundamental reference on the subject until\ntoday. Additionally, we recommend Kozsul’s note classes [4 2] and, for references\nin English, there are algebraic geometry books as [35]. Here we introduce Čech\nCohomology as a technique to calculate Sheaf Cohomolog...",
+        "expected_source_document": [
+            "On_Sheaf_Cohomology_and_Natural_Expansions..pdf",
+            "SHEAF_COHOMOLOGY_AND_ALGEBRAIC_DE_RHAM_THEOREM.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file On_Sheaf_Cohomology_and_Natural_Expansions..pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_064",
+        "type": "Agentic Reflection",
+        "question": "What are the primary findings and theoretical analysis presented in 'ON THE AUTOMORPHISMS'?",
+        "ground_truth": "Based on academic resources, ON THE AUTOMORPHISMS\nOF THE POWER SEMIGROUPS OF A NUMERICAL SEMIGROUP\nSALVATORE TRINGALI AND KEROU WEN\nAbstract.IfHis a numerical semigroup (that is, a cofinite subset of the non-negative integers closed\nunder addition), then the non-empty subsets ofHform a semigroupP(H)under the sumset operation...",
+        "expected_source_document": [
+            "ON_THE_AUTOMORPHISMS.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file ON_THE_AUTOMORPHISMS.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_065",
+        "type": "Simple RAG",
+        "question": "How does Bernhard Riemann's work establish the relationship between prime distribution and the zeros of the zeta function?",
+        "ground_truth": "Based on academic resources, nicate across the years, and in which I will present a strategy (towards a proof of RH) which only\nuses mathematics that he was familiar with, together with the great power of modern computers. In the section\"Encounter with the Riemann zeta function\"we aim to convey to the reader a vivid pic-\ntur...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_066",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Partial Differential Equations in the Age of Machine Learning A Critical Synthesis of Classical, Machine Learning, and Hybrid Methods improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, Partial Differential Equations in the Age of Machine Learning: A Critical\nSynthesis of Classical, Machine Learning, and Hybrid Methods\nMohammad Nooraiepour1*, Jakub Wiktor Both2, Teeratorn Kadeethum3, and Saeid\nSadeghnejad4\n1,*Faculty of Mathematics and Natural Sciences, University of Oslo, 1047 ...",
+        "expected_source_document": [
+            "Partial_Differential_Equations_in_the_Age_of_Machine_Learning_A_Critical_Synthesis_of_Classical,_Machine_Learning,_and_Hybrid_Methods.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Partial_Differential_Equations_in_the_Age_of_Machine_Learning_A_Critical_Synthesis_of_Classical,_Machine_Learning,_and_Hybrid_Methods.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_067",
+        "type": "Simple RAG",
+        "question": "What is the Riemann Hypothesis and why is it considered one of the Millennium Prize Problems in mathematics?",
+        "ground_truth": "Based on academic resources, 1 Introduction\nThe Riemann Hypothesis (RH) stands as perhaps the most famous unsolved problem in mathe-\nmatics, having resisted all attempts at proof since Bernhard Riemann casually remarked in his 1859\nmemoir that \"sehr wahrscheinlich\" (very probably) all nontrivial zeros of his zeta function li...",
+        "expected_source_document": [
+            "The_Riemann_Hypothesis_Past_Present_and_a_Letter.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file The_Riemann_Hypothesis_Past_Present_and_a_Letter.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_068",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical properties and algebraic problems related to 'PSEUDOPRIME REDUCTIONS OF ELLIPTIC CURVES'?",
+        "ground_truth": "Based on academic resources, PSEUDOPRIME REDUCTIONS OF ELLIPTIC CUR VES 21\n[11] N. Koblitz, Primality of the number of points on an elliptic curve over a ﬁ nite ﬁeld , Paciﬁc\nJ. Math. 131 (1988), No. 1, 157–165. [12] E. Kowalski, Analytic problems for elliptic curves , J. Ramanujan Math.",
+        "expected_source_document": [
+            "PSEUDOPRIME_REDUCTIONS_OF_ELLIPTIC_CURVES.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file PSEUDOPRIME_REDUCTIONS_OF_ELLIPTIC_CURVES.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_069",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'SHEAF COHOMOLOGY AND ALGEBRAIC DE RHAM THEOREM'?",
+        "ground_truth": "Based on academic resources, SHEAF COHOMOLOGY AND ALGEBRAIC DE RHAM\nTHEOREM\nYIHENG YE\nAbstract. In this paper, we introduce sheaves and the cohomology of sheaves. We use sheaf-theoretic language and tools to specify the correct notion of\nde Rham cohomology of a smooth algebraic variety.",
+        "expected_source_document": [
+            "SHEAF_COHOMOLOGY_AND_ALGEBRAIC_DE_RHAM_THEOREM.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file SHEAF_COHOMOLOGY_AND_ALGEBRAIC_DE_RHAM_THEOREM.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_070",
+        "type": "Agentic Reflection",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'Sheaf theory from deep geometry to deep learning Anton Ayzenberg German Magai'?",
+        "ground_truth": "Based on academic resources, Sheaf theory: from deep geometry to deep learning\nAnton Ayzenberg German Magai\nNoeon Research, Japan Noeon Research, Japan\nanton@noeon.ai german@noeon.ai\nThomas Gebhart Grigory Solomadin\nUniversity of Minnesota, USA University of Strasbourg, France\ngebharttom8@gmail.com grigorysolomadin@gmail.com...",
+        "expected_source_document": [
+            "Sheaf_theory_from_deep_geometry_to_deep_learning_Anton_Ayzenberg_German_Magai.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Sheaf_theory_from_deep_geometry_to_deep_learning_Anton_Ayzenberg_German_Magai.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_071",
+        "type": "Simple RAG",
+        "question": "How does the network or graph structure in 'Spectral-based Graph Convolutional Network for Directed Graphs' optimize overall performance?",
+        "ground_truth": "Based on academic resources, from graph data. As the earliest convolutional networks for graph data, spectral-based models have achieved impressive\nresults in many graph related analytics tasks. However, spectral-based models are limited to work\nonly on undirected graphs [12]. So the only way to apply spectral-based models t...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_072",
+        "type": "Agentic Reflection",
+        "question": "How is reinforcement learning utilized in the context of 'Supervised Reinforcement Learning with Recurrent Neural Network for Dynamic Treatment Recommendation'?",
+        "ground_truth": "Based on academic resources, have considered to combine the benefits of supervised learning and\nreinforcement learning. In this paper, we propose Supervised Rein-\nforcement Learning with Recurrent Neural Network (SRL-RNN),\nwhich fuses them into a synergistic learning framework. Specif-\nically, SRL-RNN applies an off-policy a...",
+        "expected_source_document": [
+            "Supervised_Reinforcement_Learning_with_Recurrent_Neural_Network_for_Dynamic_Treatment_Recommendation.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Supervised_Reinforcement_Learning_with_Recurrent_Neural_Network_for_Dynamic_Treatment_Recommendation.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_073",
+        "type": "Simple RAG",
+        "question": "How does the proposed AUTOMATIC SOLUTION OF PARTIAL DIFFERENTIAL EQUATIONS USING A GLOBAL SPECTRAL METHOD improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, pure spectral methods achieve optimal performance with minimal implementation complexity\n[158]. Spectral element decomposition extends these advantages to complex domains while\npreserving high-order accuracy. Fundamental limitations restrict applicability.",
+        "expected_source_document": [
+            "Partial_Differential_Equations_in_the_Age_of_Machine_Learning_A_Critical_Synthesis_of_Classical,_Machine_Learning,_and_Hybrid_Methods.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Partial_Differential_Equations_in_the_Age_of_Machine_Learning_A_Critical_Synthesis_of_Classical,_Machine_Learning,_and_Hybrid_Methods.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_074",
+        "type": "Agentic Reflection",
+        "question": "Explain the historical context, current state, and mathematical significance of the Riemann Hypothesis.",
+        "ground_truth": "Based on academic resources, The Riemann Hypothesis: Past, Present and a Letter\nThrough Time\n[Alain Connes]\nFebruary 5, 2026\nAbstract\nThis paper, commissioned as a survey of the Riemann Hypothesis, provides a comprehensive\noverview of 165 years of mathematical approaches to this fundamental problem, while introduc-\ning a new...",
+        "expected_source_document": [
+            "The_Riemann_Hypothesis_Past_Present_and_a_Letter.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file The_Riemann_Hypothesis_Past_Present_and_a_Letter.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_SIM_075",
+        "type": "Simple RAG",
+        "question": "What are the mathematical formulations, proofs, and solutions discussed in 'WEIGHTED LINEARIZATION OF VECTOR FIELDS'?",
+        "ground_truth": "Based on academic resources, WEIGHTED LINEARIZATION OF VECTOR FIELDS\nVIA A FORMAL MOSER TRICK\nARTHUR LEI QIU\nAbstract.Manywell-knowntheoremsestablishsufficientcriteriaforlinearizabilityofavectorfield\nin terms of the eigenvalues of its linear approximation. By attaching weights to coordinates so that\nsome directions are consi...",
+        "expected_source_document": [
+            "WEIGHTED_LINEARIZATION_OF_VECTOR_FIELDS.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file WEIGHTED_LINEARIZATION_OF_VECTOR_FIELDS.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "math"
+    },
+    {
+        "test_case_id": "TC_AGT_076",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'Anomalous Transport and Explicit Symmetry'?",
+        "ground_truth": "Based on academic resources, detection of gravitational waves and the first observation of\na binary black hole merger. ACKNOWLEDGMENTS\nThe authors gratefully acknowledge the support of the\nUnited States National Science Foundation (NSF) for the\nconstruction and operation of the LIGO Laboratory and\nAdvanced LIGO as well as th...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_077",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'A Simple Symmetry as a Guide Towards New Physics'?",
+        "ground_truth": "Based on academic resources, *Full author list given at the end of the article. Published by the American Physical Society under the terms of\nthe Creative Commons Attribution 3.0 License . Further distri-\nbution of this work must maintain attribution to the author(s) and\nthe published article ’s title, journal citation, and ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_078",
+        "type": "Agentic Reflection",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?",
+        "ground_truth": "Based on academic resources, 2 (90%\ncredible region) [39,46]. The basic features of GW150914 point to it being\nproduced by the coalescence of two black holes — i.e.,\ntheir orbital inspiral and merger, and subsequent final black\nhole ringdown. Over 0.2 s, the signal increases in frequency\nand amplitude in about 8 cycles from ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_079",
+        "type": "Simple RAG",
+        "question": "Can you provide a comprehensive summary of the concepts and history discussed in 'Deep Reinforcement Learning for Intelligent Transportation Systems A Survey'?",
+        "ground_truth": "Based on academic resources, reviewed in [114], with only the lowest event rates being\nexcluded. Binary black hole systems at larger distances contribute\nto a stochastic background of gravitational waves from the\nsuperposition of unresolved systems. Predictions for such a\nbackground are presented in [115].",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_080",
+        "type": "Agentic Reflection",
+        "question": "What are the physical principles, experimental observations, and models described in 'Einstein Fields A Neural Perspective To Computational General Relativity'?",
+        "ground_truth": "Based on academic resources, DOI: 10.1103/PhysRevLett.116.061102\nI. INTRODUCTION\nIn 1916, the year after the final formulation of the field\nequations of general relativity, Albert Einstein predicted\nthe existence of gravitational waves. He found that\nthe linearized weak-field equations had wave solutions:\ntransverse waves of...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_081",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Energy Dependent Polarization Angle Variability as a Robust Diagnostic for Blazar Flaring'?",
+        "ground_truth": "Based on academic resources, amplitude. The sensitivity is limited by photon shot noise at frequencies above 150 Hz, and by a superposition of other noise sources at\nlower frequencies [47]. Narrow-band features include calibration lines (33 –38, 330, and 1080 Hz), vibrational modes of suspension\nfibers (500 Hz and harmonics)...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_082",
+        "type": "Agentic Reflection",
+        "question": "What are the physical principles, experimental observations, and models described in 'EUROPEAN ORGANISATION FOR NUCLEAR RESEARCH (CERN)'?",
+        "ground_truth": "Based on academic resources, P150914 and VIR-0015A-16. [1] A. Einstein, Sitzungsber. K. Preuss. Akad. Wiss. 1, 688\n(1916). [2] A. Einstein, Sitzungsber. K. Preuss. Akad. Wiss. 1, 154\n(1918). [3] P . R. Saulson, Gen. Relativ. Gravit. 43, 3289 (2011) . [4] K. Schwarzschild, Sitzungsber. K. Preuss. Akad. Wiss.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_083",
+        "type": "Simple RAG",
+        "question": "What are the physical principles, experimental observations, and models described in 'Flavour changing charged current decays at LHCb'?",
+        "ground_truth": "Based on academic resources, (2015). [35] C. Affeldt et al. , Classical Quantum Gravity 31, 224002\n(2014). [36] Y . Aso, Y . Michimura, K. Somiya, M. Ando, O. Miyakawa, T. Sekiguchi, D. Tatsumi, and H. Y amamoto,\nPhys. Rev. D 88, 043007 (2013) . [37] The waveform shown is SXS:BBH:0305, available for\ndownload at http://www.bl...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_084",
+        "type": "Agentic Reflection",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Gravitational Lensing by Black Holes in Einstein Quartic Gravity H. Khodabakhshi1;2;3, Robert B. Mann3;4'?",
+        "ground_truth": "Based on academic resources, consistency check involves the mass and spin of the final\nblack hole. In general relativity, the end product of a black\nhole binary coalescence is a Kerr black hole, which is fully\ndescribed by its mass and spin. For quasicircular inspirals,\nthese are predicted uniquely by Einstein ’ s equations ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_085",
+        "type": "Simple RAG",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Gravitational lensing by Einstein-Born-Infeld black holes'?",
+        "ground_truth": "Based on academic resources, mg < 1.2 × 10−22 eV=c2. This improves on Solar System\nand binary pulsar bounds [98,99] by factors of a few and a\nthousand, respectively, but does not improve on the model-\ndependent bounds derived from the dynamics of Galaxy\nclusters [100] and weak lensing observations [101].I n\nsummary, all thre...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_086",
+        "type": "Agentic Reflection",
+        "question": "How does the research on 'Integrated Photonics for Quantum Communications and Metrology' contribute to quantum information or technology?",
+        "ground_truth": "Based on academic resources, Canada, Canadian Institute for Advanced Research, the\nBrazilian Ministry of Science, Technology, and Innovation,\nRussian Foundation for Basic Research, the Leverhulme\nTrust, the Research Corporation, Ministry of Science and\nTechnology (MOST), Taiwan, and the Kavli Foundation.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_087",
+        "type": "Simple RAG",
+        "question": "How does the research on 'Large quantum dot energy level shifts in anomalous photon assisted tunneling' contribute to quantum information or technology?",
+        "ground_truth": "Based on academic resources, Canada, Canadian Institute for Advanced Research, the\nBrazilian Ministry of Science, Technology, and Innovation,\nRussian Foundation for Basic Research, the Leverhulme\nTrust, the Research Corporation, Ministry of Science and\nTechnology (MOST), Taiwan, and the Kavli Foundation.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_088",
+        "type": "Agentic Reflection",
+        "question": "What are cosmological perturbations and what role do they play in the large-scale structure of the universe?",
+        "ground_truth": "Based on academic resources, independently of their frequency evolution (C 2 þ C3). The classes C2 and C3 are defined in the text. Right: The tail in the black-line\nbackground of the binary coalescence search is due to random coincidences of GW150914 in one detector with noise in the other\ndetector.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_089",
+        "type": "Simple RAG",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Learning Null Geodesics for Gravitational Lensing Rendering in General Relativity'?",
+        "ground_truth": "Based on academic resources, mass and spin deduced from the early stage of the\ncoalescence and those inferred independently from the late\nstage are consistent with each other, with no evidence for\ndisagreement from general relativity. Within the post-Newtonian formalism, the phase of the\ngravitational waveform during the ins...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_090",
+        "type": "Agentic Reflection",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Master field equations for spherically symmetric gravitational fields beyond general relativity'?",
+        "ground_truth": "Based on academic resources, DOI: 10.1103/PhysRevLett.116.061102\nI. INTRODUCTION\nIn 1916, the year after the final formulation of the field\nequations of general relativity, Albert Einstein predicted\nthe existence of gravitational waves. He found that\nthe linearized weak-field equations had wave solutions:\ntransverse waves of...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_091",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Neutrino Physics at the LHC Status and Prospects'?",
+        "ground_truth": "Based on academic resources, LIGO and construction and operation of theGEO 600 detector. Additional support for Advanced LIGO was provided by the\nAustralian Research Council. The authors gratefully acknowl-\nedge the Italian Istituto Nazionale di Fisica Nucleare (INFN),\nthe French Centre National de la Recherche Scientifique\n...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_092",
+        "type": "Agentic Reflection",
+        "question": "What are gravitational waves and what was the significance of the first binary black hole merger observation by LIGO?",
+        "ground_truth": "Based on academic resources, þ160\n−180 Mpc corresponding to a redshiftz ¼ 0.09þ0.03\n−0.04 . In the source frame, the initial black hole masses are 36þ5\n−4 M⊙ and 29þ4\n−4 M⊙ , and the final black hole mass is\n62þ4\n−4 M⊙ ,w i t h3.0þ0.5\n−0.5 M⊙ c2 radiated in gravitational waves. All uncertainties define 90% credible intervals.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_093",
+        "type": "Simple RAG",
+        "question": "What are the primary findings and theoretical analysis presented in 'ON ENUMERATION OF b ANGULATIONS OF SURFACES FROM AN'?",
+        "ground_truth": "Based on academic resources, coherent Bayesian analysis to derive posterior distributions\nof the source parameters [89]. The initial and final masses,\nfinal spin, distance, and redshift of the source are shown in\nTable I. The spin of the primary black hole is constrained\nto be < 0.7 (90% credible interval) indicating it is n...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_094",
+        "type": "Agentic Reflection",
+        "question": "What are the primary findings and theoretical analysis presented in 'On the Geometry of Cotton Gravity'?",
+        "ground_truth": "Based on academic resources, coherent Bayesian analysis to derive posterior distributions\nof the source parameters [89]. The initial and final masses,\nfinal spin, distance, and redshift of the source are shown in\nTable I. The spin of the primary black hole is constrained\nto be < 0.7 (90% credible interval) indicating it is n...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_095",
+        "type": "Simple RAG",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'OPTICAL COMMUNICATION CIRCUTS'?",
+        "ground_truth": "Based on academic resources, W. Yam,10 H. Yamamoto,1 C. C. Yancey,62 M. J. Yap,20 H. Y u,10 M. Yvert,7 A. Zadrożny,112 L. Zangrando,42 M. Zanolin,97\nJ.-P . Zendri,42 M. Zevin,82 F. Zhang,10 L. Zhang,1 M. Zhang,120 Y . Zhang,102 C. Zhao,51 M. Zhou,82 Z. Zhou,82 X. J. Zhu,51\nM. E. Zucker, 1,10 S. E. Zuraw,103 and J.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_096",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, the gravitational-wave signal extraction by broadening the\nbandwidth of the arm cavities [51,52]. The interferometer\nis illuminated with a 1064-nm wavelength Nd:Y AG laser,\nstabilized in amplitude, frequency, and beam geometry\n[53,54]. The gravitational-wave signal is extracted at the\noutput port...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_097",
+        "type": "Simple RAG",
+        "question": "What are the key results and methodology used in the 'Quantitative comparison of heat flow, guarded-heater and AC Harman methods for thermoelectric module efficiency'?",
+        "ground_truth": "Based on academic resources, [63]. The calibration is established to an uncertainty ( 1σ)o f\nless than 10% in amplitude and 10 degrees in phase, and is\ncontinuously monitored with calibration laser excitations at\nselected frequencies. Two alternative methods are used to\nvalidate the absolute calibration, one referenced to th...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_098",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Quantum Graph Convolutional Networks Based on Spectral Methods improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, multiple classes, this significance is decreased by a trials\nfactor equal to the number of classes [71]. A. Generic transient search\nDesigned to operate without a specific waveform model,\nthis search identifies coincident excess power in time-\nfrequency representations of the detector strain data...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_099",
+        "type": "Simple RAG",
+        "question": "What are the core mathematical and physical principles underlying Quantum Information Theory?",
+        "ground_truth": "Based on academic resources, value [108,109]. Further astrophysical implications of this\nbinary black hole discovery are discussed in [110]. These observational results constrain the rate of stellar-\nmass binary black hole mergers in the local universe. Using\nseveral different models of the underlying binary black hole\nmass ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_100",
+        "type": "Agentic Reflection",
+        "question": "How does the research on 'Quantum Probe to the Higher Dimensional Yang Mills' contribute to quantum information or technology?",
+        "ground_truth": "Based on academic resources, Canada, Canadian Institute for Advanced Research, the\nBrazilian Ministry of Science, Technology, and Innovation,\nRussian Foundation for Basic Research, the Leverhulme\nTrust, the Research Corporation, Ministry of Science and\nTechnology (MOST), Taiwan, and the Kavli Foundation.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_101",
+        "type": "Simple RAG",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Research on Optical Communication Technologies and'?",
+        "ground_truth": "Based on academic resources, the gravitational-wave signal extraction by broadening the\nbandwidth of the arm cavities [51,52]. The interferometer\nis illuminated with a 1064-nm wavelength Nd:Y AG laser,\nstabilized in amplitude, frequency, and beam geometry\n[53,54]. The gravitational-wave signal is extracted at the\noutput port...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_102",
+        "type": "Agentic Reflection",
+        "question": "How does the research on 'Scalable Measurement-Based Quantum Simulation Patterns for Benchmarking' contribute to quantum information or technology?",
+        "ground_truth": "Based on academic resources, Canada, Canadian Institute for Advanced Research, the\nBrazilian Ministry of Science, Technology, and Innovation,\nRussian Foundation for Basic Research, the Leverhulme\nTrust, the Research Corporation, Ministry of Science and\nTechnology (MOST), Taiwan, and the Kavli Foundation.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_103",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Simulating dynamics of RLC circuits with a'?",
+        "ground_truth": "Based on academic resources, of magnitude of isolation from ground motion for frequen-\ncies above 10 Hz. Thermal noise is minimized by using\nlow-mechanical-loss materials in the test masses and their\nsuspensions: the test masses are 40-kg fused silica substrates\nwith low-loss dielectric optical coatings [58,59],a n da r e\nsu...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_104",
+        "type": "Agentic Reflection",
+        "question": "What are the physical principles, experimental observations, and models described in 'Solid inflation'?",
+        "ground_truth": "Based on academic resources, mass and spin deduced from the early stage of the\ncoalescence and those inferred independently from the late\nstage are consistent with each other, with no evidence for\ndisagreement from general relativity. Within the post-Newtonian formalism, the phase of the\ngravitational waveform during the ins...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_105",
+        "type": "Simple RAG",
+        "question": "What are the astrophysical implications and general relativity aspects of 'Spacetime Perspective of Gravitational Lensing in Perturbed Cosmologies'?",
+        "ground_truth": "Based on academic resources, value [108,109]. Further astrophysical implications of this\nbinary black hole discovery are discussed in [110]. These observational results constrain the rate of stellar-\nmass binary black hole mergers in the local universe. Using\nseveral different models of the underlying binary black hole\nmass ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_106",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?",
+        "ground_truth": "Based on academic resources, the gravitational-wave signal extraction by broadening the\nbandwidth of the arm cavities [51,52]. The interferometer\nis illuminated with a 1064-nm wavelength Nd:Y AG laser,\nstabilized in amplitude, frequency, and beam geometry\n[53,54]. The gravitational-wave signal is extracted at the\noutput port...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_107",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Thermal and geometric normal modes of spectral fluctuations in heavy ion collisions'?",
+        "ground_truth": "Based on academic resources, amplitude. The sensitivity is limited by photon shot noise at frequencies above 150 Hz, and by a superposition of other noise sources at\nlower frequencies [47]. Narrow-band features include calibration lines (33 –38, 330, and 1080 Hz), vibrational modes of suspension\nfibers (500 Hz and harmonics)...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_108",
+        "type": "Agentic Reflection",
+        "question": "Describe the historical origins and physical experiments that led to the birth of quantum mechanics.",
+        "ground_truth": "Based on academic resources, gravitational-wave amplitudes would be remarkably\nsmall; moreover, until the Chapel Hill conference in\n1957 there was significant debate about the physical\nreality of gravitational waves [3]. Also in 1916, Schwarzschild published a solution for the\nfield equations [4] that was later understood to...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_109",
+        "type": "Simple RAG",
+        "question": "What are the astrophysical implications and general relativity aspects of 'The particle gravity frontier'?",
+        "ground_truth": "Based on academic resources, value [108,109]. Further astrophysical implications of this\nbinary black hole discovery are discussed in [110]. These observational results constrain the rate of stellar-\nmass binary black hole mergers in the local universe. Using\nseveral different models of the underlying binary black hole\nmass ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_110",
+        "type": "Agentic Reflection",
+        "question": "What are the physical principles, limitations, and future outlook of optical computing as described by Peter McMahon?",
+        "ground_truth": "Based on academic resources, amplitude. The sensitivity is limited by photon shot noise at frequencies above 150 Hz, and by a superposition of other noise sources at\nlower frequencies [47]. Narrow-band features include calibration lines (33 –38, 330, and 1080 Hz), vibrational modes of suspension\nfibers (500 Hz and harmonics)...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_111",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'The Standard Model of Particle Physics. Neutrino Oscillations'?",
+        "ground_truth": "Based on academic resources, amplitude. The sensitivity is limited by photon shot noise at frequencies above 150 Hz, and by a superposition of other noise sources at\nlower frequencies [47]. Narrow-band features include calibration lines (33 –38, 330, and 1080 Hz), vibrational modes of suspension\nfibers (500 Hz and harmonics)...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_112",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'Topical Collection Testing the Kerr spacetime with'?",
+        "ground_truth": "Based on academic resources, detection of gravitational waves and the first observation of\na binary black hole merger. ACKNOWLEDGMENTS\nThe authors gratefully acknowledge the support of the\nUnited States National Science Foundation (NSF) for the\nconstruction and operation of the LIGO Laboratory and\nAdvanced LIGO as well as th...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_SIM_113",
+        "type": "Simple RAG",
+        "question": "What are the physical principles, experimental observations, and models described in 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?",
+        "ground_truth": "Based on academic resources, amplitude. The sensitivity is limited by photon shot noise at frequencies above 150 Hz, and by a superposition of other noise sources at\nlower frequencies [47]. Narrow-band features include calibration lines (33 –38, 330, and 1080 Hz), vibrational modes of suspension\nfibers (500 Hz and harmonics)...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "physics"
+    },
+    {
+        "test_case_id": "TC_AGT_114",
+        "type": "Agentic Reflection",
+        "question": "What are the key design methodologies for an Advanced Integrated Audio and Power Conversion IC?",
+        "ground_truth": "Ground truth answer regarding: What are the key design methodologies for an Advanced Integrated Audio and Power Conversion IC?",
+        "expected_source_document": [
+            "Advanced_Integrated_Audio_and_Power_Conversion_IC.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Advanced_Integrated_Audio_and_Power_Conversion_IC.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_115",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Analog Front-End ASIC for Compact Silicon Photomultiplier Sensor Interfaces in Mixed-Signal Systems'?",
+        "ground_truth": "Based on academic resources, valerio.bocci@roma1.infn.it (V .B.); giacomo.chiodi@roma1.infn.it (G.C.);\nfrancesco.iacoangeli@roma1.infn.it (F.I.); luigi.recchia@roma1.infn.it (L.R.)\n* Correspondence: davide.badoni@roma2.infn.it\nAbstract\nWe present a mixed-signal front-end ASIC designed for compact Silicon Photomultiplier\n(SiP...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_116",
+        "type": "Agentic Reflection",
+        "question": "What are the key results and methodology used in the 'Analysis and Application of Analog Electronic'?",
+        "ground_truth": "Based on academic resources, the N-layer, along with electrons that have arrived from the P-layer, are left\nin the N-layer conduction band. Meanwhile the holes diffuse through the\nN-layer up to the depletion layer while being accelerated and are collected\nin the P-layer valence band.",
+        "expected_source_document": [
+            "Analysis_and_Application_of_Analog_Electronic.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Analysis_and_Application_of_Analog_Electronic.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_117",
+        "type": "Simple RAG",
+        "question": "Explain the design, operation, and advantages of the LIF (Leaky Integrate-and-Fire) neuronal network model.",
+        "ground_truth": "Based on academic resources, reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or\nreuse of any copyrighted component of this work in other works. Abstract—We present an array of leaky integrate-and-ﬁre (LIF)\nneuron c...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_118",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'An Energy-Efficient ASIC for Wireless Body'?",
+        "ground_truth": "Based on academic resources, front-end chain. The ASIC operates in conjunction with an external microcontroller/SoC for\nconfiguration and data acquisition and is designed to achieve a per-channel analog current\nconsumption of approximately 5.9 mA at 3.3 V (19.5 mW), reflecting a balanced trade-off\nbetween speed, robustness, ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_119",
+        "type": "Simple RAG",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'arXiv2407.09166v1 [eess.SP] 12 Jul 202468-Channel Highly-Integrated Neural Signal Processing PSoC with On-Chip Feature'?",
+        "ground_truth": "Ground truth answer regarding: Explain the hardware architecture, circuit design, and performance metrics of 'arXiv2407.09166v1 [eess.SP] 12 Jul 202468-Channel Highly-Integrated Neural Signal Processing PSoC with On-Chip Feature'?",
+        "expected_source_document": [
+            "arXiv2407.09166v1_[eess.SP]_12_Jul_202468-Channel_Highly-Integrated_Neural_Signal_Processing_PSoC_with_On-Chip_Feature.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file arXiv2407.09166v1_[eess.SP]_12_Jul_202468-Channel_Highly-Integrated_Neural_Signal_Processing_PSoC_with_On-Chip_Feature.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_120",
+        "type": "Agentic Reflection",
+        "question": "How does a high-performance Lock-In Amplifier (LIA) based interface benefit battery-powered systems?",
+        "ground_truth": "Based on academic resources, ampliﬁers (MIAs) are shown to be necessary to protect patients from\nelectrical shock hazard during bioelectric measurements. All MIAs\nprovide extreme galvanic isolation between the patient and the mon-\nitoring station. We illustrate several MIA architectures, including a\nnovel direct sensing syst...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_121",
+        "type": "Simple RAG",
+        "question": "What is neuromorphic computing and how does it mimic the structure and function of the human brain?",
+        "ground_truth": "Based on academic resources, algorithm. Taking inspiration from this biological feat, neuromorphic\narchitectures not only adopt a non-von Neumann architecture\nby collocating memory close to the computational element,\nbut also introduce massive parallelism, high energy efﬁciency,\nreconﬁgurability, fault tolerance, and integra...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_122",
+        "type": "Agentic Reflection",
+        "question": "What are the frontiers of high-performance design regimes beyond sole parametric optimization in electronics?",
+        "ground_truth": "Ground truth answer regarding: What are the frontiers of high-performance design regimes beyond sole parametric optimization in electronics?",
+        "expected_source_document": [
+            "Beyond_Sole_Parametric_Optimization_Design_Regimes_Understanding_and_Advancing_the_Frontiers_of_High.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Beyond_Sole_Parametric_Optimization_Design_Regimes_Understanding_and_Advancing_the_Frontiers_of_High.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_123",
+        "type": "Simple RAG",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?",
+        "ground_truth": "Ground truth answer regarding: Explain the role of optical communication and signal transmission discussed in 'Controllable optical modulation of bluegreen up-conversion fluorescence from Tm3+ (Er3+) single-doped glass ceramics upon two-step excitation of two-wavelengths'?",
+        "expected_source_document": [
+            "Controllable_optical_modulation_of_bluegreen_up-conversion_fluorescence_from_Tm3+_(Er3+)_single-doped_glass_ceramics_upon_two-step_excitation_of_two-wavelengths.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Controllable_optical_modulation_of_bluegreen_up-conversion_fluorescence_from_Tm3+_(Er3+)_single-doped_glass_ceramics_upon_two-step_excitation_of_two-wavelengths.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_124",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'CSI Transactions on ICT manuscript No. (will be inserted by the editor)'?",
+        "ground_truth": "Ground truth answer regarding: What are the hardware design methodologies and challenges described in 'CSI Transactions on ICT manuscript No. (will be inserted by the editor)'?",
+        "expected_source_document": [
+            "CSI_Transactions_on_ICT_manuscript_No._(will_be_inserted_by_the_editor).pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file CSI_Transactions_on_ICT_manuscript_No._(will_be_inserted_by_the_editor).pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_125",
+        "type": "Simple RAG",
+        "question": "How is the process of Design and Comparative analysis of a Two Stage achieved in this research?",
+        "ground_truth": "Ground truth answer regarding: How is the process of Design and Comparative analysis of a Two Stage achieved in this research?",
+        "expected_source_document": [
+            "Design_and_Comparative_analysis_of_a_Two_Stage.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Design_and_Comparative_analysis_of_a_Two_Stage.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_126",
+        "type": "Agentic Reflection",
+        "question": "How is the process of Design of Analog CMOS Circuits for Bateryless achieved in this research?",
+        "ground_truth": "Ground truth answer regarding: How is the process of Design of Analog CMOS Circuits for Bateryless achieved in this research?",
+        "expected_source_document": [
+            "Design_of_Analog_CMOS_Circuits_for_Bateryless.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Design_of_Analog_CMOS_Circuits_for_Bateryless.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_127",
+        "type": "Simple RAG",
+        "question": "How is the process of Design of a fault free Inverter Circuit using Minimum achieved in this research?",
+        "ground_truth": "Ground truth answer regarding: How is the process of Design of a fault free Inverter Circuit using Minimum achieved in this research?",
+        "expected_source_document": [
+            "Design_of_a_fault_free_Inverter_Circuit_using_Minimum.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Design_of_a_fault_free_Inverter_Circuit_using_Minimum.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_128",
+        "type": "Agentic Reflection",
+        "question": "How is the system enabling AI-Native Mobility in 6G A Real-World Dataset for Handover, Beam Management, and Timing Advance in this paper?",
+        "ground_truth": "Based on academic resources, OMNIBUS containing target synapse addresses and row-wise\nenables. If a packet’s synapse address matches the target\nsynapse address, the target enables a 6-bit current-mode Digital\nto Analog Converter (DAC) for a short duration, essentially\nrelaying a current pulse event to the neuron on either of...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_129",
+        "type": "Simple RAG",
+        "question": "How does the proposed General and concise operator approach to the dyadic Green's function of layered media improve performance and efficiency?",
+        "ground_truth": "Ground truth answer regarding: How does the proposed General and concise operator approach to the dyadic Green's function of layered media improve performance and efficiency?",
+        "expected_source_document": [
+            "General_and_concise_operator_approach_to_the_dyadic_Green's_function_of_layered_media.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file General_and_concise_operator_approach_to_the_dyadic_Green's_function_of_layered_media.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_130",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Implantable Medical Electronic Devices Sensing Mechanisms, Communication Methods, and the Biodegradable Future improve performance and efficiency?",
+        "ground_truth": "Ground truth answer regarding: How does the proposed Implantable Medical Electronic Devices Sensing Mechanisms, Communication Methods, and the Biodegradable Future improve performance and efficiency?",
+        "expected_source_document": [
+            "Implantable_Medical_Electronic_Devices_Sensing_Mechanisms,_Communication_Methods,_and_the_Biodegradable_Future.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Implantable_Medical_Electronic_Devices_Sensing_Mechanisms,_Communication_Methods,_and_the_Biodegradable_Future.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_131",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Integrated Circuit Audio Amplifier Design'?",
+        "ground_truth": "Ground truth answer regarding: What are the hardware design methodologies and challenges described in 'Integrated Circuit Audio Amplifier Design'?",
+        "expected_source_document": [
+            "Integrated_Circuit_Audio_Amplifier_Design.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Integrated_Circuit_Audio_Amplifier_Design.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_132",
+        "type": "Agentic Reflection",
+        "question": "How are Learnable Quantum Efficiency Filters used to improve accuracy in urban hyperspectral segmentation?",
+        "ground_truth": "Ground truth answer regarding: How are Learnable Quantum Efficiency Filters used to improve accuracy in urban hyperspectral segmentation?",
+        "expected_source_document": [
+            "Learnable_Quantum_Efficiency_Filters_for_Urban_Hyperspectral_Segmentation.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Learnable_Quantum_Efficiency_Filters_for_Urban_Hyperspectral_Segmentation.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_133",
+        "type": "Simple RAG",
+        "question": "What are the primary challenges and design approaches for developing low-power neuromorphic hardware?",
+        "ground_truth": "Based on academic resources, be used to drive the transformer’s primary in the latter case. If a high-\nfrequency oscillator is used, the transformer can be made smaller and lighter\n(a smaller core and fewer turns on the windings are required) and the output\nﬁlter capacitor can be smaller and lighter.",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_134",
+        "type": "Agentic Reflection",
+        "question": "How does the network or graph structure in 'Massive MIMO CSI Feedback with Spiking Neural Networks' optimize overall performance?",
+        "ground_truth": "Ground truth answer regarding: How does the network or graph structure in 'Massive MIMO CSI Feedback with Spiking Neural Networks' optimize overall performance?",
+        "expected_source_document": [
+            "Massive_MIMO_CSI_Feedback_with_Spiking_Neural_Networks.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Massive_MIMO_CSI_Feedback_with_Spiking_Neural_Networks.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_135",
+        "type": "Simple RAG",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Optical Communication Circuits'?",
+        "ground_truth": "Ground truth answer regarding: Explain the role of optical communication and signal transmission discussed in 'Optical Communication Circuits'?",
+        "expected_source_document": [
+            "Optical_Communication_Circuits.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Optical_Communication_Circuits.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_136",
+        "type": "Agentic Reflection",
+        "question": "How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?",
+        "ground_truth": "Ground truth answer regarding: How does the proposed Optical Fiber Network Device and Optical Fiber Optic Signal Transmission Method improve performance and efficiency?",
+        "expected_source_document": [
+            "Optical_Fiber_Network_Device_and_Optical_Fiber_Optic_Signal_Transmission_Method.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Optical_Fiber_Network_Device_and_Optical_Fiber_Optic_Signal_Transmission_Method.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_137",
+        "type": "Simple RAG",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Photonic and Optoelectronic Devices and Systems, Second Edition'?",
+        "ground_truth": "Ground truth answer regarding: Explain the role of optical communication and signal transmission discussed in 'Photonic and Optoelectronic Devices and Systems, Second Edition'?",
+        "expected_source_document": [
+            "Photonic_and_Optoelectronic_Devices_and_Systems,_Second_Edition.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Photonic_and_Optoelectronic_Devices_and_Systems,_Second_Edition.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_138",
+        "type": "Agentic Reflection",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Photonic Integrated Circuits for Communication Systems'?",
+        "ground_truth": "Ground truth answer regarding: Explain the role of optical communication and signal transmission discussed in 'Photonic Integrated Circuits for Communication Systems'?",
+        "expected_source_document": [
+            "Photonic_Integrated_Circuits_for_Communication_Systems.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Photonic_Integrated_Circuits_for_Communication_Systems.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_139",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Power Electronics Revolutionized A Comprehensive Analysis'?",
+        "ground_truth": "Ground truth answer regarding: What are the hardware design methodologies and challenges described in 'Power Electronics Revolutionized A Comprehensive Analysis'?",
+        "expected_source_document": [
+            "Power_Electronics_Revolutionized_A_Comprehensive_Analysis.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Power_Electronics_Revolutionized_A_Comprehensive_Analysis.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_140",
+        "type": "Agentic Reflection",
+        "question": "What are the hardware design methodologies and challenges described in 'Power Management IC for a Dual Input Triple Output'?",
+        "ground_truth": "Ground truth answer regarding: What are the hardware design methodologies and challenges described in 'Power Management IC for a Dual Input Triple Output'?",
+        "expected_source_document": [
+            "Power_Management_IC_for_a_Dual_Input_Triple_Output.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Power_Management_IC_for_a_Dual_Input_Triple_Output.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_141",
+        "type": "Simple RAG",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Real Time Minimum Energy Operating Point'?",
+        "ground_truth": "Ground truth answer regarding: Explain the hardware architecture, circuit design, and performance metrics of 'Real Time Minimum Energy Operating Point'?",
+        "expected_source_document": [
+            "Real_Time_Minimum_Energy_Operating_Point.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Real_Time_Minimum_Energy_Operating_Point.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_142",
+        "type": "Agentic Reflection",
+        "question": "What are the operation principles and design characteristics of the proposed semiconductor device?",
+        "ground_truth": "Based on academic resources, (random) generation of hole–electron pairs in the depletion region of the\ndevice. The depletion region is a volume around the junction in the p- and\nn-doped semiconductor sides that is free of mobile carriers (holes and elec-\ntrons, respectively). The electric ﬁeld from the negative vD causes the...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_143",
+        "type": "Simple RAG",
+        "question": "What are the hardware design methodologies and challenges described in 'Signal Processing Semiconductors and Devices'?",
+        "ground_truth": "Ground truth answer regarding: What are the hardware design methodologies and challenges described in 'Signal Processing Semiconductors and Devices'?",
+        "expected_source_document": [
+            "Signal_Processing_Semiconductors_and_Devices.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Signal_Processing_Semiconductors_and_Devices.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_144",
+        "type": "Agentic Reflection",
+        "question": "Explain the role of optical communication and signal transmission discussed in 'Silicon photonic devices and integrated circuits'?",
+        "ground_truth": "Ground truth answer regarding: Explain the role of optical communication and signal transmission discussed in 'Silicon photonic devices and integrated circuits'?",
+        "expected_source_document": [
+            "Silicon_photonic_devices_and_integrated_circuits.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Silicon_photonic_devices_and_integrated_circuits.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_145",
+        "type": "Simple RAG",
+        "question": "How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?",
+        "ground_truth": "Ground truth answer regarding: How does the proposed Systems and Methods for Optical Full-Field Transmission Using Photonic Integration improve performance and efficiency?",
+        "expected_source_document": [
+            "Systems_and_Methods_for_Optical_Full-Field_Transmission_Using_Photonic_Integration.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Systems_and_Methods_for_Optical_Full-Field_Transmission_Using_Photonic_Integration.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_146",
+        "type": "Agentic Reflection",
+        "question": "What are the physical principles, limitations, and future outlook of optical computing as described by Peter McMahon?",
+        "ground_truth": "Based on academic resources, of the source-degenerated Operational Transconductance Ampliﬁer (OTA) (used inside synaptic input and leak). computational power versus the silicon area and design com-\nplexity. This entails that the emulated neuron models should\nbe rich enough to replicate most computational studies, as\nwell as ...",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_147",
+        "type": "Simple RAG",
+        "question": "What advancements are proposed in the paper 'Towards Closed-loop Stability of Nonlinear Receding Horizon Games'?",
+        "ground_truth": "Based on academic resources, 5.3 What Stability Means................................................................................205\n5.4 Use of Root Locus in Feedback Ampliﬁer Design...............................214\n5.5 Use of Root-Locus in the Design of “Linear” Oscillators...................223\n5.5.1 Introduction........",
+        "expected_source_document": [],
+        "evaluation_criteria": "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_148",
+        "type": "Agentic Reflection",
+        "question": "How is reinforcement learning utilized in the context of 'Traffic aware Multi Agent Reinforcement Learning based Distributed Routing for Low Earth Orbit Satel'?",
+        "ground_truth": "Ground truth answer regarding: How is reinforcement learning utilized in the context of 'Traffic aware Multi Agent Reinforcement Learning based Distributed Routing for Low Earth Orbit Satel'?",
+        "expected_source_document": [
+            "Traffic_aware_Multi_Agent_Reinforcement_Learning_based_Distributed_Routing_for_Low_Earth_Orbit_Satel.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Traffic_aware_Multi_Agent_Reinforcement_Learning_based_Distributed_Routing_for_Low_Earth_Orbit_Satel.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_SIM_149",
+        "type": "Simple RAG",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?",
+        "ground_truth": "Ground truth answer regarding: Explain the hardware architecture, circuit design, and performance metrics of 'Transmission of signals in the 300 GHz band with a bit-error rate below ${10}^{-9}$ using a soliton comb'?",
+        "expected_source_document": [
+            "Transmission_of_signals_in_the_300_GHz_band_with_a_bit-error_rate_below_${10}^{-9}$_using_a_soliton_comb.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Transmission_of_signals_in_the_300_GHz_band_with_a_bit-error_rate_below_${10}^{-9}$_using_a_soliton_comb.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
+    },
+    {
+        "test_case_id": "TC_AGT_150",
+        "type": "Agentic Reflection",
+        "question": "Explain the hardware architecture, circuit design, and performance metrics of 'Ultrafast Time Compressive CMOS Image Sensors Based on Multitap Charge Modulators for Filming Light'?",
+        "ground_truth": "Ground truth answer regarding: Explain the hardware architecture, circuit design, and performance metrics of 'Ultrafast Time Compressive CMOS Image Sensors Based on Multitap Charge Modulators for Filming Light'?",
+        "expected_source_document": [
+            "Ultrafast_Time_Compressive_CMOS_Image_Sensors_Based_on_Multitap_Charge_Modulators_for_Filming_Light_.pdf"
+        ],
+        "evaluation_criteria": "Hệ thống phải truy xuất chính xác thông tin từ file Ultrafast_Time_Compressive_CMOS_Image_Sensors_Based_on_Multitap_Charge_Modulators_for_Filming_Light_.pdf và trả về câu trả lời chính xác, đầy đủ.",
+        "domain": "electronics"
     }
 ]

@@ -60,3 +60,13 @@ credentials.json
 token.json
 client_secret*.json
 node_modules
+
+# Logs and temporary demonstration outputs
+logs/
+*.log
+
+# RAG Evaluation outputs
+evaluation_results.csv
+evaluation_results.json
+ragas_evaluation.csv
+
