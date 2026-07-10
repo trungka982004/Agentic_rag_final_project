@@ -91,17 +91,19 @@ export function useWebSocket(sessionId: string | null) {
         if (rawLinks) {
           if (typeof rawLinks === 'object' && !Array.isArray(rawLinks)) {
             const list: ExportLink[] = [];
-            if (rawLinks.docs || rawLinks.google_docs) {
+            const docUrl = rawLinks.docs || rawLinks.google_docs;
+            if (docUrl) {
               list.push({
                 type: 'google_docs',
-                url: rawLinks.docs || rawLinks.google_docs,
+                url: docUrl,
                 title: 'Mở trong Google Docs',
               });
             }
-            if (rawLinks.sheets || rawLinks.google_sheets) {
+            const sheetUrl = rawLinks.sheets || rawLinks.google_sheets;
+            if (sheetUrl) {
               list.push({
                 type: 'google_sheets',
-                url: rawLinks.sheets || rawLinks.google_sheets,
+                url: sheetUrl,
                 title: 'Mở trong Google Sheets',
               });
             }
