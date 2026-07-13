@@ -70,3 +70,7 @@ evaluation_results.csv
 evaluation_results.json
 ragas_evaluation.csv
 
+# Temporary scratchpad scripts and assets
+scratch/
+temp_assets/
+
