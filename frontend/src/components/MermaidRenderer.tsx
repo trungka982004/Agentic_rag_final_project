@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface MermaidRendererProps {
   chart: string;
@@ -9,12 +10,13 @@ interface MermaidRendererProps {
 // Global promise chain to serialize all Mermaid rendering calls.
 // This prevents concurrent renders from corrupting Mermaid's shared state/DOM.
 let globalRenderQueue: Promise<void> = Promise.resolve();
-let mermaidInitialized = false;
+let mermaidInitialized_v2 = false;
 
 export default function MermaidRenderer({ chart }: MermaidRendererProps) {
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   // Generate a random stable ID for this render session.
   // Mermaid IDs must start with a letter and contain only alphanumeric characters.
@@ -34,27 +36,14 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
         try {
           const mermaid = (await import('mermaid')).default;
 
-          if (!mermaidInitialized) {
+          if (!mermaidInitialized_v2) {
             mermaid.initialize({
               startOnLoad: false,
-              theme: 'dark',
-              themeVariables: {
-                background: '#0f1318',
-                primaryColor: '#1e3a5f',
-                primaryTextColor: '#e8edf5',
-                primaryBorderColor: '#3b82f6',
-                lineColor: '#4a5568',
-                secondaryColor: '#1a2333',
-                tertiaryColor: '#151c26',
-                edgeLabelBackground: '#0f1318',
-                clusterBkg: '#151c26',
-                titleColor: '#93c5fd',
-                nodeTextColor: '#e8edf5',
-              },
+              theme: 'default',
               flowchart: { htmlLabels: true, curve: 'linear' },
               sequence: { useMaxWidth: true },
             });
-            mermaidInitialized = true;
+            mermaidInitialized_v2 = true;
           }
 
           const cleanChart = chart.trim();
@@ -151,19 +140,57 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
       )}
 
       {!isLoading && !error && svg && (
-        <div
-          className="mermaid-container"
-          style={{
-            background: 'rgba(15,19,24,0.8)',
-            border: '1px solid var(--border-muted)',
-            borderRadius: 'var(--radius-md)',
-            padding: '20px',
-            margin: '8px 0',
-            overflowX: 'auto',
-            textAlign: 'center',
-          }}
-          dangerouslySetInnerHTML={{ __html: svg }}
-        />
+        <>
+          <div
+            className="mermaid-container"
+            onClick={() => setIsFullScreen(true)}
+            style={{
+              background: '#ffffff',
+              border: '1px solid var(--outline-variant)',
+              borderRadius: 'var(--radius-md)',
+              padding: '20px',
+              margin: '8px 0',
+              overflowX: 'auto',
+              textAlign: 'center',
+              cursor: 'zoom-in',
+            }}
+            dangerouslySetInnerHTML={{ __html: svg }}
+          />
+
+          {isFullScreen && createPortal(
+            <div style={{
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+              backgroundColor: '#ffffff', zIndex: 99999,
+              display: 'flex', flexDirection: 'column',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '12px 24px', borderBottom: '1px solid var(--outline-variant)',
+                background: 'var(--surface-container-lowest)'
+              }}>
+                <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--on-surface)', margin: 0 }}>
+                  Chế độ toàn màn hình
+                </h2>
+                <button
+                  onClick={() => setIsFullScreen(false)}
+                  style={{
+                    background: 'var(--surface-container-high)', border: 'none',
+                    borderRadius: '50%', width: '36px', height: '36px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', color: 'var(--on-surface)',
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div style={{ flex: 1, overflow: 'auto', padding: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#f8f9fa' }}>
+                <div style={{ background: '#ffffff', padding: '24px', borderRadius: '8px', minWidth: '60%', textAlign: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }} dangerouslySetInnerHTML={{ __html: svg }} />
+              </div>
+            </div>,
+            document.body
+          )}
+        </>
       )}
     </>
   );

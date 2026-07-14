@@ -1,0 +1,93 @@
+version: "3.9"
+
+# ============================================================
+# Agentic RAG – Optimised Docker Compose
+# Changes vs the original bare `docker run` approach:
+#   1. Named volumes  → data survives container recreation
+#   2. Resource limits → prevents the DB from hogging RAM/CPU
+#   3. Health-check   → other services wait until Postgres is
+#      actually accepting connections (not just "started")
+#   4. Restart policy → auto-recover from crashes / host reboot
+#   5. Separate network → containers talk over an isolated bridge
+#   6. Logging caps   → stop logs from filling the disk
+# ============================================================
+
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine          # alpine = smaller image
+    container_name: agentic-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agentic_rag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      # Tune shared_buffers for a modest dev workload
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data    # named volume – survives restarts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d agentic_rag"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+    networks:
+      - rag_net
+
+# ── (Optional) Redis – uncomment if you want a shared search-result cache
+# that survives process restarts, rather than the in-process dict cache.
+#
+#  redis:
+#    image: redis:7-alpine
+#    container_name: agentic-redis
+#    restart: unless-stopped
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redisdata:/data
+#    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+#    healthcheck:
+#      test: ["CMD", "redis-cli", "ping"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 320M
+#          cpus: "0.5"
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10m"
+#        max-file: "2"
+#    networks:
+#      - rag_net
+
+# ── Volumes ────────────────────────────────────────────────
+volumes:
+  pgdata:
+    driver: local
+  # redisdata:
+  #   driver: local
+
+# ── Network ────────────────────────────────────────────────
+networks:
+  rag_net:
+    driver: bridge

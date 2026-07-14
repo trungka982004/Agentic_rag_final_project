@@ -634,3 +634,16 @@ body {
   transition: background 0.15s;
 }
 .upgrade-btn:hover { background: var(--primary); }
+
+/* Scientific bookcase item styling */
+.sidebar-bookcase-item {
+  transition: all 0.2s ease-in-out !important;
+}
+.sidebar-bookcase-item:hover {
+  background: var(--surface-container-high) !important;
+  border-color: var(--primary-container) !important;
+  transform: translateY(-1px);
+}
+.sidebar-bookcase-item:active {
+  cursor: grabbing !important;
+}

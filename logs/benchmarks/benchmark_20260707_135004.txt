@@ -1,0 +1,240 @@
+13:50:04 | INFO     | 
+╔══════════════════════════════════════════════════════════════════════╗
+║          AGENTIC RAG – Optimization Benchmark Suite                 ║
+║          Run: 2026-07-07 13:50:04                             ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+13:50:04 | INFO     | Log (text)   : D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\benchmark_20260707_135004.txt
+13:50:04 | INFO     | Log (jsonl)  : D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\benchmark_20260707_135004.jsonl
+13:50:04 | INFO     | Report (json): D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\report_20260707_135004.json
+13:50:04 | INFO     | 
+13:50:04 | INFO     | 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:50:04 | INFO     |   [1/4] Domain List TTL Cache
+13:50:04 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:50:14 | INFO     | ======================================================================
+13:50:14 | INFO     | BENCHMARK: get_active_domains()  (BEFORE disk read vs AFTER TTL cache)
+13:50:14 | INFO     | ======================================================================
+13:50:14 | INFO     | 
+  ── DC-01: Cold-start (cache empty)
+13:50:14 | INFO     |   [PASS] get_active_domains[cold] | DC-01 cold-start | 0.0001s
+13:50:14 | INFO     |     Domains found  : ['electronics', 'it', 'kinh_t', 'math', 'physics']
+13:50:14 | INFO     |     Avg cold time  : 0.104 ms
+13:50:14 | INFO     |     Domains > 0    : ✓ PASS
+13:50:14 | INFO     | 
+  ── DC-02: Warm cache (repeated calls within TTL)
+13:50:14 | INFO     |   [PASS] get_active_domains[warm] | DC-02 warm-cache | 0.0000s
+13:50:14 | INFO     |     Avg warm time  : 0.000232 ms
+13:50:14 | INFO     |     Max warm time  : 0.002400 ms
+13:50:14 | INFO     |     Speedup vs cold: 450.0×
+13:50:14 | INFO     |     Data consistent: True
+13:50:14 | INFO     |     < 1 ms gate: ✓ PASS
+13:50:14 | INFO     |     Overall        : ✓ PASS
+13:50:14 | INFO     | 
+  ── DC-03: Cache invalidation via clear_rag_caches()
+13:50:14 | INFO     |   [PASS] get_active_domains[invalidate] | DC-03 cache invalidation | 0.0001s
+13:50:14 | INFO     |     Cache cleared         : True
+13:50:14 | INFO     |     Domains after re-read : ['electronics', 'it', 'kinh_t', 'math', 'physics']
+13:50:14 | INFO     |     Consistent with cold  : True
+13:50:14 | INFO     |     Overall               : ✓ PASS
+13:50:14 | INFO     | 
+  ── DC-04: Thread-safety (10 concurrent readers)
+13:50:14 | INFO     |   [PASS] get_active_domains[concurrent] | DC-04 thread-safety | 0.0016s
+13:50:14 | INFO     |     Threads completed: 10/10
+13:50:14 | INFO     |     All returned same: True
+13:50:14 | INFO     |     Errors           : none
+13:50:14 | INFO     |     Overall          : ✓ PASS
+13:50:14 | INFO     | 
+──────────────────────────────────────────────────────────────────────
+13:50:14 | INFO     |   domain_cache SUMMARY
+13:50:14 | INFO     |   Tests passed      : 4/4
+13:50:14 | INFO     |   Cold read avg     : 0.104 ms
+13:50:14 | INFO     |   Warm cache avg    : 0.000232 ms  (200 reps)
+13:50:14 | INFO     |   Speedup           : 450×
+13:50:14 | INFO     | ──────────────────────────────────────────────────────────────────────
+13:50:14 | INFO     | 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:50:14 | INFO     |   [2/4] grade_documents_node (LLM → keyword overlap)
+13:50:14 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:50:16 | INFO     | ======================================================================
+13:50:16 | INFO     | BENCHMARK: grade_documents_node  (BEFORE LLM vs AFTER keyword)
+13:50:16 | INFO     | ======================================================================
+13:50:16 | INFO     | 
+  ── GD-01: Relevant document – high keyword overlap
+13:50:16 | DEBUG    | [timer] after_GD-01: 0.0002s
+13:50:16 | INFO     |   [PASS] grade_documents_node[AFTER] | Relevant document – high keyword overlap | 0.0002s
+13:50:16 | INFO     |     Running OLD LLM grader for GD-01 (may take ~5-10s)...
+13:50:59 | INFO     |   [PASS] grade_documents_node[BEFORE] | Relevant document – high keyword overlap | 43.4414s
+13:50:59 | INFO     |     BEFORE latency : 43.44s (LLM said: 'yes
+
+the retrieved document directly addresses what the transformer architecture is in the context of deep learning, making it highly relevant to the user's question.')
+13:50:59 | INFO     |     AFTER  latency : 0.000158s
+13:50:59 | INFO     |     Speedup        : 275294×
+13:50:59 | INFO     |     Decision correct: True | Fast enough: True | Overall: ✓ PASS
+13:50:59 | INFO     | 
+  ── GD-02: Irrelevant document – low keyword overlap
+13:50:59 | DEBUG    | [timer] after_GD-02: 0.0002s
+13:50:59 | INFO     |   [PASS] grade_documents_node[AFTER] | Irrelevant document – low keyword overlap | 0.0002s
+13:50:59 | INFO     |     Running OLD LLM grader for GD-02 (may take ~5-10s)...
+13:51:02 | INFO     |   [PASS] grade_documents_node[BEFORE] | Irrelevant document – low keyword overlap | 2.8901s
+13:51:02 | INFO     |     BEFORE latency : 2.89s (LLM said: 'no.')
+13:51:02 | INFO     |     AFTER  latency : 0.000203s
+13:51:02 | INFO     |     Speedup        : 14244×
+13:51:02 | INFO     |     Decision correct: True | Fast enough: True | Overall: ✓ PASS
+13:51:02 | INFO     | 
+  ── GD-03: selected_doc present – bypass check unconditionally
+13:51:02 | DEBUG    | [timer] after_GD-03: 0.0001s
+13:51:02 | INFO     |   [PASS] grade_documents_node[AFTER] | selected_doc present – bypass check unconditionally | 0.0001s
+13:51:02 | INFO     |     Running OLD LLM grader for GD-03 (may take ~5-10s)...
+13:51:04 | INFO     |   [PASS] grade_documents_node[BEFORE] | selected_doc present – bypass check unconditionally | 1.7656s
+13:51:04 | INFO     |     BEFORE latency : 1.77s (LLM said: 'no')
+13:51:04 | INFO     |     AFTER  latency : 0.000122s
+13:51:04 | INFO     |     Speedup        : 14460×
+13:51:04 | INFO     |     Decision correct: True | Fast enough: True | Overall: ✓ PASS
+13:51:04 | INFO     | 
+  ── GD-04: Empty documents list – fallback to web
+13:51:04 | DEBUG    | [timer] after_GD-04: 0.0001s
+13:51:04 | INFO     |   [PASS] grade_documents_node[AFTER] | Empty documents list – fallback to web | 0.0001s
+13:51:04 | INFO     |     [BEFORE] LLM not available – using recorded baseline (~6s avg)
+13:51:04 | INFO     |     BEFORE latency : [SKIPPED – Ollama not available]
+13:51:04 | INFO     |     AFTER  latency : 0.000089s
+13:51:04 | INFO     |     Decision correct: True | Fast enough: True | Overall: ✓ PASS
+13:51:04 | INFO     | 
+  ── GD-05: Short/stopword-only question – accept local docs
+13:51:04 | DEBUG    | [timer] after_GD-05: 0.0001s
+13:51:04 | INFO     |   [FAIL] grade_documents_node[AFTER] | Short/stopword-only question – accept local docs | 0.0001s
+13:51:04 | INFO     |     Running OLD LLM grader for GD-05 (may take ~5-10s)...
+13:51:30 | INFO     |   [PASS] grade_documents_node[BEFORE] | Short/stopword-only question – accept local docs | 26.3019s
+13:51:30 | INFO     |     BEFORE latency : 26.30s (LLM said: 'no
+
+the user's question "why" is very general and does not provide specific context. the retrieved document, which explains various scientific topics in detail, may be relevant to a wide range of questions but does not specifically address the "why" aspect without more context. therefore, it cannot be determined as highly relevant based solely on the given information.')
+13:51:30 | INFO     |     AFTER  latency : 0.000139s
+13:51:30 | INFO     |     Speedup        : 188951×
+13:51:30 | INFO     |     Decision correct: False | Fast enough: True | Overall: ✗ FAIL
+13:51:30 | INFO     | 
+  ── GD-06: Technical query – moderate overlap match
+13:51:30 | DEBUG    | [timer] after_GD-06: 0.0001s
+13:51:30 | INFO     |   [PASS] grade_documents_node[AFTER] | Technical query – moderate overlap match | 0.0001s
+13:51:30 | INFO     |     Running OLD LLM grader for GD-06 (may take ~5-10s)...
+13:51:47 | INFO     |   [PASS] grade_documents_node[BEFORE] | Technical query – moderate overlap match | 16.9046s
+13:51:47 | INFO     |     BEFORE latency : 16.90s (LLM said: 'yes
+
+the retrieved document directly addresses the use of convolutional neural networks (cnns) in image recognition tasks, which aligns with the user's question. therefore, it is relevant to the query.')
+13:51:47 | INFO     |     AFTER  latency : 0.000100s
+13:51:47 | INFO     |     Speedup        : 168373×
+13:51:47 | INFO     |     Decision correct: True | Fast enough: True | Overall: ✓ PASS
+13:51:47 | INFO     | 
+──────────────────────────────────────────────────────────────────────
+13:51:47 | INFO     |   grade_documents_node SUMMARY
+13:51:47 | INFO     |   Tests passed     : 5/6
+13:51:47 | INFO     |   Avg AFTER latency: 0.14 ms
+13:51:47 | INFO     |   Avg BEFORE latency: 18.26s
+13:51:47 | INFO     |   Average speedup   : 134998×
+13:51:47 | INFO     | ──────────────────────────────────────────────────────────────────────
+13:51:47 | INFO     | 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:51:47 | INFO     |   [3/4] grade_generation fast-path (selected_doc / retry≥1)
+13:51:47 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:51:47 | INFO     | ======================================================================
+13:51:47 | INFO     | BENCHMARK: grade_generation_v_documents_and_question
+13:51:47 | INFO     |          (BEFORE always-LLM vs AFTER fast-path)
+13:51:47 | INFO     | ======================================================================
+13:51:47 | INFO     | 
+  ── GG-01: selected_doc set → fast-path skip
+13:51:47 | INFO     |   [PASS] grade_generation[AFTER-fast-path] | selected_doc set → fast-path skip | 0.0000s
+13:51:47 | INFO     |     Decision  : useful (expected useful) → ✓
+13:51:47 | INFO     |     Avg time  : 0.0055 ms  (max 0.0129 ms over 20 reps)
+13:51:47 | INFO     |     < 10 ms gate : ✓ PASS
+13:51:47 | INFO     |     Overall   : ✓ PASS
+13:51:47 | INFO     |     BEFORE est: ~6-10s (LLM call) → speedup ≈ 1091902×
+13:51:47 | INFO     | 
+  ── GG-02: retry_count=1 → fast-path skip
+13:51:47 | INFO     |   [PASS] grade_generation[AFTER-fast-path] | retry_count=1 → fast-path skip | 0.0000s
+13:51:47 | INFO     |     Decision  : useful (expected useful) → ✓
+13:51:47 | INFO     |     Avg time  : 0.0069 ms  (max 0.0158 ms over 20 reps)
+13:51:47 | INFO     |     < 10 ms gate : ✓ PASS
+13:51:47 | INFO     |     Overall   : ✓ PASS
+13:51:47 | INFO     |     BEFORE est: ~6-10s (LLM call) → speedup ≈ 866426×
+13:51:47 | INFO     | 
+  ── GG-03: retry_count=2 → fast-path skip (max retries)
+13:51:47 | INFO     |   [PASS] grade_generation[AFTER-fast-path] | retry_count=2 → fast-path skip (max retries) | 0.0000s
+13:51:47 | INFO     |     Decision  : useful (expected useful) → ✓
+13:51:47 | INFO     |     Avg time  : 0.0056 ms  (max 0.0094 ms over 20 reps)
+13:51:47 | INFO     |     < 10 ms gate : ✓ PASS
+13:51:47 | INFO     |     Overall   : ✓ PASS
+13:51:47 | INFO     |     BEFORE est: ~6-10s (LLM call) → speedup ≈ 1077199×
+13:51:47 | INFO     | 
+  ── GG-04: First attempt, no selected_doc → LLM grader runs
+13:51:47 | INFO     |     Running LLM grader (may take ~5-15s)...
+13:52:01 | DEBUG    | [timer] llm_grader_GG-04: 13.7318s
+13:52:01 | INFO     |   [PASS] grade_generation[AFTER-llm-path] | First attempt, no selected_doc → LLM grader runs | 13.7318s
+13:52:01 | INFO     |     Decision  : useful (expected useful) → ✓
+13:52:01 | INFO     |     Elapsed   : 13.732s
+13:52:01 | INFO     |     Overall   : ✓ PASS
+13:52:01 | INFO     | 
+──────────────────────────────────────────────────────────────────────
+13:52:01 | INFO     |   grade_generation SUMMARY
+13:52:01 | INFO     |   Tests passed       : 4/4
+13:52:01 | INFO     |   Avg fast-path time : 0.0060 ms
+13:52:01 | INFO     |   Avg LLM-path time  : 13.73s
+13:52:01 | INFO     |   BEFORE estimate    : ~6-10s per call (always LLM)
+13:52:01 | INFO     |   Estimated speedup  : ~1167315× for selected_doc/retry paths
+13:52:01 | INFO     | ──────────────────────────────────────────────────────────────────────
+13:52:01 | INFO     | 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:52:01 | INFO     |   [4/4] condense_question() no-history guard
+13:52:01 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13:52:01 | INFO     | ======================================================================
+13:52:01 | INFO     | BENCHMARK: condense_question()  (no-history guard verification)
+13:52:01 | INFO     | ======================================================================
+13:52:01 | INFO     | 
+  ── CQ-01: No chat history – guard short-circuit
+13:52:01 | INFO     |   [PASS] condense_question[guard] | No chat history – guard short-circuit | 0.0000s
+13:52:01 | INFO     |     Avg time   : 0.000303 ms  (max 0.001900 ms)
+13:52:01 | INFO     |     < 0.5ms gate: ✓ PASS
+13:52:01 | INFO     |     Exact match: ✓
+13:52:01 | INFO     |     Overall    : ✓ PASS
+13:52:01 | INFO     | 
+  ── CQ-02: History present, referential question ('it')
+13:52:01 | INFO     |     Running LLM condense (may take ~3-8s)...
+13:52:08 | DEBUG    | [timer] condense_CQ-02: 7.6914s
+13:52:08 | INFO     |   [PASS] condense_question[llm] | History present, referential question ('it') | 7.6914s
+13:52:08 | INFO     |     Original  : How does it handle long sequences?
+13:52:08 | INFO     |     Condensed : How does a transformer handle long sequences?
+13:52:08 | INFO     |     Elapsed   : 7.691s
+13:52:08 | INFO     |     Overall   : ✓ PASS
+13:52:08 | INFO     | 
+  ── CQ-03: History present, standalone question – LLM should keep as-is
+13:52:08 | INFO     |     Running LLM condense (may take ~3-8s)...
+13:52:12 | DEBUG    | [timer] condense_CQ-03: 3.5529s
+13:52:12 | INFO     |   [PASS] condense_question[llm] | History present, standalone question – LLM should keep as-is | 3.5529s
+13:52:12 | INFO     |     Original  : What is backpropagation?
+13:52:12 | INFO     |     Condensed : What is backpropagation?
+13:52:12 | INFO     |     Elapsed   : 3.553s
+13:52:12 | INFO     |     Overall   : ✓ PASS
+13:52:12 | INFO     | 
+──────────────────────────────────────────────────────────────────────
+13:52:12 | INFO     |   condense_question SUMMARY
+13:52:12 | INFO     |   Tests passed : 3/3
+13:52:12 | INFO     | ──────────────────────────────────────────────────────────────────────
+13:52:12 | INFO     | 
+══════════════════════════════════════════════════════════════════════
+13:52:12 | INFO     |   ███  FINAL SUMMARY  ███
+13:52:12 | INFO     | ══════════════════════════════════════════════════════════════════════
+13:52:12 | INFO     |   Total tests  : 17
+13:52:12 | INFO     |   ✓ Passed     : 16
+13:52:12 | INFO     |   ✗ Failed     : 1
+13:52:12 | INFO     |   ◎ Skipped    : 0  (LLM unavailable)
+13:52:12 | INFO     |   Pass rate    : 94.1%
+13:52:12 | INFO     | 
+13:52:12 | INFO     |   Speedup Summary:
+13:52:12 | INFO     |     Domain cache    : cold 0.104 ms → warm 0.000232 ms  (450.0× speedup)
+13:52:12 | INFO     |     Grade documents : ~6000 ms (LLM) → 0.135 ms (keyword) ≈ 6000× speedup
+13:52:12 | INFO     |     Grade generation: ~7000 ms (LLM) → 0.006 ms (skip) ≈ 7000× speedup (fast-path)
+13:52:12 | INFO     |     Condense guard  : 0.000303 ms (no LLM call for new sessions)
+13:52:12 | INFO     | ══════════════════════════════════════════════════════════════════════
+13:52:12 | INFO     | 
+  Full report → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\report_20260707_135004.json
+13:52:12 | INFO     |   Human log   → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\benchmark_20260707_135004.txt
+13:52:12 | INFO     |   Report saved → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\report_20260707_135004.json
+13:52:12 | INFO     |   Latest copy → D:\PHANTHIETTRUNG\SCHOOL_SEMESTER\KLTN\Agentic_rag_final_project\logs\benchmarks\LATEST_REPORT.json

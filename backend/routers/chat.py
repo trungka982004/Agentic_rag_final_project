@@ -64,14 +64,32 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
 
     await websocket.accept()
 
+    async def safe_send(payload: dict) -> bool:
+        try:
+            await websocket.send_json(payload)
+            return True
+        except Exception:
+            return False
+
     try:
         while True:
             data = await websocket.receive_text()
             try:
                 payload = json.loads(data)
-                question = payload.get("question", "").strip()
+                
+                raw_question = payload.get("question")
+                question = raw_question.strip() if isinstance(raw_question, str) else ""
+                
+                raw_domain = payload.get("domain")
+                preferred_domain = raw_domain.strip() if isinstance(raw_domain, str) else ""
+                
+                raw_selected_doc = payload.get("selected_doc")
+                selected_doc = raw_selected_doc.strip() if isinstance(raw_selected_doc, str) else ""
+                if not selected_doc:
+                    selected_doc = None
             except json.JSONDecodeError:
-                await websocket.send_json({"type": "error", "message": "Invalid JSON format"})
+                if not await safe_send({"type": "error", "message": "Invalid JSON format"}):
+                    break
                 continue
             
             if not question:
@@ -98,7 +116,9 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             # Prepare graph inputs
             inputs = {
                 "question": question,
+                "original_question": None,
                 "chat_history": chat_history,
+                "preferred_domain": preferred_domain,
                 "use_tavily": True,
                 "export_to_workspace": True,
                 "expert_required": True,
@@ -106,13 +126,15 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 "web_fallback": True,
                 "documents": [],           
                 "generation": "",          
-                "structured_data": None    
+                "structured_data": None,
+                "selected_doc": selected_doc
             }
 
             config = {"configurable": {"thread_id": str(session.id)}, "recursion_limit": 10}
 
             # Send a processing start event
-            await websocket.send_json({"type": "status", "message": "Agent processing started..."})
+            if not await safe_send({"type": "status", "message": "Agent processing started..."}):
+                break
 
             state = {}
             # Stream events from LangGraph
@@ -121,18 +143,19 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                     # Event is a dictionary where keys are node names and values are the returned state updates
                     for node_name, node_state in event.items():
                         print(f"[WS Debug] node_name: {node_name}, type(node_state): {type(node_state)}, node_state: {repr(node_state)}")
-                        await websocket.send_json({
+                        if not await safe_send({
                             "type": "node_update",
                             "node": node_name,
                             "message": f"Completed node: {node_name}"
-                        })
+                        }):
+                            break
                         if node_state is not None:
                             state.update(node_state)
                 final_state = state
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                await websocket.send_json({"type": "error", "message": f"Error during processing: {str(e)}"})
+                await safe_send({"type": "error", "message": f"Error during processing: {str(e)}"})
                 continue
 
             if final_state is None:
@@ -142,6 +165,8 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             # Get final outputs
             generation = final_state.get("generation", "No answer generated.")
             export_links = final_state.get("export_links", {})
+            original_question = final_state.get("original_question")  # Non-None if query was corrected
+            corrected_question = final_state.get("question") if original_question else None
             flags = {
                 "expert_required": final_state.get("expert_required"),
                 "python_repl": final_state.get("python_repl"),
@@ -158,23 +183,48 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 flags=flags
             )
             db.add(agent_msg)
-            
-            # Update session title if it's the first message
-            if session.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]:
-                session.title = generate_chat_summary(question, generation)
-                db.add(session)
-                
+
+            # Update session title if it's the first message – done ASYNCHRONOUSLY
+            # so the WebSocket response is never delayed by the title-generation LLM call.
+            is_first_message = session.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]
+
             db.commit()
             db.refresh(agent_msg)
 
-            # Send final response to WebSocket
-            await websocket.send_json({
+            # Send final response to WebSocket immediately (before title update)
+            if not await safe_send({
                 "type": "final_answer",
                 "id": str(agent_msg.id),
                 "content": generation,
                 "export_links": export_links,
-                "flags": flags
-            })
+                "flags": flags,
+                # Correction metadata — frontend can use this for "Did you mean?" UI
+                "original_question": original_question,
+                "corrected_question": corrected_question,
+            }):
+                break
+
+            # Now generate & persist the session title in the background (non-blocking)
+            if is_first_message:
+                import asyncio
+                from backend.database import get_db as _get_db_factory
+                async def _update_title_bg(q: str, ans: str, sess_id):
+                    try:
+                        title = generate_chat_summary(q, ans)
+                        # Open a fresh DB session for the background task
+                        bg_db = next(_get_db_factory())
+                        try:
+                            from backend.models import ChatSession as _CS
+                            bg_sess = bg_db.query(_CS).filter(_CS.id == sess_id).first()
+                            if bg_sess and bg_sess.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]:
+                                bg_sess.title = title
+                                bg_db.add(bg_sess)
+                                bg_db.commit()
+                        finally:
+                            bg_db.close()
+                    except Exception as _e:
+                        print(f"[Background Title] Error: {_e}")
+                asyncio.create_task(_update_title_bg(question, generation, session.id))
 
     except WebSocketDisconnect:
         print(f"Client disconnected from session: {session_id}")

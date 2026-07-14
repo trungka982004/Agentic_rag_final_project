@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { buildWsUrl } from '@/services/api';
 import type { WSEvent, ActiveNode, ExportLink, DisplayMessage } from '@/types';
 
-export type ChatSendFn = (question: string) => void;
+export type ChatSendFn = (question: string, selectedDoc?: string | null) => void;
 
 export function useWebSocket(sessionId: string | null) {
   const ws = useRef<WebSocket | null>(null);
@@ -87,28 +87,53 @@ export function useWebSocket(sessionId: string | null) {
       case 'final_answer': {
         const finalContent = event.content ?? streamContentRef.current;
         let finalLinks = [...streamLinksRef.current];
-        const rawLinks = (event as any).export_links;
+        const rawLinks = event.export_links;
         if (rawLinks) {
           if (typeof rawLinks === 'object' && !Array.isArray(rawLinks)) {
             const list: ExportLink[] = [];
-            if (rawLinks.docs || rawLinks.google_docs) {
+            const docUrl = rawLinks.docs || rawLinks.google_docs;
+            if (docUrl) {
               list.push({
                 type: 'google_docs',
-                url: rawLinks.docs || rawLinks.google_docs,
+                url: docUrl,
                 title: 'Mở trong Google Docs',
               });
             }
-            if (rawLinks.sheets || rawLinks.google_sheets) {
+            const sheetUrl = rawLinks.sheets || rawLinks.google_sheets;
+            if (sheetUrl) {
               list.push({
                 type: 'google_sheets',
-                url: rawLinks.sheets || rawLinks.google_sheets,
+                url: sheetUrl,
                 title: 'Mở trong Google Sheets',
               });
             }
             finalLinks = list;
           }
         }
-        patchStreaming(finalContent, [...streamNodesRef.current], finalLinks, true, event.id);
+
+        // Forward correction metadata so MessageBubble can show "Did you mean?" hint
+        const correctionMeta = {
+          original_question: event.original_question ?? null,
+          corrected_question: event.corrected_question ?? null,
+        };
+
+        setMessages(prev => {
+          const copy = [...prev];
+          const last = copy[copy.length - 1];
+          if (last && 'isStreaming' in last && last.isStreaming) {
+            copy[copy.length - 1] = {
+              ...last,
+              id: event.id ?? last.id,
+              content: finalContent,
+              activeNodes: [...streamNodesRef.current],
+              exportLinks: finalLinks,
+              isStreaming: false,
+              ...correctionMeta,
+            } as DisplayMessage;
+          }
+          return copy;
+        });
+
         setIsThinking(false);
         resetStream();
         break;
@@ -123,27 +148,68 @@ export function useWebSocket(sessionId: string | null) {
     }
   }, [patchStreaming]);
 
-  // Connect / reconnect when sessionId changes
+  const [reconnectCount, setReconnectCount] = useState(0);
+
+  // Connect / reconnect when sessionId changes or reconnect count changes
   useEffect(() => {
     if (!sessionId) return;
+
+    let active = true;
+    let reconnectTimeoutId: any = null;
 
     const url = buildWsUrl(sessionId);
     const socket = new WebSocket(url);
     ws.current = socket;
 
-    socket.onopen = () => setIsConnected(true);
-    socket.onclose = () => setIsConnected(false);
-    socket.onerror = () => setIsConnected(false);
-    socket.onmessage = (e) => handleEvent(e.data);
+    socket.onopen = () => {
+      if (active) {
+        setIsConnected(true);
+      }
+    };
+
+    socket.onclose = (event) => {
+      if (active) {
+        setIsConnected(false);
+        // Code 1008 means Policy Violation (e.g. invalid/expired token)
+        if (event.code === 1008) {
+          console.warn('WebSocket unauthorized (1008). Redirecting to login.');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+          }
+          return;
+        }
+        // Auto-reconnect after 3 seconds for non-auth errors
+        reconnectTimeoutId = setTimeout(() => {
+          if (active) {
+            setReconnectCount(c => c + 1);
+          }
+        }, 3000);
+      }
+    };
+
+    socket.onerror = () => {
+      if (active) {
+        setIsConnected(false);
+      }
+    };
+
+    socket.onmessage = (e) => {
+      if (active) {
+        handleEvent(e.data);
+      }
+    };
 
     return () => {
+      active = false;
       socket.close();
       ws.current = null;
       setIsConnected(false);
+      if (reconnectTimeoutId) clearTimeout(reconnectTimeoutId);
     };
-  }, [sessionId, handleEvent]);
+  }, [sessionId, reconnectCount, handleEvent]);
 
-  const sendMessage = useCallback((question: string) => {
+  const sendMessage = useCallback((question: string, selectedDoc?: string | null) => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
 
     // Append user bubble
@@ -168,7 +234,12 @@ export function useWebSocket(sessionId: string | null) {
     setIsThinking(true);
     resetStream();
 
-    ws.current.send(JSON.stringify({ question }));
+    const activeDomain = (typeof window !== 'undefined' ? localStorage.getItem('active_domain') : '') || 'it';
+    ws.current.send(JSON.stringify({ 
+      question, 
+      domain: activeDomain,
+      selected_doc: selectedDoc || null
+    }));
   }, [sessionId]);
 
   const loadHistory = useCallback((history: DisplayMessage[]) => {

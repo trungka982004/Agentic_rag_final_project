@@ -8,6 +8,8 @@ import { useState } from 'react';
 //           System Data Management (clear cache, backup, reset)
 //           Agent tip card
 
+import { useRouter } from 'next/navigation';
+
 const Toggle = ({ checked, onChange, id }: { checked: boolean; onChange: (v: boolean) => void; id?: string }) => (
   <label className="toggle" style={{ cursor: 'pointer' }} htmlFor={id}>
     <input id={id} type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
@@ -24,6 +26,7 @@ const LLM_MODELS = [
 ];
 
 export default function SystemConfigPage() {
+  const router = useRouter();
   const [model, setModel] = useState(LLM_MODELS[0]);
   const [temperature, setTemperature] = useState(0.2);
   const [maxTokens, setMaxTokens] = useState(2048);
@@ -31,9 +34,78 @@ export default function SystemConfigPage() {
   const [autoAnalyze, setAutoAnalyze] = useState(true);
   const [optimizeNetwork, setOptimizeNetwork] = useState(false);
   const [clearConfirm, setClearConfirm] = useState(false);
+  
+  const [isSaving, setIsSaving] = useState(false);
+  const [showToast, setShowToast] = useState('');
+
+  const showNotification = (msg: string) => {
+    setShowToast(msg);
+    setTimeout(() => setShowToast(''), 3000);
+  };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      showNotification('Lưu cấu hình hệ thống thành công!');
+    }, 800);
+  };
+
+  const handleCancel = () => {
+    router.push('/settings');
+  };
+
+  const handleClearCache = () => {
+    setClearConfirm(true);
+    setTimeout(() => {
+      setClearConfirm(false);
+      showNotification('Đã xóa bộ nhớ đệm thành công!');
+    }, 2000);
+  };
+
+  const handleBackup = () => {
+    showNotification('Đang tạo bản sao lưu... Vui lòng đợi!');
+    setTimeout(() => {
+      showNotification('Đã tải xuống bản sao lưu cấu hình dự án!');
+    }, 2000);
+  };
+
+  const handleReset = () => {
+    if (confirm('Bạn có chắc chắn muốn khôi phục cài đặt gốc của hệ thống? Tất cả các cấu hình của bạn sẽ bị mất.')) {
+      setModel(LLM_MODELS[0]);
+      setTemperature(0.2);
+      setMaxTokens(2048);
+      setGpuBoost(true);
+      setAutoAnalyze(true);
+      setOptimizeNetwork(false);
+      showNotification('Đã khôi phục cài đặt gốc thành công!');
+    }
+  };
 
   return (
-    <div style={{ maxWidth: '900px' }}>
+    <div style={{
+      maxWidth: '900px',
+      margin: '0 auto',
+      width: '100%',
+      position: 'relative'
+    }}>
+      {/* Toast Notification */}
+      {showToast && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--success-container)', color: 'var(--success)',
+          padding: '12px 24px', borderRadius: 'var(--radius-md)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          display: 'flex', alignItems: 'center', gap: '8px', zIndex: 100,
+          fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-display)'
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {showToast}
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
@@ -256,14 +328,15 @@ export default function SystemConfigPage() {
                 <button
                   className="btn btn-secondary"
                   id="clear-cache-btn"
-                  onClick={() => { setClearConfirm(true); setTimeout(() => setClearConfirm(false), 2000); }}
-                  style={{ fontSize: '12px', padding: '5px 12px', gap: '5px' }}
+                  onClick={handleClearCache}
+                  disabled={clearConfirm}
+                  style={{ fontSize: '12px', padding: '5px 12px', gap: '5px', opacity: clearConfirm ? 0.7 : 1 }}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="3 6 5 6 21 6" strokeLinecap="round" />
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" strokeLinecap="round" />
                   </svg>
-                  {clearConfirm ? '✓ Đã xóa' : 'Xóa ngay'}
+                  {clearConfirm ? 'Đang xóa...' : 'Xóa ngay'}
                 </button>
               </div>
 
@@ -282,6 +355,7 @@ export default function SystemConfigPage() {
                 <button
                   className="btn btn-secondary"
                   id="backup-config-btn"
+                  onClick={handleBackup}
                   style={{ fontSize: '12px', padding: '5px 12px', gap: '5px' }}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -297,6 +371,7 @@ export default function SystemConfigPage() {
               <div style={{ paddingTop: '4px', textAlign: 'center' }}>
                 <button
                   id="reset-config-btn"
+                  onClick={handleReset}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer',
                     color: 'var(--error)', fontSize: '12.5px',
@@ -318,8 +393,16 @@ export default function SystemConfigPage() {
         marginTop: '24px', paddingTop: '20px',
         borderTop: '1px solid var(--outline-variant)',
       }}>
-        <button className="btn btn-secondary" id="config-cancel-btn">Huỷ thay đổi</button>
-        <button className="btn btn-primary" id="config-save-btn">Lưu cấu hình</button>
+        <button className="btn btn-secondary" id="config-cancel-btn" onClick={handleCancel}>Huỷ thay đổi</button>
+        <button 
+          className="btn btn-primary" 
+          id="config-save-btn" 
+          onClick={handleSave}
+          disabled={isSaving}
+          style={{ opacity: isSaving ? 0.7 : 1, minWidth: '120px' }}
+        >
+          {isSaving ? 'Đang lưu...' : 'Lưu cấu hình'}
+        </button>
       </div>
     </div>
   );

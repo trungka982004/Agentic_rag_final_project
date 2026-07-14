@@ -54,7 +54,85 @@ app.add_middleware(
 def read_root():
     return {"message": "Agentic RAG Backend is running successfully!"}
 
+@app.get("/api/health")
+def health_check():
+    """Docker / load-balancer health check endpoint."""
+    return {"status": "ok"}
+
 app.include_router(chat.router)
+
+# ---------------------------------------------------------------------------
+# CHAT EXPORTS DASHBOARD ENDPOINT
+# Returns all agent messages that have export_links so the Library /
+# Settings dashboards can display them without re-fetching each session.
+# ---------------------------------------------------------------------------
+@app.get("/api/chat-exports")
+def list_chat_exports(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Returns a flat list of all agent messages that contain Google Workspace
+    export links (docs / sheets), belonging to the current user.
+    Used to sync the Library / Academic dashboard with the chat history.
+    """
+    # Fetch all sessions owned by the user
+    sessions = db.query(ChatSession).filter(ChatSession.user_id == current_user.id).all()
+    session_ids = [s.id for s in sessions]
+
+    if not session_ids:
+        return []
+
+    # Fetch agent messages with non-null export_links across all user sessions
+    msgs = (
+        db.query(Message)
+        .filter(
+            Message.session_id.in_(session_ids),
+            Message.role == "agent",
+            Message.export_links.isnot(None),
+        )
+        .order_by(Message.created_at.desc())
+        .limit(100)
+        .all()
+    )
+
+    result = []
+    for msg in msgs:
+        links = msg.export_links or {}
+        # Only include messages that actually have at least one link
+        if not links.get("docs") and not links.get("sheets"):
+            continue
+
+        # Find the preceding user question for context
+        preceding = (
+            db.query(Message)
+            .filter(
+                Message.session_id == msg.session_id,
+                Message.created_at < msg.created_at,
+                Message.role == "user",
+            )
+            .order_by(Message.created_at.desc())
+            .first()
+        )
+        question_preview = ""
+        if preceding:
+            q = preceding.content
+            question_preview = q[:120] + "..." if len(q) > 120 else q
+
+        # Resolve session title
+        sess = next((s for s in sessions if s.id == msg.session_id), None)
+        session_title = sess.title if sess else "Unknown Session"
+
+        result.append({
+            "message_id": str(msg.id),
+            "session_id": str(msg.session_id),
+            "session_title": session_title,
+            "question_preview": question_preview,
+            "export_links": links,
+            "created_at": msg.created_at.isoformat(),
+        })
+
+    return result
 
 # --- AUTHENTICATION ENDPOINTS ---
 
@@ -149,6 +227,11 @@ def delete_session(session_id: UUID, current_user: User = Depends(get_current_us
 
 # --- DOCUMENT LIBRARY ENDPOINTS ---
 
+from pydantic import BaseModel
+
+class BulkDeleteRequest(BaseModel):
+    ids: List[str]
+
 RAW_DATA_PATH = "data/raw"
 
 def get_all_documents():
@@ -156,12 +239,10 @@ def get_all_documents():
     if not os.path.exists(RAW_DATA_PATH):
         return docs
         
-    # Walk through each domain folder
-    for domain in ["it", "math", "physics", "electronics"]:
+    # Walk through each domain folder dynamically
+    domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d)) and not d.startswith(".")]
+    for domain in domains:
         domain_path = os.path.join(RAW_DATA_PATH, domain)
-        if not os.path.exists(domain_path):
-            continue
-            
         for file in os.listdir(domain_path):
             if file.endswith(".pdf"):
                 file_path = os.path.join(domain_path, file)
@@ -176,12 +257,13 @@ def get_all_documents():
                 status = "done" if os.path.exists(domain_db_path) else "pending"
                 
                 docs.append({
-                    "id": file, # use filename as id
+                    "id": f"{domain}::{file}", # Unique identifier combining domain and file name
                     "name": file,
                     "author": domain.upper(), # Map domain as author/tag for SIS
                     "year": datetime.fromtimestamp(stat.st_mtime).year,
                     "date": added_date,
                     "size": f"{size_mb:.1f} MB",
+                    "size_bytes": stat.st_size, # Add raw size in bytes for sorting
                     "status": status,
                     "mtime": stat.st_mtime
                 })
@@ -216,13 +298,15 @@ def upload_document(
     domain: str = Form("it"),
     current_user: User = Depends(get_current_user)
 ):
-    if domain not in ["it", "math", "physics", "electronics"]:
-        raise HTTPException(status_code=400, detail="Invalid domain")
+    # Sanitize and validate domain name
+    clean_domain = "".join(c for c in domain.lower() if c.isalnum() or c in ["-", "_"])
+    if not clean_domain:
+        raise HTTPException(status_code=400, detail="Invalid domain name")
         
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
         
-    domain_path = os.path.join(RAW_DATA_PATH, domain)
+    domain_path = os.path.join(RAW_DATA_PATH, clean_domain)
     if not os.path.exists(domain_path):
         os.makedirs(domain_path)
         
@@ -232,12 +316,117 @@ def upload_document(
             shutil.copyfileobj(file.file, buffer)
             
         # Trigger background ingestion
-        background_tasks.add_task(run_ingestion_background, domain)
+        background_tasks.add_task(run_ingestion_background, clean_domain)
         
         return {"message": f"Successfully uploaded {file.filename}. AI analysis started in background."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class ReassignDocumentRequest(BaseModel):
+    id: str
+    target_domain: str
+
+@app.delete("/api/documents/bulk")
+def bulk_delete_documents(
+    payload: BulkDeleteRequest,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    deleted_files = []
+    affected_domains = set()
+    
+    for doc_id in payload.ids:
+        if "::" not in doc_id:
+            continue
+        domain, filename = doc_id.split("::", 1)
+        domain_path = os.path.join(RAW_DATA_PATH, domain)
+        file_path = os.path.join(domain_path, filename)
+        
+        if os.path.exists(file_path):
+            try:
+                # Delete vectors from ChromaDB first
+                try:
+                    from local_rag import get_vector_db, find_exact_source_path
+                    db = get_vector_db(domain)
+                    if db:
+                        db_source_path = find_exact_source_path(db, filename)
+                        if db_source_path:
+                            db.delete(where={"source": db_source_path})
+                            print(f"[Bulk Delete] Deleted vectors for {filename} from ChromaDB '{domain}_collection'.")
+                except Exception as e:
+                    print(f"[Bulk Delete] Warning: Failed to delete vectors from ChromaDB: {e}")
+                
+                os.remove(file_path)
+                deleted_files.append(filename)
+                affected_domains.add(domain)
+            except Exception as e:
+                print(f"[Bulk Delete] Error deleting {file_path}: {e}")
+                
+    # Rebuild indexes for affected domains in background
+    for domain in affected_domains:
+        background_tasks.add_task(run_ingestion_background, domain)
+        
+    return {
+        "message": f"Successfully deleted {len(deleted_files)} file(s).",
+        "deleted": deleted_files
+    }
+
+@app.post("/api/documents/reassign")
+def reassign_document(
+    payload: ReassignDocumentRequest,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    if "::" not in payload.id:
+        raise HTTPException(status_code=400, detail="Invalid document ID format")
+        
+    source_domain, filename = payload.id.split("::", 1)
+    target_domain = payload.target_domain.lower()
+    
+    if source_domain == target_domain:
+        return {"message": "Document is already in the target domain"}
+        
+    source_path = os.path.join(RAW_DATA_PATH, source_domain, filename)
+    target_dir = os.path.join(RAW_DATA_PATH, target_domain)
+    target_path = os.path.join(target_dir, filename)
+    
+    if not os.path.exists(source_path):
+        raise HTTPException(status_code=404, detail=f"Source file not found: {filename}")
+        
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+        
+    if os.path.exists(target_path):
+        raise HTTPException(status_code=400, detail="A document with this name already exists in the target domain")
+        
+    try:
+        # 1. Delete vectors from old domain's ChromaDB
+        try:
+            from local_rag import get_vector_db, find_exact_source_path
+            db = get_vector_db(source_domain)
+            if db:
+                db_source_path = find_exact_source_path(db, filename)
+                if db_source_path:
+                    db.delete(where={"source": db_source_path})
+                    print(f"[Reassign] Deleted old vectors for {filename} from ChromaDB '{source_domain}_collection'.")
+        except Exception as e:
+            print(f"[Reassign] Warning: Failed to delete old vectors: {e}")
+            
+        # 2. Move file on disk
+        shutil.move(source_path, target_path)
+        
+        # 3. Rebuild indexes for both domains in background
+        background_tasks.add_task(run_ingestion_background, source_domain)
+        background_tasks.add_task(run_ingestion_background, target_domain)
+        
+        return {
+            "message": f"Successfully moved {filename} from {source_domain.upper()} to {target_domain.upper()}.",
+            "new_id": f"{target_domain}::{filename}"
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+

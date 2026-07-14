@@ -4,6 +4,7 @@
 // 2x2 grid: Zotero (connected), Mendeley (connected), Google Scholar (disconnected), ORCID ID (form)
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ServiceCardProps {
   id: string;
@@ -16,6 +17,7 @@ interface ServiceCardProps {
   onSync: () => void;
   onDisconnect: () => void;
   onConnect: () => void;
+  isProcessing?: boolean;
 }
 
 const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -25,7 +27,7 @@ const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   </label>
 );
 
-function ServiceCard({ id, logo, name, status, account, lastSync, description, onSync, onDisconnect, onConnect }: ServiceCardProps) {
+function ServiceCard({ id, logo, name, status, account, lastSync, description, onSync, onDisconnect, onConnect, isProcessing }: ServiceCardProps) {
   const [autoSync, setAutoSync] = useState(status === 'connected');
 
   return (
@@ -89,12 +91,22 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
-            <button className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center', fontSize: '13px' }}
-              id={`${id}-sync-btn`} onClick={onSync}>
-              Đồng bộ ngay
+            <button 
+              className="btn btn-secondary" 
+              style={{ flex: 1, justifyContent: 'center', fontSize: '13px', opacity: isProcessing ? 0.7 : 1 }}
+              id={`${id}-sync-btn`} 
+              onClick={onSync}
+              disabled={isProcessing}
+            >
+              {isProcessing ? 'Đang đồng bộ...' : 'Đồng bộ ngay'}
             </button>
-            <button className="btn btn-danger" style={{ flex: 1, justifyContent: 'center', fontSize: '13px' }}
-              id={`${id}-disconnect-btn`} onClick={onDisconnect}>
+            <button 
+              className="btn btn-danger" 
+              style={{ flex: 1, justifyContent: 'center', fontSize: '13px', opacity: isProcessing ? 0.7 : 1 }}
+              id={`${id}-disconnect-btn`} 
+              onClick={onDisconnect}
+              disabled={isProcessing}
+            >
               Ngắt kết nối
             </button>
           </div>
@@ -106,9 +118,14 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
               {description}
             </p>
           )}
-          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: '13px' }}
-            id={`${id}-connect-btn`} onClick={onConnect}>
-            Kết nối tài khoản
+          <button 
+            className="btn btn-primary" 
+            style={{ width: '100%', justifyContent: 'center', fontSize: '13px', opacity: isProcessing ? 0.7 : 1 }}
+            id={`${id}-connect-btn`} 
+            onClick={onConnect}
+            disabled={isProcessing}
+          >
+            {isProcessing ? 'Đang kết nối...' : 'Kết nối tài khoản'}
           </button>
         </>
       )}
@@ -117,10 +134,77 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
 }
 
 export default function AcademicIntegrationPage() {
+  const router = useRouter();
   const [orcid, setOrcid] = useState('');
+  
+  const [isSaving, setIsSaving] = useState(false);
+  const [showToast, setShowToast] = useState('');
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  const [services, setServices] = useState([
+    { id: 'zotero', status: 'connected', account: 'nguyenvana_academic', lastSync: 'Tự động đồng bộ' },
+    { id: 'mendeley', status: 'connected', account: 'a.nguyen@mendeley.org', lastSync: '1 giờ trước' },
+    { id: 'scholar', status: 'disconnected', account: '', lastSync: '' }
+  ]);
+
+  const showNotification = (msg: string) => {
+    setShowToast(msg);
+    setTimeout(() => setShowToast(''), 3000);
+  };
+
+  const handleServiceAction = (id: string, action: 'sync' | 'connect' | 'disconnect') => {
+    setProcessingId(id);
+    setTimeout(() => {
+      if (action === 'disconnect') {
+        setServices(services.map(s => s.id === id ? { ...s, status: 'disconnected', account: '', lastSync: '' } : s));
+        showNotification(`Đã ngắt kết nối ${id}`);
+      } else if (action === 'connect') {
+        setServices(services.map(s => s.id === id ? { ...s, status: 'connected', account: `user_${id}@example.com`, lastSync: 'Vừa xong' } : s));
+        showNotification(`Đã kết nối thành công với ${id}`);
+      } else {
+        setServices(services.map(s => s.id === id ? { ...s, lastSync: 'Vừa xong' } : s));
+        showNotification(`Đã đồng bộ dữ liệu từ ${id}`);
+      }
+      setProcessingId(null);
+    }, 1000);
+  };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      showNotification('Lưu thiết lập kết nối thành công!');
+    }, 800);
+  };
+
+  const handleCancel = () => {
+    router.push('/settings');
+  };
 
   return (
-    <div style={{ maxWidth: '880px' }}>
+    <div style={{
+      maxWidth: '880px',
+      margin: '0 auto',
+      width: '100%',
+      position: 'relative'
+    }}>
+      {/* Toast Notification */}
+      {showToast && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--success-container)', color: 'var(--success)',
+          padding: '12px 24px', borderRadius: 'var(--radius-md)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          display: 'flex', alignItems: 'center', gap: '8px', zIndex: 100,
+          fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-display)'
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {showToast}
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
@@ -138,27 +222,38 @@ export default function AcademicIntegrationPage() {
           id="zotero"
           logo="Z"
           name="Zotero"
-          status="connected"
-          account="nguyenvana_academic"
-          lastSync="Tự động đồng bộ"
-          onSync={() => {}} onDisconnect={() => {}} onConnect={() => {}}
+          status={services.find(s => s.id === 'zotero')?.status as any}
+          account={services.find(s => s.id === 'zotero')?.account}
+          lastSync={services.find(s => s.id === 'zotero')?.lastSync}
+          isProcessing={processingId === 'zotero'}
+          onSync={() => handleServiceAction('zotero', 'sync')} 
+          onDisconnect={() => handleServiceAction('zotero', 'disconnect')} 
+          onConnect={() => handleServiceAction('zotero', 'connect')}
         />
         <ServiceCard
           id="mendeley"
           logo="M"
           name="Mendeley"
-          status="connected"
-          account="a.nguyen@mendeley.org"
-          lastSync="1 giờ trước"
-          onSync={() => {}} onDisconnect={() => {}} onConnect={() => {}}
+          status={services.find(s => s.id === 'mendeley')?.status as any}
+          account={services.find(s => s.id === 'mendeley')?.account}
+          lastSync={services.find(s => s.id === 'mendeley')?.lastSync}
+          isProcessing={processingId === 'mendeley'}
+          onSync={() => handleServiceAction('mendeley', 'sync')} 
+          onDisconnect={() => handleServiceAction('mendeley', 'disconnect')} 
+          onConnect={() => handleServiceAction('mendeley', 'connect')}
         />
         <ServiceCard
           id="scholar"
           logo="G"
           name="Google Scholar"
-          status="disconnected"
+          status={services.find(s => s.id === 'scholar')?.status as any}
+          account={services.find(s => s.id === 'scholar')?.account}
+          lastSync={services.find(s => s.id === 'scholar')?.lastSync}
           description="Kết nối để tự động cập nhật danh sách trích dẫn và các bài báo từ Google Scholar vào hệ thống."
-          onSync={() => {}} onDisconnect={() => {}} onConnect={() => {}}
+          isProcessing={processingId === 'scholar'}
+          onSync={() => handleServiceAction('scholar', 'sync')} 
+          onDisconnect={() => handleServiceAction('scholar', 'disconnect')} 
+          onConnect={() => handleServiceAction('scholar', 'connect')}
         />
 
         {/* ORCID Card */}
@@ -194,10 +289,18 @@ export default function AcademicIntegrationPage() {
           />
           <button
             className="btn btn-secondary"
-            style={{ width: '100%', justifyContent: 'center', fontSize: '13px' }}
+            style={{ width: '100%', justifyContent: 'center', fontSize: '13px', opacity: processingId === 'orcid' ? 0.7 : 1 }}
             id="orcid-verify-btn"
+            disabled={processingId === 'orcid' || !orcid}
+            onClick={() => {
+              setProcessingId('orcid');
+              setTimeout(() => {
+                showNotification(`Đã xác thực ORCID: ${orcid}`);
+                setProcessingId(null);
+              }, 1200);
+            }}
           >
-            Xác thực &amp; Kết nối
+            {processingId === 'orcid' ? 'Đang xác thực...' : 'Xác thực & Kết nối'}
           </button>
         </div>
       </div>
@@ -218,8 +321,16 @@ export default function AcademicIntegrationPage() {
           Nâng cấp Premium
         </button>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="btn btn-secondary" id="academic-back-btn">← Quay lại</button>
-          <button className="btn btn-primary" id="academic-save-btn">Lưu thiết lập kết nối</button>
+          <button className="btn btn-secondary" id="academic-back-btn" onClick={handleCancel}>← Quay lại</button>
+          <button 
+            className="btn btn-primary" 
+            id="academic-save-btn" 
+            onClick={handleSave}
+            disabled={isSaving}
+            style={{ opacity: isSaving ? 0.7 : 1, minWidth: '160px' }}
+          >
+            {isSaving ? 'Đang lưu...' : 'Lưu thiết lập kết nối'}
+          </button>
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ interface Props {
   messages: DisplayMessage[];
   isConnected: boolean;
   isThinking: boolean;
-  onSend: (text: string) => void;
+  onSend: (text: string, selectedDoc?: string | null) => void;
   user: User | null;
   sessionTitle?: string;
 }
@@ -47,6 +47,27 @@ export default function ChatWindow({
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [attachedFile, setAttachedFile] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Listen for document attachment event from Sidebar
+  useEffect(() => {
+    const handleAttach = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.name) {
+        const fileName = customEvent.detail.name;
+        setAttachedFile(fileName);
+        setInput(prev => {
+          const base = prev.trim();
+          if (base) return `${base} (liên quan đến tài liệu ${fileName})`;
+          return `Tóm tắt tài liệu ${fileName} giúp tôi.`;
+        });
+      }
+    };
+    window.addEventListener('attach-document-to-chat', handleAttach);
+    return () => {
+      window.removeEventListener('attach-document-to-chat', handleAttach);
+    };
+  }, []);
 
   const handleChatFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -59,7 +80,8 @@ export default function ChatWindow({
     setUploadingFile(true);
     setAttachedFile(null);
     try {
-      await apiUploadDocument(file, 'it');
+      const activeDomain = (typeof window !== 'undefined' ? localStorage.getItem('active_domain') : '') || 'it';
+      await apiUploadDocument(file, activeDomain);
       setAttachedFile(file.name);
       // Auto-populate chat input with a nice prompt asking to summarize this document
       setInput(prev => {
@@ -101,10 +123,68 @@ export default function ChatWindow({
   const handleSend = useCallback(() => {
     const text = input.trim();
     if (!text || isThinking || !isConnected) return;
-    onSend(text);
+    onSend(text, attachedFile);
     setInput('');
     setAttachedFile(null);
-  }, [input, isThinking, isConnected, onSend, setAttachedFile]);
+  }, [input, isThinking, isConnected, onSend, attachedFile]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    // 1. Try to read internal PDF filename from drag-and-drop source
+    const internalFileName = e.dataTransfer.getData('text/plain');
+    if (internalFileName && internalFileName.endsWith('.pdf')) {
+      setAttachedFile(internalFileName);
+      setInput(prev => {
+        const base = prev.trim();
+        if (base) return `${base} (liên quan đến tài liệu ${internalFileName})`;
+        return `Tóm tắt tài liệu ${internalFileName} giúp tôi.`;
+      });
+      return;
+    }
+
+    // 2. Try to read external local file dragged from OS
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (!file.name.endsWith('.pdf')) {
+        alert('Chỉ hỗ trợ tệp định dạng PDF.');
+        return;
+      }
+      setUploadingFile(true);
+      setAttachedFile(null);
+      try {
+        const activeDomain = (typeof window !== 'undefined' ? localStorage.getItem('active_domain') : '') || 'it';
+        await apiUploadDocument(file, activeDomain);
+        setAttachedFile(file.name);
+        setInput(prev => {
+          const base = prev.trim();
+          if (base) return `${base} (liên quan đến tài liệu ${file.name})`;
+          return `Tóm tắt tài liệu ${file.name} giúp tôi.`;
+        });
+        window.dispatchEvent(new Event('document-uploaded'));
+      } catch (err) {
+        console.error(err);
+        alert('Tải lên tài liệu thất bại.');
+      } finally {
+        setUploadingFile(false);
+      }
+    }
+  }, []);
 
   const handleKey = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -150,7 +230,56 @@ export default function ChatWindow({
         height: '100%',
         minWidth: 0,
         overflow: 'hidden',
-      }}>
+        position: 'relative',
+      }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      >
+        {isDragging && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            border: '2px dashed var(--primary)',
+            borderRadius: 'var(--radius-lg)',
+            margin: '12px',
+            pointerEvents: 'none',
+          }}>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '16px',
+            }}>
+              📥
+            </div>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: 600,
+              color: 'var(--primary)',
+              marginBottom: '8px',
+              fontFamily: 'var(--font-display)',
+            }}>
+              Thả tài liệu vào đây
+            </h3>
+            <p style={{
+              fontSize: '14px',
+              color: 'var(--on-surface-variant)',
+              maxWidth: '300px',
+              textAlign: 'center',
+            }}>
+              Hỗ trợ kéo thả trực tiếp từ Tủ sách khoa học hoặc từ máy tính của bạn (định dạng PDF)
+            </p>
+          </div>
+        )}
         {/* ─── Message list ─── */}
         <div style={{
           flex: 1,
@@ -495,6 +624,7 @@ export default function ChatWindow({
       <ScientificConsole
         selectedMessage={selectedMessage}
         onUpdateMessageLinks={handleUpdateMessageLinks}
+        allMessages={localMessages}
       />
     </div>
   </div>

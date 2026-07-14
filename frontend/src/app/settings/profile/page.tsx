@@ -5,6 +5,8 @@ import { useState } from 'react';
 // Stitch screen: "Thông tin cá nhân — Personal Information"
 // Sections: Profile card + form fields, Security (password + 2FA toggle)
 
+import { useRouter } from 'next/navigation';
+
 const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
   <label className="toggle" style={{ cursor: 'pointer' }}>
     <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
@@ -13,11 +15,60 @@ const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 );
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [twoFA, setTwoFA] = useState(true);
   const [tags, setTags] = useState(['Trí tuệ nhân tạo', 'Xử lý ngôn ngữ tự nhiên', 'Học sâu']);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: 'Nguyễn Văn A',
+    title: 'Tiến sĩ / Phó Giáo sư',
+    email: 'a.nguyen@academic.edu.vn',
+    org: 'Viện Công nghệ Thông tin – Viện Hàn lâm KH&CN VN',
+    pwCurrent: '',
+    pwNew: '',
+    pwConfirm: '',
+  });
+
+  const handleSave = () => {
+    setIsSaving(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSaving(false);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }, 800);
+  };
+
+  const handleCancel = () => {
+    router.push('/settings');
+  };
 
   return (
-    <div style={{ maxWidth: '780px' }}>
+    <div style={{
+      maxWidth: '780px',
+      margin: '0 auto',
+      width: '100%',
+      position: 'relative'
+    }}>
+      {/* Toast Notification */}
+      {showToast && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--success-container)', color: 'var(--success)',
+          padding: '12px 24px', borderRadius: 'var(--radius-md)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          display: 'flex', alignItems: 'center', gap: '8px', zIndex: 100,
+          fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-display)'
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Lưu thông tin cá nhân thành công!
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
@@ -40,7 +91,7 @@ export default function ProfilePage() {
             fontSize: '22px', fontWeight: 700, fontFamily: 'var(--font-display)',
             flexShrink: 0, position: 'relative',
           }}>
-            N
+            {formData.name.charAt(0).toUpperCase()}
             {/* Active badge */}
             <span style={{
               position: 'absolute', bottom: 0, right: 0,
@@ -51,7 +102,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '17px', fontWeight: 700, color: 'var(--on-surface)' }}>
-              TS. Nguyễn Văn A
+              TS. {formData.name}
             </div>
             <span style={{
               fontSize: '10.5px', fontFamily: 'var(--font-label)', fontWeight: 700,
@@ -65,10 +116,10 @@ export default function ProfilePage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           {[
-            { id: 'profile-name',  label: 'Họ và tên',           value: 'Nguyễn Văn A',                span: 1 },
-            { id: 'profile-title', label: 'Chức danh / Học vị',  value: 'Tiến sĩ / Phó Giáo sư',      span: 1 },
-            { id: 'profile-email', label: 'Email học thuật',     value: 'a.nguyen@academic.edu.vn',     span: 1 },
-            { id: 'profile-org',   label: 'Cơ quan / Tổ chức',   value: 'Viện Công nghệ Thông tin – Viện Hàn lâm KH&CN VN', span: 1 },
+            { id: 'name',  label: 'Họ và tên',           value: formData.name, span: 1 },
+            { id: 'title', label: 'Chức danh / Học vị',  value: formData.title, span: 1 },
+            { id: 'email', label: 'Email học thuật',     value: formData.email, span: 1 },
+            { id: 'org',   label: 'Cơ quan / Tổ chức',   value: formData.org,   span: 1 },
           ].map(f => (
             <div key={f.id} style={{ gridColumn: `span ${f.span}` }}>
               <label htmlFor={f.id} style={{
@@ -77,7 +128,13 @@ export default function ProfilePage() {
               }}>
                 {f.label}
               </label>
-              <input id={f.id} className="input" defaultValue={f.value} style={{ fontSize: '13.5px' }} />
+              <input 
+                id={f.id} 
+                className="input" 
+                value={f.value} 
+                onChange={(e) => setFormData({...formData, [f.id]: e.target.value})}
+                style={{ fontSize: '13.5px' }} 
+              />
             </div>
           ))}
 
@@ -127,6 +184,12 @@ export default function ProfilePage() {
                   fontFamily: 'var(--font-label)',
                 }}
                 id="add-tag-btn"
+                onClick={() => {
+                  const newTag = prompt('Nhập lĩnh vực nghiên cứu mới:');
+                  if (newTag && newTag.trim() && !tags.includes(newTag.trim())) {
+                    setTags([...tags, newTag.trim()]);
+                  }
+                }}
               >
                 + Thêm lĩnh vực
               </button>
@@ -145,15 +208,22 @@ export default function ProfilePage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
           {[
-            { id: 'pw-current', label: 'Mật khẩu hiện tại', type: 'password', value: '••••••••••••' },
-            { id: 'pw-new',     label: 'Mật khẩu mới',       type: 'password', placeholder: 'Nhập mật khẩu mới' },
-            { id: 'pw-confirm', label: 'Xác nhận mật khẩu mới', type: 'password', placeholder: 'Xác nhận lại' },
+            { id: 'pwCurrent', label: 'Mật khẩu hiện tại', type: 'password', value: formData.pwCurrent, placeholder: '••••••••••••' },
+            { id: 'pwNew',     label: 'Mật khẩu mới',       type: 'password', value: formData.pwNew, placeholder: 'Nhập mật khẩu mới' },
+            { id: 'pwConfirm', label: 'Xác nhận mật khẩu mới', type: 'password', value: formData.pwConfirm, placeholder: 'Xác nhận lại' },
           ].map(f => (
             <div key={f.id}>
               <label htmlFor={f.id} style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px' }}>
                 {f.label}
               </label>
-              <input id={f.id} type={f.type} className="input" defaultValue={(f as any).value} placeholder={(f as any).placeholder} />
+              <input 
+                id={f.id} 
+                type={f.type} 
+                className="input" 
+                value={f.value}
+                onChange={(e) => setFormData({...formData, [f.id]: e.target.value})}
+                placeholder={f.placeholder} 
+              />
             </div>
           ))}
         </div>
@@ -193,8 +263,16 @@ export default function ProfilePage() {
 
       {/* Action buttons */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '8px' }}>
-        <button className="btn btn-secondary" id="profile-cancel-btn">Huỷ bỏ</button>
-        <button className="btn btn-primary" id="profile-save-btn">Lưu thông tin</button>
+        <button className="btn btn-secondary" id="profile-cancel-btn" onClick={handleCancel}>Huỷ bỏ</button>
+        <button 
+          className="btn btn-primary" 
+          id="profile-save-btn" 
+          onClick={handleSave}
+          disabled={isSaving}
+          style={{ opacity: isSaving ? 0.7 : 1, minWidth: '120px' }}
+        >
+          {isSaving ? 'Đang lưu...' : 'Lưu thông tin'}
+        </button>
       </div>
     </div>
   );

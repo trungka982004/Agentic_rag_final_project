@@ -67,6 +67,7 @@ export type WSEventType =
 
 export interface WSEvent {
   type: WSEventType;
+  id?: string;
   // for node_update
   node?: string;
   // for token / final_answer
@@ -79,6 +80,12 @@ export interface WSEvent {
   message?: string;
   // generic status message
   detail?: string;
+  // query correction metadata
+  original_question?: string | null;
+  corrected_question?: string | null;
+  // export links object (docs/sheets)
+  export_links?: Record<string, string | null>;
+  flags?: MessageFlags;
 }
 
 // ============================================================
@@ -97,8 +104,11 @@ export interface StreamingMessage {
   activeNodes: ActiveNode[];
   exportLinks: ExportLink[];
   isStreaming: boolean;
+  // query correction
+  original_question?: string | null;
+  corrected_question?: string | null;
 }
 
 export type DisplayMessage =
-  | (Message & { isStreaming?: false })
+  | (Message & { isStreaming?: false; original_question?: string | null; corrected_question?: string | null })
   | (StreamingMessage & { id?: string; session_id?: string; created_at?: string; isStreaming: true });

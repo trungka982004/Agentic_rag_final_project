@@ -1,0 +1,233 @@
+{
+  "run_timestamp": "2026-07-07 13:50:04",
+  "optimizations_tested": [
+    "get_active_domains TTL cache",
+    "grade_documents_node keyword-overlap",
+    "grade_generation fast-path skip",
+    "condense_question no-history guard"
+  ],
+  "summary": {
+    "total_tests": 17,
+    "passed": 16,
+    "failed": 1,
+    "skipped": 0,
+    "pass_rate": "94.1%"
+  },
+  "benchmarks": {
+    "domain_cache": {
+      "benchmark": "get_active_domains_cache",
+      "passed": 4,
+      "total": 4,
+      "cold_read_avg_ms": 0.104,
+      "warm_cache_avg_ms": 0.000232,
+      "speedup": 450.0,
+      "results": [
+        {
+          "test_id": "DC-01",
+          "name": "Cold-start read",
+          "avg_ms": 0.104,
+          "domains": [
+            "electronics",
+            "it",
+            "kinh_t",
+            "math",
+            "physics"
+          ],
+          "passed": true
+        },
+        {
+          "test_id": "DC-02",
+          "name": "Warm cache read",
+          "avg_ms": 0.000232,
+          "max_ms": 0.0024,
+          "speedup_vs_cold": 450.0,
+          "domains_consistent": true,
+          "passed": true
+        },
+        {
+          "test_id": "DC-03",
+          "name": "Cache invalidation",
+          "cache_was_cleared": true,
+          "post_clear_read_ms": 0.09,
+          "domains_consistent": true,
+          "passed": true
+        },
+        {
+          "test_id": "DC-04",
+          "name": "Thread-safety",
+          "threads": 10,
+          "all_consistent": true,
+          "errors": [],
+          "passed": true
+        }
+      ]
+    },
+    "grade_documents": {
+      "benchmark": "grade_documents_node",
+      "passed": 5,
+      "total": 6,
+      "avg_after_ms": 0.135,
+      "avg_before_s": 18.261,
+      "results": [
+        {
+          "test_id": "GD-01",
+          "name": "Relevant document – high keyword overlap",
+          "expected_web_fallback": false,
+          "got_web_fallback": false,
+          "correct_decision": true,
+          "after_elapsed_s": 0.000158,
+          "before_elapsed_s": 43.4414,
+          "speedup": 275294.1,
+          "passed": true
+        },
+        {
+          "test_id": "GD-02",
+          "name": "Irrelevant document – low keyword overlap",
+          "expected_web_fallback": true,
+          "got_web_fallback": true,
+          "correct_decision": true,
+          "after_elapsed_s": 0.000203,
+          "before_elapsed_s": 2.8901,
+          "speedup": 14244.0,
+          "passed": true
+        },
+        {
+          "test_id": "GD-03",
+          "name": "selected_doc present – bypass check unconditionally",
+          "expected_web_fallback": false,
+          "got_web_fallback": false,
+          "correct_decision": true,
+          "after_elapsed_s": 0.000122,
+          "before_elapsed_s": 1.7656,
+          "speedup": 14460.0,
+          "passed": true
+        },
+        {
+          "test_id": "GD-04",
+          "name": "Empty documents list – fallback to web",
+          "expected_web_fallback": true,
+          "got_web_fallback": true,
+          "correct_decision": true,
+          "after_elapsed_s": 8.9e-05,
+          "before_elapsed_s": "N/A (LLM unavailable)",
+          "speedup": "N/A",
+          "passed": true
+        },
+        {
+          "test_id": "GD-05",
+          "name": "Short/stopword-only question – accept local docs",
+          "expected_web_fallback": false,
+          "got_web_fallback": true,
+          "correct_decision": false,
+          "after_elapsed_s": 0.000139,
+          "before_elapsed_s": 26.3019,
+          "speedup": 188950.7,
+          "passed": false
+        },
+        {
+          "test_id": "GD-06",
+          "name": "Technical query – moderate overlap match",
+          "expected_web_fallback": false,
+          "got_web_fallback": false,
+          "correct_decision": true,
+          "after_elapsed_s": 0.0001,
+          "before_elapsed_s": 16.9046,
+          "speedup": 168372.9,
+          "passed": true
+        }
+      ]
+    },
+    "grade_generation": {
+      "benchmark": "grade_generation_v_documents_and_question",
+      "passed": 4,
+      "total": 4,
+      "avg_fast_path_ms": 0.006,
+      "avg_llm_path_s": 13.732,
+      "results": [
+        {
+          "test_id": "GG-01",
+          "name": "selected_doc set → fast-path skip",
+          "path": "fast-path (no LLM)",
+          "expected": "useful",
+          "got": "useful",
+          "correct_decision": true,
+          "avg_elapsed_ms": 0.0055,
+          "max_elapsed_ms": 0.0129,
+          "before_estimate_s": "~6-10 (LLM)",
+          "speedup_estimate": "~1091901×",
+          "passed": true
+        },
+        {
+          "test_id": "GG-02",
+          "name": "retry_count=1 → fast-path skip",
+          "path": "fast-path (no LLM)",
+          "expected": "useful",
+          "got": "useful",
+          "correct_decision": true,
+          "avg_elapsed_ms": 0.0069,
+          "max_elapsed_ms": 0.0158,
+          "before_estimate_s": "~6-10 (LLM)",
+          "speedup_estimate": "~866425×",
+          "passed": true
+        },
+        {
+          "test_id": "GG-03",
+          "name": "retry_count=2 → fast-path skip (max retries)",
+          "path": "fast-path (no LLM)",
+          "expected": "useful",
+          "got": "useful",
+          "correct_decision": true,
+          "avg_elapsed_ms": 0.0056,
+          "max_elapsed_ms": 0.0094,
+          "before_estimate_s": "~6-10 (LLM)",
+          "speedup_estimate": "~1077199×",
+          "passed": true
+        },
+        {
+          "test_id": "GG-04",
+          "name": "First attempt, no selected_doc → LLM grader runs",
+          "path": "llm-grader",
+          "expected": "useful",
+          "got": "useful",
+          "correct_decision": true,
+          "elapsed_s": 13.732,
+          "passed": true
+        }
+      ]
+    },
+    "condense_question": {
+      "benchmark": "condense_question",
+      "passed": 3,
+      "total": 3,
+      "results": [
+        {
+          "test_id": "CQ-01",
+          "name": "No chat history – guard short-circuit",
+          "path": "no-history guard",
+          "avg_ms": 0.000303,
+          "max_ms": 0.0019,
+          "correct_output": true,
+          "passed": true
+        },
+        {
+          "test_id": "CQ-02",
+          "name": "History present, referential question ('it')",
+          "path": "llm-condense",
+          "original": "How does it handle long sequences?",
+          "condensed": "How does a transformer handle long sequences?",
+          "elapsed_s": 7.691,
+          "passed": true
+        },
+        {
+          "test_id": "CQ-03",
+          "name": "History present, standalone question – LLM should keep as-is",
+          "path": "llm-condense",
+          "original": "What is backpropagation?",
+          "condensed": "What is backpropagation?",
+          "elapsed_s": 3.553,
+          "passed": true
+        }
+      ]
+    }
+  }
+}

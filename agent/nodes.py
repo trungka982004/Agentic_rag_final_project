@@ -4,6 +4,7 @@ from tools.expert_search import get_expert_answer
 from tools.google_workspace import export_to_google_docs, export_to_google_sheets, upload_image_to_drive
 from tools.mermaid_renderer import render_mermaid_to_image
 from tools.formatter import format_agent_output
+from tools.query_normalizer import normalize_query
 import re
 import os
 
@@ -81,12 +82,25 @@ def router_node(state: GraphState):
     logger.info("--- ROUTER NODE ---")
     question = state["question"]
     chat_history = state.get("chat_history", [])
-    
+    preferred_domain = state.get("preferred_domain")
+
+    # ── Step 0: Normalize / fix typos / infer intent from malformed Vietnamese ──
+    original_question = None
+    normalized_q, was_corrected = normalize_query(question, llm)
+    if was_corrected:
+        original_question = question      # Save raw input for UI feedback
+        question = normalized_q
+        logger.info(f"[Router] Query corrected: '{original_question}' → '{question}'")
+
     # Condense the question using conversation history
     question = condense_question(question, chat_history)
-    domain = classify_domain(question)
     
-    logger.info(f"[*] Classified Domain: {domain.upper()}")
+    if preferred_domain and preferred_domain != 'all':
+        domain = preferred_domain.strip().lower()
+        logger.info(f"[*] Bypassing classification. Using user preferred domain: {domain.upper()}")
+    else:
+        domain = classify_domain(question)
+        logger.info(f"[*] Classified Domain: {domain.upper()}")
     
     # Keyword-based configurations (All default to ON)
     expert_required = True
@@ -106,10 +120,11 @@ def router_node(state: GraphState):
     if not any(kw in question.lower() for kw in export_keywords):
         export_to_workspace = False
         
-    logger.info(f"[*] Decided Flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
+    logger.info(f"[*] Decided Flags → expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
         
     return {
         "question": question,
+        "original_question": original_question,
         "domain": domain, 
         "expert_required": expert_required, 
         "python_repl": python_repl,
@@ -122,8 +137,9 @@ def retrieve_local_node(state: GraphState):
     logger.info("--- RETRIEVE LOCAL NODE ---")
     question = state["question"]
     domain = state["domain"]
+    selected_doc = state.get("selected_doc")
     
-    context = retrieve_context(question, domain)
+    context = retrieve_context(question, domain, target_file=selected_doc)
     
     # Check for failure messages in context
     if any(msg in context for msg in ["No database found", "No relevant information", "Error occurred"]):
@@ -134,33 +150,38 @@ def retrieve_local_node(state: GraphState):
     return {"documents": docs}
 
 def grade_documents_node(state: GraphState):
-    """Grades the retrieved documents for relevance."""
+    """Grades the retrieved documents for relevance using fast keyword overlap (no LLM call)."""
     logger.info("--- GRADE DOCUMENTS NODE ---")
     question = state["question"]
     documents = state.get("documents", [])
-    
+    selected_doc = state.get("selected_doc")
+
     if not documents:
         logger.info("[*] No local documents found. Falling back to Web Search.")
         return {"web_fallback": True}
-        
-    prompt = ChatPromptTemplate.from_template(
-        "You are a grader assessing relevance of a retrieved document to a user question.\n"
-        "Here is the retrieved document: \n\n {document} \n\n"
-        "Here is the user question: {question}\n"
-        "If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant.\n"
-        "Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question."
-    )
-    
-    chain = prompt | llm | StrOutputParser()
-    try:
-        score = chain.invoke({"question": question, "document": documents[0]}).strip().lower()
-        if "yes" in score:
-            logger.info("[*] Local documents are RELEVANT.")
+
+    # If user explicitly pinned a document, trust the retrieval unconditionally
+    if selected_doc:
+        logger.info(f"[*] Explicit document selected ('{selected_doc}'). Skipping relevance check.")
+        return {"web_fallback": False}
+
+    # Fast keyword overlap check – avoids an entire LLM round-trip (~5-8s)
+    context_text = documents[0].lower()
+    # Tokenise question into meaningful words (length > 2) and check overlap
+    question_tokens = [t for t in re.split(r"\W+", question.lower()) if len(t) > 2]
+    if question_tokens:
+        hits = sum(1 for tok in question_tokens if tok in context_text)
+        overlap_ratio = hits / len(question_tokens)
+        is_relevant = overlap_ratio >= 0.25  # At least 25 % of question terms appear
+        logger.info(f"[*] Keyword overlap: {hits}/{len(question_tokens)} tokens matched (ratio={overlap_ratio:.2f}). Relevant={is_relevant}")
+        if is_relevant:
             return {"web_fallback": False}
-    except Exception as e:
-        logger.error(f"Grading failed: {e}")
-    
-    logger.info("[*] Local documents are NOT relevant. Falling back to Web Search.")
+    else:
+        # Edge-case: single-char or no tokens – just accept the local result
+        logger.info("[*] No meaningful tokens in question. Accepting local documents.")
+        return {"web_fallback": False}
+
+    logger.info("[*] Low keyword overlap. Falling back to Web Search.")
     return {"web_fallback": True}
 
 def web_search_node(state: GraphState):
@@ -215,14 +236,15 @@ def generate_node(state: GraphState):
     You are a professional technical assistant. Answer the [QUESTION] based on the provided [CONTEXT] and the past [CONVERSATION HISTORY] (if any).
     
     MANDATORY RULES:
-    1. BE CONCISE. Do not explain your plan or describe how you will do things. Just provide the final result.
+    1. BE DETAILED AND COMPREHENSIVE. You MUST provide a long, fully developed, and rich textual explanation answering the question in detail first. Do not just give a brief summary.
     2. NEVER mention "Google Forms", "API", or "environment details".
     3. If calculation results are present in [CONTEXT], use them as the primary answer.
     4. If a Python code execution result is present in [CONTEXT], focus on explaining the result and output. DO NOT repeat or rewrite the raw Python code block (```python ... ```) in your answer.
-    5. If the user asked for a diagram, you MUST provide BOTH a detailed, well-structured textual report/explanation answering the question first, and then append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. Do not output only the diagram.
-    6. Do not repeat information.
-    7. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
-    8. Return ONLY the final report content.
+    5. You MUST ALWAYS provide the detailed textual report first. If a diagram is requested or appropriate, append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. The Mermaid diagram MUST act ONLY as a visual summary of the detailed text you already provided above. Do not rely on the diagram to convey new information.
+    6. ABSOLUTELY NO TEXT OR EXPLANATION should be generated after the Mermaid code block. The Mermaid block MUST be the absolute final element of your response.
+    7. Do not repeat information redundantly, but ensure the topic is thoroughly explained.
+    8. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
+    9. Return ONLY the final report content.
  
     [CONVERSATION HISTORY]:
     {history}

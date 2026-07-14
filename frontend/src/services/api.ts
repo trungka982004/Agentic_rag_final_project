@@ -91,6 +91,7 @@ export interface DocumentInfo {
   year: number;
   date: string;
   size: string;
+  size_bytes?: number;
   status: 'done' | 'indexing' | 'pending';
 }
 
@@ -109,6 +110,18 @@ export async function apiUploadDocument(file: File, domain: string): Promise<any
   return res.data;
 }
 
+export async function apiDeleteDocumentsBulk(ids: string[]): Promise<any> {
+  const res = await api.delete('/api/documents/bulk', {
+    data: { ids },
+  });
+  return res.data;
+}
+
+export async function apiReassignDocument(id: string, targetDomain: string): Promise<any> {
+  const res = await api.post('/api/documents/reassign', { id, target_domain: targetDomain });
+  return res.data;
+}
+
 // ============================================================
 // WEBSOCKET HELPERS
 // ============================================================
@@ -116,6 +129,23 @@ export function buildWsUrl(sessionId: string): string {
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : '';
   const wsBase = BASE_URL.replace(/^http/, 'ws');
   return `${wsBase}/api/ws/chat/${sessionId}?token=${token}`;
+}
+
+// ============================================================
+// CHAT EXPORTS  (sync with Library / Academic dashboards)
+// ============================================================
+export interface ChatExport {
+  message_id: string;
+  session_id: string;
+  session_title: string;
+  question_preview: string;
+  export_links: { docs?: string; sheets?: string };
+  created_at: string;
+}
+
+export async function apiListChatExports(): Promise<ChatExport[]> {
+  const res = await api.get<ChatExport[]>('/api/chat-exports');
+  return res.data;
 }
 
 export default api;
