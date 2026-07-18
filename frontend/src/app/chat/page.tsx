@@ -40,12 +40,12 @@ export default function ChatIndexPage() {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>
-          Chọn hoặc tạo cuộc hội thoại
+          Select or create a conversation
         </h2>
         <p style={{ fontSize: '0.85em', color: 'var(--text-muted)', maxWidth: '320px', lineHeight: 1.6 }}>
-          Chọn một phiên hội thoại ở thanh bên trái, hoặc nhấn{' '}
-          <strong style={{ color: 'var(--text-secondary)' }}>Cuộc hội thoại mới</strong>{' '}
-          để bắt đầu đặt câu hỏi.
+          Select a conversation from the sidebar, or click{' '}
+          <strong style={{ color: 'var(--text-secondary)' }}>New Conversation</strong>{' '}
+          to start asking questions.
         </p>
       </div>
 
@@ -58,10 +58,10 @@ export default function ChatIndexPage() {
         marginTop: '8px',
       }}>
         {[
-          { icon: '📚', label: 'RAG cục bộ', desc: 'Truy vấn tài liệu học thuật' },
-          { icon: '🌐', label: 'Tìm kiếm web', desc: 'Dự phòng khi không có dữ liệu' },
-          { icon: '🐍', label: 'Python REPL', desc: 'Thực thi code và tính toán' },
-          { icon: '📊', label: 'Google Export', desc: 'Xuất báo cáo Docs/Sheets' },
+          { icon: '📚', label: 'Local RAG', desc: 'Query academic documents' },
+          { icon: '🌐', label: 'Web Search', desc: 'Fallback when no local data is found' },
+          { icon: '🐍', label: 'Python REPL', desc: 'Execute code and perform calculations' },
+          { icon: '📊', label: 'Google Export', desc: 'Export reports to Docs/Sheets' },
         ].map(f => (
           <div key={f.label} style={{
             padding: '14px',

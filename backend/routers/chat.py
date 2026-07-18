@@ -33,11 +33,11 @@ def generate_chat_summary(question: str, answer: str) -> str:
         from local_rag import llm
         if llm:
             prompt = (
-                "Bạn là một trợ lý học thuật chuyên nghiệp. Hãy tóm tắt câu hỏi của người dùng và câu trả lời "
-                "thành một tiêu đề ngắn gọn (không quá 6 từ, ví dụ: 'Thuật toán Attention trong Transformer', "
-                "'Học sâu và xử lý ngôn ngữ', v.v.). Trả về DUY NHẤT tiêu đề tóm tắt đó, không giải thích gì thêm.\n\n"
-                f"Câu hỏi: {question}\n"
-                f"Trả lời: {answer[:150]}"
+                "You are a professional academic assistant. Summarize the user's question and response "
+                "into a brief title (no more than 6 words, e.g., 'Attention Algorithm in Transformers', "
+                "'Deep Learning & NLP', etc.). Return ONLY the summarized title, with no further explanation.\n\n"
+                f"Question: {question}\n"
+                f"Answer: {answer[:150]}"
             )
             response = llm.invoke(prompt)
             summary = response.content.strip().replace('"', '').replace("'", "")
@@ -186,7 +186,7 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
 
             # Update session title if it's the first message – done ASYNCHRONOUSLY
             # so the WebSocket response is never delayed by the title-generation LLM call.
-            is_first_message = session.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]
+            is_first_message = session.title in ["New Conversation", "New Chat"]
 
             db.commit()
             db.refresh(agent_msg)
@@ -216,7 +216,7 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                         try:
                             from backend.models import ChatSession as _CS
                             bg_sess = bg_db.query(_CS).filter(_CS.id == sess_id).first()
-                            if bg_sess and bg_sess.title in ["New Conversation", "Cuộc hội thoại mới", "New Chat"]:
+                            if bg_sess and bg_sess.title in ["New Conversation", "New Chat"]:
                                 bg_sess.title = title
                                 bg_db.add(bg_sess)
                                 bg_db.commit()

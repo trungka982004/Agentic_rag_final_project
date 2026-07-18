@@ -144,7 +144,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
           <div style={{ fontWeight: 600, color: 'var(--on-surface)', marginBottom: '4px' }}>
             Scientific Console
           </div>
-          Chưa chọn câu trả lời nào để hiển thị dữ liệu khoa học chuyên sâu.
+          No response selected to display in-depth scientific data.
         </div>
       </div>
     );
@@ -185,7 +185,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
       setActiveTab('export');
     } catch (err: any) {
       console.error(err);
-      setExportError(err.response?.data?.detail || 'Không thể xuất tài liệu. Vui lòng kiểm tra cấu hình credentials.json.');
+      setExportError(err.response?.data?.detail || 'Could not export document. Please check the credentials.json configuration.');
     } finally {
       setIsExporting(false);
     }
@@ -228,7 +228,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
           }}
         >
           <Icon path={ICONS.quote} size={13} />
-          Trích dẫn ({citationsList.length})
+          Citations ({citationsList.length})
         </button>
 
         <button
@@ -252,7 +252,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
           }}
         >
           <Icon path={ICONS.map} size={13} />
-          Bản đồ {allDiagrams.length > 0 ? `(${allDiagrams.length})` : ''}
+          Maps {allDiagrams.length > 0 ? `(${allDiagrams.length})` : ''}
         </button>
 
         <button
@@ -276,7 +276,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
           }}
         >
           <Icon path={ICONS.export} size={13} />
-          Xuất bản {exportLinks.length > 0 ? '✓' : ''}
+          Publish {exportLinks.length > 0 ? '✓' : ''}
         </button>
       </div>
 
@@ -285,11 +285,11 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
         {activeTab === 'citations' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-              Trích Dẫn Gốc & Nguồn Tài Liệu
+              Original Citations &amp; Document Sources
             </h4>
             {citationsList.length === 0 ? (
               <p style={{ fontSize: '12.5px', color: 'var(--on-surface-variant)', fontStyle: 'italic' }}>
-                Không tìm thấy trích dẫn trực tiếp nào trong câu trả lời này.
+                No direct citations found in this response.
               </p>
             ) : (
               citationsList.map((cite, index) => (
@@ -317,11 +317,11 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)', margin: 0 }}>
-                Sơ Đồ Tư Duy & Kiến Trúc
+                Mind Maps &amp; Architecture Diagrams
               </h4>
               {allDiagrams.length > 0 && (
                 <span style={{ fontSize: '11px', color: 'var(--on-surface-variant)', background: 'var(--surface-container)', padding: '2px 8px', borderRadius: '99px' }}>
-                  {allDiagrams.length} sơ đồ
+                  {allDiagrams.length} diagrams
                 </span>
               )}
             </div>
@@ -332,7 +332,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                 <svg style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <input
                   type="text"
-                  placeholder="Tìm theo câu hỏi hoặc loại sơ đồ..."
+                  placeholder="Search by question or diagram type..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   style={{
@@ -354,11 +354,11 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
             {allDiagrams.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--on-surface-variant)', fontSize: '12.5px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
                 <Icon path={ICONS.map} size={24} />
-                <span>Chưa có sơ đồ nào. Hãy yêu cầu Agent vẽ sơ đồ!</span>
+                <span>No diagrams available yet. Ask the Agent to draw a diagram!</span>
               </div>
             ) : filteredDiagrams.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '20px 16px', color: 'var(--on-surface-variant)', fontSize: '12.5px' }}>
-                Không tìm thấy sơ đồ phù hợp.
+                No matching diagrams found.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -367,9 +367,9 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                   const dt = diagram.diagramType;
                   const questionTitle = diagram.userQuestion
                     ? (diagram.userQuestion.length > 72 ? diagram.userQuestion.slice(0, 72) + '…' : diagram.userQuestion)
-                    : `Sơ đồ #${idx + 1}`;
+                    : `Diagram #${idx + 1}`;
                   const timeLabel = diagram.timestamp
-                    ? new Date(diagram.timestamp).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })
+                    ? new Date(diagram.timestamp).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })
                     : '';
                   return (
                     <div key={idx} style={{ border: '1px solid var(--outline-variant)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', background: 'var(--surface-container-low)', boxShadow: isExpanded ? '0 4px 16px rgba(0,0,0,0.12)' : 'none', transition: 'box-shadow 0.18s' }}>
@@ -411,7 +411,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                         <div style={{ background: '#ffffff', padding: '14px 12px', overflowX: 'auto', position: 'relative' }}>
                           <MermaidRenderer chart={diagram.code} />
                           <details style={{ marginTop: '12px' }}>
-                            <summary style={{ fontSize: '11px', color: 'var(--on-surface-variant)', cursor: 'pointer', userSelect: 'none' }}>Xem mã nguồn Mermaid</summary>
+                            <summary style={{ fontSize: '11px', color: 'var(--on-surface-variant)', cursor: 'pointer', userSelect: 'none' }}>View Mermaid Source</summary>
                             <pre style={{ marginTop: '6px', padding: '8px 10px', background: 'var(--surface-container-high)', borderRadius: 'var(--radius-sm)', fontSize: '10.5px', color: 'var(--on-surface)', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'monospace' }}>{diagram.code}</pre>
                           </details>
                         </div>
@@ -427,10 +427,10 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
         {activeTab === 'export' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-              Xuất Bản Sang Google Workspace
+              Publish to Google Workspace
             </h4>
             <p style={{ fontSize: '12.5px', color: 'var(--on-surface-variant)', lineHeight: '1.5' }}>
-              Xuất báo cáo chi tiết kèm hình ảnh sơ đồ Mermaid đã sinh ra thẳng sang tài liệu Google Docs hoặc Google Sheets của bạn.
+              Export a detailed report including generated Mermaid diagrams directly to Google Docs or Google Sheets.
             </p>
 
             {/* Status & Action Button */}
@@ -441,7 +441,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                   color: 'var(--success)', fontSize: '12.5px', fontWeight: 600
                 }}>
                   <Icon path={ICONS.check} size={14} />
-                  Đã liên kết xuất bản thành công!
+                  Successfully linked and published!
                 </div>
                 {exportLinks.map((link, i) => (
                   <a
@@ -469,7 +469,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                       <Icon path={ICONS.external} size={14} />
                       {link.title}
                     </span>
-                    <span style={{ fontSize: '11px', opacity: 0.8 }}>Mở ›</span>
+                    <span style={{ fontSize: '11px', opacity: 0.8 }}>Open ›</span>
                   </a>
                 ))}
 
@@ -488,7 +488,7 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                     cursor: 'pointer',
                   }}
                 >
-                  Xuất lại tài liệu mới
+                  Re-export new document
                 </button>
               </div>
             ) : (
@@ -520,12 +520,12 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                       <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>
                         <Icon path={ICONS.loader} size={14} />
                       </span>
-                      Đang liên kết Google Docs & Sheets...
+                      Linking Google Docs &amp; Sheets...
                     </>
                   ) : (
                     <>
                       <Icon path={ICONS.export} size={14} />
-                      Xuất sang Google Docs & Sheets
+                      Export to Google Docs &amp; Sheets
                     </>
                   )}
                 </button>

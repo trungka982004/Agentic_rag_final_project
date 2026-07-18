@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Stitch screen: "Đoạn trích đã lưu — Saved Snippets"
-// Card grid with: quoted text (reading-serif), source, tags, "Xem ngữ cảnh đầy đủ" link, copy/delete actions
-// Top: search bar + filter chips (Tất cả, Self-Attention, Transformer, LLM, NLP)
-// Bottom: "Thêm đoạn trích mới" empty card + "Mở Thư viện tài liệu" button
+// Stitch screen: "Saved Snippets"
+// Card grid with: quoted text (reading-serif), source, tags, "View full context" link, copy/delete actions
+// Top: search bar + filter chips (All, Self-Attention, Transformer, LLM, NLP)
+// Bottom: "Add new snippet" empty card + "Open Document Library" button
 
-const FILTER_CHIPS = ['Tất cả', 'Self-Attention', 'Transformer', 'LLM', 'NLP'];
+const FILTER_CHIPS = ['All', 'Self-Attention', 'Transformer', 'LLM', 'NLP'];
 
 const SAMPLE_SNIPPETS = [
   {
@@ -16,7 +16,7 @@ const SAMPLE_SNIPPETS = [
     source: 'Attention Is All You Need.pdf',
     author: 'Vaswani et al. (2017)',
     quote: '"The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely."',
-    note: 'Đây là luận điểm trọng tâm về tầm quan trọng từ kiến trúc Transformer thuần túy dựa trên Attention. Chú ý về khái niệm là rõ ràng về hiệu suất học tuần tự song song.',
+    note: 'This is a key thesis on the importance of the pure self-attention mechanism in the Transformer architecture, showing clear performance gains in parallel training over sequence learning.',
     tags: ['Self-Attention', 'Architecture'],
   },
   {
@@ -24,7 +24,7 @@ const SAMPLE_SNIPPETS = [
     source: 'BERT: Pre-training of Deep Bidirectional Transformers.pdf',
     author: 'Devlin et al. (2018)',
     quote: '"Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer."',
-    note: 'Điểm khác biệt với các mô hình trước là "bidirectional" thay vì "unidirectional". BERT hiểu ngữ cảnh từ cả hai phía bên trái các các tác vụ ngôn ngữ.',
+    note: 'The key distinction from previous models is the deep bidirectional representations rather than unidirectional ones, allowing BERT to jointly condition on both left and right contexts.',
     tags: ['Bidirectional', 'Pre-training'],
   },
 ];
@@ -32,7 +32,7 @@ const SAMPLE_SNIPPETS = [
 export default function SavedSnippetsPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('Tất cả');
+  const [activeFilter, setActiveFilter] = useState('All');
 
   const [showToast, setShowToast] = useState('');
 
@@ -42,7 +42,7 @@ export default function SavedSnippetsPage() {
   };
 
   const filtered = SAMPLE_SNIPPETS.filter(s =>
-    activeFilter === 'Tất cả' || s.tags.includes(activeFilter)
+    activeFilter === 'All' || s.tags.includes(activeFilter)
   ).filter(s =>
     !search || s.quote.toLowerCase().includes(search.toLowerCase()) ||
     s.source.toLowerCase().includes(search.toLowerCase())
@@ -79,22 +79,22 @@ export default function SavedSnippetsPage() {
       }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-            Đoạn trích đã lưu
+            Saved Snippets
           </h1>
           <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-            Quản lý và tổ chức các đoạn trích quan trọng từ tài liệu nghiên cứu của bạn.
+            Manage and organize important snippets from your research papers.
           </p>
         </div>
         <button 
           className="btn btn-secondary" 
           id="snippets-export-btn" 
           style={{ gap: '6px' }}
-          onClick={() => showNotification('Đã xuất toàn bộ dữ liệu đoạn trích thành công')}
+          onClick={() => showNotification('Successfully exported all snippet data')}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Xuất dữ liệu
+          Export Data
         </button>
       </div>
 
@@ -103,7 +103,7 @@ export default function SavedSnippetsPage() {
         <input
           id="snippets-search"
           className="input input-search"
-          placeholder="Tìm kiếm trong các đoạn trích..."
+          placeholder="Search in snippets..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{ maxWidth: '400px', marginBottom: '12px' }}
@@ -141,11 +141,11 @@ export default function SavedSnippetsPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px', marginBottom: '10px' }}>
               <button 
                 className="btn-icon" 
-                title="Sao chép" 
+                title="Copy" 
                 id={`snippet-copy-${snippet.id}`}
                 onClick={() => {
                   navigator.clipboard?.writeText(snippet.quote);
-                  showNotification('Đã sao chép nội dung đoạn trích');
+                  showNotification('Snippet content copied to clipboard');
                 }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -154,10 +154,10 @@ export default function SavedSnippetsPage() {
               </button>
               <button 
                 className="btn-icon" 
-                title="Xoá" 
+                title="Delete" 
                 id={`snippet-delete-${snippet.id}`}
                 style={{ color: 'var(--error)' }}
-                onClick={() => showNotification('Đã xóa đoạn trích khỏi thư viện')}
+                onClick={() => showNotification('Snippet removed from library')}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeLinecap="round" strokeLinejoin="round" />
@@ -193,7 +193,7 @@ export default function SavedSnippetsPage() {
                 marginBottom: '10px',
               }}>
                 <div style={{ fontSize: '10.5px', fontFamily: 'var(--font-label)', fontWeight: 600, color: 'var(--primary-container)', marginBottom: '3px' }}>
-                  GHI CHÚ CỦA NHÀ NGHIÊN CỨU
+                  RESEARCHER NOTE
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--on-surface-variant)', lineHeight: '1.5' }}>
                   {snippet.note}
@@ -201,7 +201,7 @@ export default function SavedSnippetsPage() {
               </div>
             )}
 
-            {/* Tags + "Xem ngữ cảnh" */}
+            {/* Tags + "View context" */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                 {snippet.tags.map(tag => (
@@ -219,13 +219,13 @@ export default function SavedSnippetsPage() {
                 }}
                 onClick={() => router.push(`/settings/library?highlight_doc=${encodeURIComponent(snippet.source)}`)}
               >
-                Xem ngữ cảnh đầy đủ ›
+                View full context ›
               </button>
             </div>
           </div>
         ))}
 
-        {/* "Thêm đoạn trích mới" card */}
+        {/* "Add new snippet" card */}
         <div style={{
           border: '1.5px dashed var(--outline-variant)',
           borderRadius: 'var(--radius-md)',
@@ -256,10 +256,10 @@ export default function SavedSnippetsPage() {
           }}>+</div>
           <div>
             <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', marginBottom: '4px' }}>
-              Thêm đoạn trích mới
+              Add new snippet
             </div>
             <div style={{ fontSize: '12.5px', color: 'var(--on-surface-variant)' }}>
-              Bạn có thể kéo và chọn văn bản trong quá trình đọc tài liệu để thêm tiếp vào đây.
+              You can drag and select text while reading documents to add them here.
             </div>
           </div>
           <button 
@@ -267,7 +267,7 @@ export default function SavedSnippetsPage() {
             id="snippets-open-library-btn"
             onClick={() => router.push('/settings/library?action=add_snippet')}
           >
-            Mở Thư viện tài liệu
+            Open Document Library
           </button>
         </div>
       </div>

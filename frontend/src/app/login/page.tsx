@@ -21,7 +21,7 @@ export default function LoginPage() {
       localStorage.setItem('access_token', tokens.access_token);
       router.push('/chat');
     } catch (err: any) {
-      setError(err?.response?.data?.detail ?? 'Email hoặc mật khẩu không đúng.');
+      setError(err?.response?.data?.detail ?? 'Incorrect email or password.');
     } finally {
       setLoading(false);
     }
@@ -78,10 +78,10 @@ export default function LoginPage() {
             color: 'var(--on-surface)',
             margin: 0,
           }}>
-            Đăng nhập
+            Sign In
           </h1>
           <p style={{ fontSize: '13.5px', color: 'var(--on-surface-variant)', marginTop: '6px' }}>
-            Đăng nhập để tiếp tục nghiên cứu
+            Sign in to continue research
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
               fontWeight: 500,
               color: 'var(--on-surface)',
               marginBottom: '6px',
-            }}>Mật khẩu</label>
+            }}>Password</label>
             <input
               id="password"
               type="password"
@@ -155,9 +155,9 @@ export default function LoginPage() {
                   strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
                   <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                 </svg>
-                Đang đăng nhập...
+                Signing in...
               </>
-            ) : 'Đăng nhập'}
+            ) : 'Sign In'}
           </button>
         </form>
 
@@ -167,13 +167,13 @@ export default function LoginPage() {
           fontSize: '13px',
           color: 'var(--on-surface-variant)',
         }}>
-          Chưa có tài khoản?{' '}
+          Don't have an account?{' '}
           <Link href="/register" style={{
             color: 'var(--primary-container)',
             fontWeight: 600,
             textDecoration: 'none',
           }}>
-            Đăng ký ngay
+            Register now
           </Link>
         </p>
       </div>

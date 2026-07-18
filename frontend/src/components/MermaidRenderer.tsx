@@ -101,7 +101,7 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
             style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }}>
             <path d="M21 12a9 9 0 1 1-6.219-8.56" />
           </svg>
-          Đang render sơ đồ...
+          Rendering diagram...
         </div>
       )}
 
@@ -125,7 +125,7 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
           </p>
           <details>
             <summary style={{ color: 'var(--text-muted)', fontSize: '0.75em', cursor: 'pointer' }}>
-              Xem source
+              View source
             </summary>
             <pre style={{
               marginTop: '6px', fontSize: '0.72em',
@@ -170,7 +170,7 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
                 background: 'var(--surface-container-lowest)'
               }}>
                 <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--on-surface)', margin: 0 }}>
-                  Chế độ toàn màn hình
+                  Fullscreen Mode
                 </h2>
                 <button
                   onClick={() => setIsFullScreen(false)}

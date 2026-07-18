@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-// Stitch screen: "Cấu hình hệ thống"
+// Stitch screen: "System Config"
 // Sections: LLM Config (model dropdown + temperature slider + max tokens)
 //           RAG Performance toggles
 //           System Data Management (clear cache, backup, reset)
@@ -18,7 +18,7 @@ const Toggle = ({ checked, onChange, id }: { checked: boolean; onChange: (v: boo
 );
 
 const LLM_MODELS = [
-  'Qwen 2.5 (Mặc định)',
+  'Qwen 2.5 (Default)',
   'Llama 3.1 70B',
   'Mistral 7B',
   'GPT-4o Mini',
@@ -47,7 +47,7 @@ export default function SystemConfigPage() {
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
-      showNotification('Lưu cấu hình hệ thống thành công!');
+      showNotification('System configuration saved successfully!');
     }, 800);
   };
 
@@ -59,26 +59,26 @@ export default function SystemConfigPage() {
     setClearConfirm(true);
     setTimeout(() => {
       setClearConfirm(false);
-      showNotification('Đã xóa bộ nhớ đệm thành công!');
+      showNotification('Local cache cleared successfully!');
     }, 2000);
   };
 
   const handleBackup = () => {
-    showNotification('Đang tạo bản sao lưu... Vui lòng đợi!');
+    showNotification('Creating backup... Please wait!');
     setTimeout(() => {
-      showNotification('Đã tải xuống bản sao lưu cấu hình dự án!');
+      showNotification('Project configuration backup downloaded!');
     }, 2000);
   };
 
   const handleReset = () => {
-    if (confirm('Bạn có chắc chắn muốn khôi phục cài đặt gốc của hệ thống? Tất cả các cấu hình của bạn sẽ bị mất.')) {
+    if (confirm('Are you sure you want to restore default system settings? All custom configurations will be lost.')) {
       setModel(LLM_MODELS[0]);
       setTemperature(0.2);
       setMaxTokens(2048);
       setGpuBoost(true);
       setAutoAnalyze(true);
       setOptimizeNetwork(false);
-      showNotification('Đã khôi phục cài đặt gốc thành công!');
+      showNotification('System settings restored successfully!');
     }
   };
 
@@ -109,10 +109,10 @@ export default function SystemConfigPage() {
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-          Cấu hình hệ thống
+          System Configuration
         </h1>
         <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-          Điều chỉnh các tham số mô hình AI, hiệu suất RAG và quản lý dữ liệu nghiên cứu của hệ thống.
+          Adjust AI model parameters, RAG performance, and manage system research data.
         </p>
       </div>
 
@@ -133,14 +133,14 @@ export default function SystemConfigPage() {
                 </svg>
               </div>
               <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-                Cấu hình mô hình ngôn ngữ (LLM)
+                Language Model (LLM) Configuration
               </div>
             </div>
 
             {/* Model selector */}
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px', fontWeight: 500 }}>
-                Bộ não phân tích (Mô hình LLM)
+                Analysis Brain (LLM Model)
               </label>
               <select
                 id="llm-model-select"
@@ -163,7 +163,7 @@ export default function SystemConfigPage() {
             <div style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label style={{ fontSize: '12.5px', color: 'var(--on-surface-variant)', fontWeight: 500 }}>
-                  Độ sáng tạo (Temperature)
+                  Creativity (Temperature)
                 </label>
                 <span style={{
                   fontSize: '12px', fontFamily: 'monospace',
@@ -183,15 +183,15 @@ export default function SystemConfigPage() {
                 style={{ width: '100%', accentColor: 'var(--primary-container)' }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--on-surface-variant)', marginTop: '3px' }}>
-                <span>Chính xác (0.0)</span>
-                <span>Sáng tạo (1.0)</span>
+                <span>Precise (0.0)</span>
+                <span>Creative (1.0)</span>
               </div>
             </div>
 
             {/* Max tokens */}
             <div>
               <label style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px', fontWeight: 500 }}>
-                Độ dài câu trả lời tối đa (Tokens)
+                Max Response Length (Tokens)
               </label>
               <input
                 id="llm-max-tokens"
@@ -203,7 +203,7 @@ export default function SystemConfigPage() {
                 style={{ fontSize: '13.5px', fontFamily: 'monospace' }}
               />
               <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)', marginTop: '4px' }}>
-                Đề xuất: 2048 cho phân tích học thuật, 4096 cho báo cáo dài.
+                Recommended: 2048 for academic analysis, 4096 for long reports.
               </div>
             </div>
           </div>
@@ -228,11 +228,11 @@ export default function SystemConfigPage() {
             </div>
             <div>
               <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--primary-container)', marginBottom: '4px', fontFamily: 'var(--font-display)' }}>
-                Mẹo từ Agent
+                Agent Tip
               </div>
               <div style={{ fontSize: '12.5px', color: 'var(--on-primary-fixed)', lineHeight: '1.6' }}>
-                Sử dụng Temperature <strong>0.2</strong> giúp cải thiện độ chính xác khi trích dẫn học thuật.
-                Tăng lên <strong>0.7–0.9</strong> khi cần tổng hợp sáng tạo hoặc brainstorming ý tưởng nghiên cứu.
+                Using a Temperature of <strong>0.2</strong> improves accuracy for academic citations.
+                Increase to <strong>0.7–0.9</strong> for creative synthesis or brainstorming research ideas.
               </div>
             </div>
           </div>
@@ -254,27 +254,27 @@ export default function SystemConfigPage() {
                 </svg>
               </div>
               <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-                Tối ưu hóa &amp; Hiệu năng RAG
+                RAG Optimization &amp; Performance
               </div>
             </div>
 
             {[
               {
                 id: 'toggle-gpu',
-                label: 'Tăng tốc độ phản hồi',
-                desc: 'Sử dụng tài nguyên GPU để xử lý mô hình AI nhanh hơn',
+                label: 'Accelerate Response Speed',
+                desc: 'Utilize GPU resources for faster AI model inference',
                 val: gpuBoost, set: setGpuBoost,
               },
               {
                 id: 'toggle-auto',
-                label: 'Tự động phân tích tài liệu',
-                desc: 'Phân tích tài liệu mới ngay khi tải lên thay vì theo lịch',
+                label: 'Auto-analyze Documents',
+                desc: 'Analyze new documents immediately upon upload instead of scheduled batching',
                 val: autoAnalyze, set: setAutoAnalyze,
               },
               {
                 id: 'toggle-network',
-                label: 'Tối ưu dung lượng mạng',
-                desc: 'Nén dữ liệu truyền tải khi kết nối băng thông thấp',
+                label: 'Optimize Network Bandwidth',
+                desc: 'Compress transmitted data when on a low-bandwidth connection',
                 val: optimizeNetwork, set: setOptimizeNetwork,
               },
             ].map((t, i, arr) => (
@@ -308,7 +308,7 @@ export default function SystemConfigPage() {
                 </svg>
               </div>
               <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-                Quản lý dữ liệu hệ thống
+                System Data Management
               </div>
             </div>
 
@@ -322,8 +322,8 @@ export default function SystemConfigPage() {
                 background: 'var(--surface-container-lowest)',
               }}>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--on-surface)' }}>Xóa bộ nhớ đệm cục bộ</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)', marginTop: '2px' }}>Giải phóng không gian lưu trữ tạm thời</div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--on-surface)' }}>Clear Local Cache</div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)', marginTop: '2px' }}>Free up temporary storage space</div>
                 </div>
                 <button
                   className="btn btn-secondary"
@@ -336,7 +336,7 @@ export default function SystemConfigPage() {
                     <polyline points="3 6 5 6 21 6" strokeLinecap="round" />
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" strokeLinecap="round" />
                   </svg>
-                  {clearConfirm ? 'Đang xóa...' : 'Xóa ngay'}
+                  {clearConfirm ? 'Clearing...' : 'Clear Now'}
                 </button>
               </div>
 
@@ -349,8 +349,8 @@ export default function SystemConfigPage() {
                 background: 'var(--surface-container-lowest)',
               }}>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--on-surface)' }}>Sao lưu cấu hình dự án</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)', marginTop: '2px' }}>Xuất toàn bộ cấu hình hệ thống về máy</div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--on-surface)' }}>Backup Project Configuration</div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)', marginTop: '2px' }}>Export all system configurations locally</div>
                 </div>
                 <button
                   className="btn btn-secondary"
@@ -363,7 +363,7 @@ export default function SystemConfigPage() {
                     <line x1="12" y1="12" x2="12" y2="21" strokeLinecap="round" />
                     <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  Sao lưu
+                  Backup
                 </button>
               </div>
 
@@ -379,7 +379,7 @@ export default function SystemConfigPage() {
                     fontFamily: 'var(--font-body)',
                   }}
                 >
-                  Khôi phục cài đặt gốc của hệ thống
+                  Restore system factory defaults
                 </button>
               </div>
             </div>
@@ -393,7 +393,7 @@ export default function SystemConfigPage() {
         marginTop: '24px', paddingTop: '20px',
         borderTop: '1px solid var(--outline-variant)',
       }}>
-        <button className="btn btn-secondary" id="config-cancel-btn" onClick={handleCancel}>Huỷ thay đổi</button>
+        <button className="btn btn-secondary" id="config-cancel-btn" onClick={handleCancel}>Cancel Changes</button>
         <button 
           className="btn btn-primary" 
           id="config-save-btn" 
@@ -401,7 +401,7 @@ export default function SystemConfigPage() {
           disabled={isSaving}
           style={{ opacity: isSaving ? 0.7 : 1, minWidth: '120px' }}
         >
-          {isSaving ? 'Đang lưu...' : 'Lưu cấu hình'}
+          {isSaving ? 'Saving...' : 'Save Configuration'}
         </button>
       </div>
     </div>

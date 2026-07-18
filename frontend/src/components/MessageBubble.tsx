@@ -39,14 +39,14 @@ export function normalizeExportLinks(rawLinks: any): ExportLink[] {
       list.push({
         type: 'google_docs',
         url: rawLinks.docs || rawLinks.google_docs,
-        title: 'Mở trong Google Docs',
+        title: 'Open in Google Docs',
       });
     }
     if (rawLinks.sheets || rawLinks.google_sheets) {
       list.push({
         type: 'google_sheets',
         url: rawLinks.sheets || rawLinks.google_sheets,
-        title: 'Mở trong Google Sheets',
+        title: 'Open in Google Sheets',
       });
     }
     return list;
@@ -172,7 +172,7 @@ export default function MessageBubble({ message, isSelected, onSelect }: Props) 
                             onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(code); }}
                             className="btn-icon"
                             style={{ width: '20px', height: '20px' }}
-                            title="Sao chép"
+                            title="Copy"
                           >
                             <Icon path={ICONS.copy} size={12} />
                           </button>

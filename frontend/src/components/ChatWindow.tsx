@@ -19,10 +19,10 @@ const ICONS = {
 };
 
 const SUGGESTIONS = [
-  { icon: '📚', text: 'Giải thích thuật toán quicksort' },
-  { icon: '🌐', text: 'So sánh TCP và UDP' },
-  { icon: '🐍', text: 'Vẽ sơ đồ kiến trúc microservices bằng Mermaid' },
-  { icon: '∫', text: 'Giải phương trình vi phân $\\frac{dy}{dx} = 2x$' },
+  { icon: '📚', text: 'Explain quicksort algorithm' },
+  { icon: '🌐', text: 'Compare TCP and UDP' },
+  { icon: '🐍', text: 'Draw microservices architecture using Mermaid' },
+  { icon: '∫', text: 'Solve differential equation $\\frac{dy}{dx} = 2x$' },
 ];
 
 interface Props {
@@ -58,8 +58,8 @@ export default function ChatWindow({
         setAttachedFile(fileName);
         setInput(prev => {
           const base = prev.trim();
-          if (base) return `${base} (liên quan đến tài liệu ${fileName})`;
-          return `Tóm tắt tài liệu ${fileName} giúp tôi.`;
+          if (base) return `${base} (related to document ${fileName})`;
+          return `Summarize document ${fileName} for me.`;
         });
       }
     };
@@ -74,7 +74,7 @@ export default function ChatWindow({
     if (!files || files.length === 0) return;
     const file = files[0];
     if (!file.name.endsWith('.pdf')) {
-      alert('Chỉ hỗ trợ tệp định dạng PDF.');
+      alert('Only PDF format files are supported.');
       return;
     }
     setUploadingFile(true);
@@ -86,14 +86,14 @@ export default function ChatWindow({
       // Auto-populate chat input with a nice prompt asking to summarize this document
       setInput(prev => {
         const base = prev.trim();
-        if (base) return `${base} (liên quan đến tài liệu ${file.name})`;
-        return `Tóm tắt tài liệu ${file.name} giúp tôi.`;
+        if (base) return `${base} (related to document ${file.name})`;
+        return `Summarize document ${file.name} for me.`;
       });
       // Trigger event to sync sidebar
       window.dispatchEvent(new Event('document-uploaded'));
     } catch (err) {
       console.error(err);
-      alert('Tải lên tài liệu thất bại.');
+      alert('Document upload failed.');
     } finally {
       setUploadingFile(false);
       e.target.value = '';
@@ -151,8 +151,8 @@ export default function ChatWindow({
       setAttachedFile(internalFileName);
       setInput(prev => {
         const base = prev.trim();
-        if (base) return `${base} (liên quan đến tài liệu ${internalFileName})`;
-        return `Tóm tắt tài liệu ${internalFileName} giúp tôi.`;
+        if (base) return `${base} (related to document ${internalFileName})`;
+        return `Summarize document ${internalFileName} for me.`;
       });
       return;
     }
@@ -162,7 +162,7 @@ export default function ChatWindow({
     if (files && files.length > 0) {
       const file = files[0];
       if (!file.name.endsWith('.pdf')) {
-        alert('Chỉ hỗ trợ tệp định dạng PDF.');
+        alert('Only PDF format files are supported.');
         return;
       }
       setUploadingFile(true);
@@ -173,13 +173,13 @@ export default function ChatWindow({
         setAttachedFile(file.name);
         setInput(prev => {
           const base = prev.trim();
-          if (base) return `${base} (liên quan đến tài liệu ${file.name})`;
-          return `Tóm tắt tài liệu ${file.name} giúp tôi.`;
+          if (base) return `${base} (related to document ${file.name})`;
+          return `Summarize document ${file.name} for me.`;
         });
         window.dispatchEvent(new Event('document-uploaded'));
       } catch (err) {
         console.error(err);
-        alert('Tải lên tài liệu thất bại.');
+        alert('Document upload failed.');
       } finally {
         setUploadingFile(false);
       }
@@ -268,7 +268,7 @@ export default function ChatWindow({
               marginBottom: '8px',
               fontFamily: 'var(--font-display)',
             }}>
-              Thả tài liệu vào đây
+              Drop documents here
             </h3>
             <p style={{
               fontSize: '14px',
@@ -276,7 +276,7 @@ export default function ChatWindow({
               maxWidth: '300px',
               textAlign: 'center',
             }}>
-              Hỗ trợ kéo thả trực tiếp từ Tủ sách khoa học hoặc từ máy tính của bạn (định dạng PDF)
+              Supports direct drag &amp; drop from Scientific Library or your computer (PDF format)
             </p>
           </div>
         )}
@@ -326,7 +326,7 @@ export default function ChatWindow({
                 maxWidth: '400px',
                 lineHeight: '1.6',
               }}>
-                Đặt câu hỏi về IT, Toán, Vật lý hay Điện tử
+                Ask questions about IT, Mathematics, Physics, or Electronics
               </p>
             </div>
 
@@ -466,7 +466,7 @@ export default function ChatWindow({
               borderRadius: '50%',
               animation: 'spin 0.8s linear infinite',
             }} />
-            <span>Đang tải lên và phân tích tài liệu...</span>
+            <span>Uploading and analyzing document...</span>
           </div>
         )}
 
@@ -485,7 +485,7 @@ export default function ChatWindow({
             width: 'fit-content',
             fontFamily: 'var(--font-label)',
           }}>
-            <span>📄 {attachedFile} (Đã tải lên và lập chỉ mục)</span>
+            <span>📄 {attachedFile} (Uploaded and indexed)</span>
             <button
               onClick={() => setAttachedFile(null)}
               style={{
@@ -515,7 +515,7 @@ export default function ChatWindow({
           <button
             onClick={() => document.getElementById('chat-file-upload')?.click()}
             disabled={uploadingFile || !isConnected}
-            title="Đính kèm tài liệu PDF"
+            title="Attach PDF document"
             style={{
               width: '34px',
               height: '34px',
@@ -560,7 +560,7 @@ export default function ChatWindow({
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
-            placeholder="Nhập câu hỏi... (Enter để gửi, Shift+Enter xuống dòng)"
+            placeholder="Type a question... (Enter to send, Shift+Enter for new line)"
             rows={1}
             disabled={!isConnected}
             style={{
@@ -608,7 +608,7 @@ export default function ChatWindow({
             color: 'var(--error)',
             marginTop: '6px',
           }}>
-            Hệ thống có thể mắc sai lầm. Hãy kiểm chứng thông tin quan trọng.
+            The system can make mistakes. Please verify important information.
           </p>
         )}
       </div>

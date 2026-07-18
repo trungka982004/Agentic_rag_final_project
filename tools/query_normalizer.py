@@ -1,20 +1,20 @@
 """
 tools/query_normalizer.py
 ─────────────────────────────────────────────────────────────────────────────
-Vietnamese Query Normalizer — hỗ trợ VNI input method + LLM typo fallback.
+Vietnamese Query Normalizer — supports VNI input method + LLM typo fallback.
 
 Pipeline:
   1. VNI Decoder (deterministic, zero-latency):
-     Giải mã số VNI thành dấu tiếng Việt.
+     Decodes VNI digits into Vietnamese diacritics.
      "chi tiet611" → "chi tiết"
-     VNI rules: 1=sắc 2=huyền 3=hỏi 4=ngã 5=nặng
+     VNI rules: 1=acute 2=grave 3=hook 4=tilde 5=dot
                 6=circumflex(â/ê/ô) 7=horn(ơ/ư) 8=breve(ă) 9=đ
-     Số thừa/không áp dụng được → bị loại bỏ.
+     Extra/invalid digits are discarded.
 
-  2. LLM Spellcheck (fallback, chỉ khi cần):
-     Sửa lỗi chính tả / thiếu dấu còn sót sau VNI decode.
-     Prompt chặt: CHỈ thêm dấu, KHÔNG thêm từ mới.
-     Guard: word count +1 max, số bảo toàn.
+  2. LLM Spellcheck (fallback, only when needed):
+     Corrects spelling and missing diacritics remaining after VNI decoding.
+     Strict prompt: ONLY add diacritics, DO NOT add new words.
+     Guard: word count +1 max, numbers preserved.
 """
 
 import re
@@ -33,7 +33,7 @@ _VNI_BREVE      = {'a': 'ă', 'A': 'Ă'}
 # Tone marks: (base_vowel, digit) → accented_vowel
 _VNI_TONES: dict[tuple[str, str], str] = {}
 _TONE_DATA = [
-    # (base, sắc, huyền, hỏi, ngã, nặng)
+    # (base, acute, grave, hook, tilde, dot)
     ('a',  'á','à','ả','ã','ạ'),
     ('ă',  'ắ','ằ','ẳ','ẵ','ặ'),
     ('â',  'ấ','ầ','ẩ','ẫ','ậ'),
@@ -56,8 +56,8 @@ for _base, *_accents in _TONE_DATA:
 
 def _is_vni_token(token: str) -> bool:
     """
-    Trả về True nếu token trông như VNI-encoded tiếng Việt.
-    Điều kiện: có chữ cái Latin + có chữ số 1-9 (không phải số thuần túy).
+    Returns True if token looks like VNI-encoded Vietnamese.
+    Condition: contains Latin letters and digits 1-9 (not pure numbers).
     """
     has_letter = bool(re.search(r'[a-zA-Z]', token))
     has_vni_digit = bool(re.search(r'[1-9]', token))
@@ -66,21 +66,20 @@ def _is_vni_token(token: str) -> bool:
 
 def _decode_vni_token(token: str) -> str:
     """
-    Giải mã một token VNI thành tiếng Việt có dấu.
-    Các số không áp dụng được (thừa, trùng tone, v.v.) bị loại bỏ.
+    Decodes a VNI token into accented Vietnamese.
+    Invalid or redundant digits are discarded.
 
-    Ví dụ:
-      "tiet611"  → "tiết"   (6→ê, 1→sắc, 1 thứ hai bị loại)
-      "kho7a7n5" → "khoản"  (7→ơ, 7 thứ hai→ư không áp dụng→loại, 5→nặng... thực ra
-                              "khoa7n5" → "khoản": a7→không áp dụng, o7→ơ, n5→không áp)
-      "vie65t"   → "việt"   (6→ê, 5→nặng)
+    Examples:
+      "tiet611"  → "tiết"   (6→ê, 1→acute, second 1 is discarded)
+      "kho7a7n5" → "khoản"  (7→ơ, second 7→ư is invalid and discarded, 5→dot is invalid on 'n')
+      "vie65t"   → "việt"   (6→ê, 5→dot)
       "d9"       → "đ"
     """
     if not _is_vni_token(token):
         return token
 
     output: list[str] = []
-    tone_applied = False  # Mỗi âm tiết chỉ nhận 1 dấu thanh
+    tone_applied = False  # Each syllable can receive at most 1 tone mark
 
     for ch in token:
         if not ch.isdigit():
@@ -90,50 +89,52 @@ def _decode_vni_token(token: str) -> str:
         digit = ch
 
         if digit == '6':
-            # Circumflex: tìm nguyên âm gần nhất (phải→trái) có thể nhận
+            # Circumflex: find the nearest vowel from right-to-left
             for j in range(len(output) - 1, -1, -1):
                 if output[j] in _VNI_CIRCUMFLEX:
                     output[j] = _VNI_CIRCUMFLEX[output[j]]
                     break
-            # Nếu không áp dụng được → bỏ qua (không append digit)
 
         elif digit == '7':
+            # Horn
             for j in range(len(output) - 1, -1, -1):
                 if output[j] in _VNI_HORN:
                     output[j] = _VNI_HORN[output[j]]
                     break
 
         elif digit == '8':
+            # Breve
             for j in range(len(output) - 1, -1, -1):
                 if output[j] in _VNI_BREVE:
                     output[j] = _VNI_BREVE[output[j]]
                     break
 
         elif digit == '9':
+            # Stroke
             for j in range(len(output) - 1, -1, -1):
                 if output[j].lower() == 'd':
                     output[j] = 'Đ' if output[j].isupper() else 'đ'
                     break
 
         elif digit in '12345':
+            # Tone mark
             if not tone_applied:
-                # Áp dụng dấu thanh cho nguyên âm gần nhất
+                # Apply tone mark to the nearest vowel from right-to-left
                 for j in range(len(output) - 1, -1, -1):
                     key = (output[j], digit)
                     if key in _VNI_TONES:
                         output[j] = _VNI_TONES[key]
                         tone_applied = True
                         break
-            # Nếu tone đã được áp hoặc không tìm được → bỏ qua digit
 
-        # digit '0' (xóa dấu) — ít gặp trong chat, bỏ qua
+        # Digit '0' (clear mark) — rarely used in chats, skipped
 
     return ''.join(output)
 
 
 def decode_vni(text: str) -> Tuple[str, bool]:
     """
-    Giải mã toàn bộ câu: tách token, decode từng token nếu là VNI.
+    Decodes the entire sentence: splits tokens, decodes each token if it is VNI.
 
     Returns:
         (decoded_text, was_changed)
@@ -168,7 +169,7 @@ def _diacritics_ratio(text: str) -> float:
 
 
 def _needs_llm_spellcheck(text: str) -> bool:
-    """Phát hiện văn bản thiếu dấu (không phải VNI) cần LLM sửa."""
+    """Detects text missing diacritics (not VNI) that needs LLM correction."""
     words = text.strip().split()
     if len(words) < 2:
         return False
@@ -185,21 +186,21 @@ def _tokenize(text: str) -> list[str]:
 
 
 def _validate_correction(original: str, corrected: str) -> bool:
-    """Kiểm tra LLM không over-correct (thêm từ, mất số)."""
+    """Validates that LLM does not over-correct (adding words, losing numbers)."""
     orig_tokens  = _tokenize(original)
     corr_tokens  = _tokenize(corrected)
-    # Word count: tối đa +1 (cho trường hợp tách token dính)
+    # Word count check: max +1 (in case attached words were split)
     if len(corr_tokens) > len(orig_tokens) + 1:
         logger.warning(f"[Normalizer] Over-correction: {len(orig_tokens)}→{len(corr_tokens)} tokens. Rollback.")
         return False
-    # Số nguyên phải được bảo toàn
+    # Numbers must be preserved
     digits_in_orig = re.findall(r'\d+', original)
     digits_in_corr = re.findall(r'\d+', corrected)
     for d in digits_in_orig:
         if d not in digits_in_corr:
             logger.warning(f"[Normalizer] Number '{d}' lost in correction. Rollback.")
             return False
-    # Độ dài ký tự
+    # Length check
     if len(corrected) > len(original) * 2:
         logger.warning("[Normalizer] Corrected text too long. Rollback.")
         return False
@@ -207,7 +208,7 @@ def _validate_correction(original: str, corrected: str) -> bool:
 
 
 def _llm_spellcheck(query: str, llm) -> Tuple[str, bool]:
-    """LLM chỉ được thêm dấu thanh, KHÔNG được thêm/xóa từ."""
+    """LLM is only allowed to add diacritics, NOT add/remove words."""
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.output_parsers import StrOutputParser
 
@@ -231,7 +232,7 @@ def _llm_spellcheck(query: str, llm) -> Tuple[str, bool]:
             "query": query,
             "word_count": len(_tokenize(query)),
         }).strip().strip('"').strip("'")
-        # Lấy dòng đầu tiên (phòng LLM thêm giải thích ở dòng sau)
+        # Extract first line (preventing LLM from appending explanations)
         corrected = corrected.split('\n')[0].strip()
         if not corrected or not _validate_correction(query, corrected):
             return query, False
@@ -246,14 +247,14 @@ def _llm_spellcheck(query: str, llm) -> Tuple[str, bool]:
 
 def normalize_query(query: str, llm, force: bool = False) -> Tuple[str, bool]:
     """
-    Chuẩn hóa query theo pipeline 2 bước:
-      1. VNI decode (deterministic, không gọi LLM)
-      2. LLM spellcheck (chỉ khi còn thiếu dấu sau bước 1)
+    Normalizes a query using a 2-step pipeline:
+      1. VNI decode (deterministic, does not call LLM)
+      2. LLM spellcheck (only if text is still missing diacritics after step 1)
 
     Args:
-        query:  Câu hỏi gốc từ user.
+        query:  Original query from user.
         llm:    ChatOllama instance.
-        force:  Bỏ qua heuristic (dùng cho testing).
+        force:  Skip heuristics (used for testing).
 
     Returns:
         (final_query, was_corrected)
@@ -261,14 +262,14 @@ def normalize_query(query: str, llm, force: bool = False) -> Tuple[str, bool]:
     original = query
     was_corrected = False
 
-    # ── Bước 1: VNI decode ──
+    # ── Step 1: VNI decode ──
     decoded, vni_changed = decode_vni(query)
     if vni_changed:
         query = decoded
         was_corrected = True
         logger.info(f"[Normalizer] VNI decoded: '{original}' → '{query}'")
 
-    # ── Bước 2: LLM spellcheck (nếu vẫn còn thiếu dấu) ──
+    # ── Step 2: LLM spellcheck (if text still lacks diacritics) ──
     if force or _needs_llm_spellcheck(query):
         logger.info(f"[Normalizer] LLM spellcheck triggered for: '{query}'")
         corrected, llm_changed = _llm_spellcheck(query, llm)
