@@ -35,7 +35,7 @@ const components: Components = {
             fontSize: '0.85em',
             fontStyle: 'italic'
           }}>
-            Đang tải renderer...
+            Loading renderer...
           </div>
         }>
           <MermaidRenderer chart={code} />

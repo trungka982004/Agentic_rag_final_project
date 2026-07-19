@@ -26,26 +26,26 @@ const ICONS = {
 
 const SETTINGS_NAV = [
   {
-    group: 'Hồ sơ của bạn',
+    group: 'Your Profile',
     items: [
-      { label: 'Thông tin cá nhân',   icon: ICONS.user,    href: '/settings/profile' },
-      { label: 'Kết nối học thuật',   icon: ICONS.school,  href: '/settings/academic' },
+      { label: 'Personal Information',   icon: ICONS.user,    href: '/settings/profile' },
+      { label: 'Academic Integration',   icon: ICONS.school,  href: '/settings/academic' },
     ],
   },
   {
-    group: 'Dữ liệu dự án',
+    group: 'Project Data',
     items: [
-      { label: 'Thư viện tài liệu',   icon: ICONS.library,  href: '/settings/library' },
-      { label: 'Đoạn trích đã lưu',   icon: ICONS.bookmark, href: '/settings/snippets' },
-      { label: 'Trích dẫn khoa học',  icon: ICONS.quote,    href: '/settings/citations' },
+      { label: 'Document Library',   icon: ICONS.library,  href: '/settings/library' },
+      { label: 'Saved Snippets',   icon: ICONS.bookmark, href: '/settings/snippets' },
+      { label: 'Scientific Citations',  icon: ICONS.quote,    href: '/settings/citations' },
     ],
   },
   {
-    group: 'Hệ thống',
+    group: 'System',
     items: [
-      { label: 'Cấu hình chung',       icon: ICONS.general,  href: '/settings' },
-      { label: 'Cấu hình hệ thống',    icon: ICONS.config,   href: '/settings/config' },
-      { label: 'Trợ giúp & Hỗ trợ',   icon: ICONS.support,  href: '/settings/support' },
+      { label: 'General Settings',       icon: ICONS.general,  href: '/settings' },
+      { label: 'System Config',    icon: ICONS.config,   href: '/settings/config' },
+      { label: 'Help & Support',   icon: ICONS.support,  href: '/settings/support' },
     ],
   },
 ];
@@ -70,7 +70,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
           <path d="M21 12a9 9 0 1 1-6.219-8.56" />
         </svg>
-        Đang tải...
+        Loading...
       </div>
     );
   }
@@ -142,14 +142,14 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           <button className="upgrade-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
-            Nâng cấp Pro
+            Upgrade Pro
           </button>
         </div>
       </aside>
 
       {/* Main content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* TopBar with Tủ sách / Thiết lập tabs */}
+        {/* TopBar with Library / Settings tabs */}
         <TopBar user={user} isConnected={true} />
 
         {/* Page content */}

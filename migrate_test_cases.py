@@ -127,9 +127,9 @@ def main():
 
         # 5. Define evaluation_criteria
         if expected_source_document:
-            evaluation_criteria = f"Hệ thống phải truy xuất chính xác thông tin từ file {expected_source_document[0]} và trả về câu trả lời chính xác, đầy đủ."
+            evaluation_criteria = f"The system must accurately retrieve information from file {expected_source_document[0]} and return a precise and complete answer."
         else:
-            evaluation_criteria = "Hệ thống phải tự định tuyến đúng domain và trả về câu trả lời chính xác dựa trên ngữ cảnh tìm thấy."
+            evaluation_criteria = "The system must correctly route to the appropriate domain and return an accurate response based on the retrieved context."
 
         migrated_cases.append({
             "test_case_id": test_case_id,

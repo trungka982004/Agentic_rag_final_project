@@ -1,7 +1,7 @@
 'use client';
 
 // Stitch screen: "Scientific Citations"
-// Table: # | Tác giả | Tiêu đề | Tạp chí | Năm | Được trích dẫn | Thao tác
+// Table: # | Author | Title | Journal | Year | Cited by | Actions
 // Search + filter chips + pagination
 
 import { useState } from 'react';
@@ -51,7 +51,7 @@ export default function ScientificCitationsPage() {
 
   const handleExport = (exportFormat: string, items = filtered) => {
     if (items.length === 0) {
-      showNotification('Không có dữ liệu để xuất');
+      showNotification('No data to export');
       return;
     }
 
@@ -76,7 +76,7 @@ export default function ScientificCitationsPage() {
     }
 
     downloadFile(content, filename, type);
-    showNotification(`Đã tải xuống ${filename}`);
+    showNotification(`Downloaded ${filename}`);
   };
 
   return (
@@ -110,10 +110,10 @@ export default function ScientificCitationsPage() {
       }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-            Trích dẫn khoa học
+            Scientific Citations
           </h1>
           <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-            Quản lý danh sách tài liệu tham khảo và xuất danh mục trích dẫn theo tiêu chuẩn học thuật.
+            Manage your reference list and export citations bibliography according to academic standards.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -142,7 +142,7 @@ export default function ScientificCitationsPage() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Xuất danh mục
+            Export Bibliography
           </button>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function ScientificCitationsPage() {
       <input
         id="citations-search"
         className="input input-search"
-        placeholder="Tìm kiếm tác giả hoặc tiêu đề..."
+        placeholder="Search author or title..."
         value={search}
         onChange={e => setSearch(e.target.value)}
         style={{ maxWidth: '400px', marginBottom: '16px' }}
@@ -174,7 +174,7 @@ export default function ScientificCitationsPage() {
                   checked={selected.length === CITATIONS.length && CITATIONS.length > 0}
                 />
               </th>
-              {['#', 'TÁC GIẢ', 'TIÊU ĐỀ', 'TẠP CHÍ', 'NĂM', 'ĐƯỢC TRÍCH DẪN', ''].map((h, i) => (
+              {['#', 'AUTHOR', 'TITLE', 'JOURNAL', 'YEAR', 'CITED BY', ''].map((h, i) => (
                 <th key={i} style={{
                   padding: '10px 14px', textAlign: 'left',
                   fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: 600,
@@ -227,12 +227,12 @@ export default function ScientificCitationsPage() {
                   <div style={{ display: 'flex', gap: '2px' }}>
                     <button 
                       className="btn-icon" 
-                      title="Sao chép trích dẫn" 
+                      title="Copy Citation" 
                       id={`cite-copy-${c.id}`}
                       onClick={() => {
                         const text = `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`;
                         navigator.clipboard?.writeText(text);
-                        showNotification(`Đã sao chép trích dẫn [${c.id}]`);
+                        showNotification(`Copied citation [${c.id}]`);
                       }}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -241,10 +241,10 @@ export default function ScientificCitationsPage() {
                     </button>
                     <button 
                       className="btn-icon" 
-                      title="Xoá" 
+                      title="Delete" 
                       id={`cite-delete-${c.id}`} 
                       style={{ color: 'var(--error)' }}
-                      onClick={() => showNotification(`Đã xóa trích dẫn [${c.id}]`)}
+                      onClick={() => showNotification(`Deleted citation [${c.id}]`)}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" strokeLinecap="round" strokeLinejoin="round" />
@@ -269,7 +269,7 @@ export default function ScientificCitationsPage() {
           fontSize: '13px', color: 'var(--primary-container)',
           marginBottom: '12px',
         }}>
-          <span>Đã chọn <strong>{selected.length}</strong> trích dẫn</span>
+          <span>Selected <strong>{selected.length}</strong> citations</span>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button 
               className="btn btn-secondary" 
@@ -278,10 +278,10 @@ export default function ScientificCitationsPage() {
                 const selectedItems = CITATIONS.filter(c => selected.includes(c.id));
                 const text = selectedItems.map(c => `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`).join('\n');
                 navigator.clipboard?.writeText(text);
-                showNotification(`Đã sao chép ${selected.length} trích dẫn theo định dạng ${format}`);
+                showNotification(`Copied ${selected.length} citations in ${format} format`);
               }}
             >
-              Sao chép {format}
+              Copy {format}
             </button>
             <button 
               className="btn btn-primary" 
@@ -291,7 +291,7 @@ export default function ScientificCitationsPage() {
                 handleExport(format, selectedItems);
               }}
             >
-              Xuất lựa chọn
+              Export Selection
             </button>
           </div>
         </div>
@@ -312,13 +312,13 @@ export default function ScientificCitationsPage() {
               `[${c.id}] ${c.authors} (${c.year}). ${c.title}. ${c.journal}.`
             ).join('\n');
             navigator.clipboard?.writeText(text);
-            showNotification(`Đã sao chép toàn bộ ${filtered.length} trích dẫn`);
+            showNotification(`Copied all ${filtered.length} citations`);
           }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Sao chép toàn bộ
+          Copy All
         </button>
         <button
           className="btn btn-secondary"
@@ -329,7 +329,7 @@ export default function ScientificCitationsPage() {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Xuất file BibTeX
+          Export BibTeX
         </button>
         <button
           className="btn btn-secondary"
@@ -340,20 +340,20 @@ export default function ScientificCitationsPage() {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Xuất file EndNote (RIS)
+          Export EndNote (RIS)
         </button>
         <button
           className="btn btn-primary"
           id="citations-save-btn"
           style={{ fontSize: '12.5px', gap: '6px', marginLeft: 'auto' }}
-          onClick={() => showNotification('Đã lưu danh mục vào hệ thống')}
+          onClick={() => showNotification('Saved bibliography to system')}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round" />
             <polyline points="17 21 17 13 7 13 7 21" />
             <polyline points="7 3 7 8 15 8" />
           </svg>
-          Lưu danh mục
+          Save Bibliography
         </button>
       </div>
     </div>

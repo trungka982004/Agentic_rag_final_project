@@ -17,11 +17,11 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     if (password !== confirm) {
-      setError('Mật khẩu xác nhận không khớp.');
+      setError('Confirm password does not match.');
       return;
     }
     if (password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự.');
+      setError('Password must be at least 6 characters.');
       return;
     }
     setLoading(true);
@@ -31,7 +31,7 @@ export default function RegisterPage() {
       localStorage.setItem('access_token', tokens.access_token);
       router.push('/chat');
     } catch (err: any) {
-      const detail = err?.response?.data?.detail ?? 'Đăng ký thất bại. Email có thể đã được sử dụng.';
+      const detail = err?.response?.data?.detail ?? 'Registration failed. Email might already be in use.';
       setError(detail);
     } finally {
       setLoading(false);
@@ -86,18 +86,18 @@ export default function RegisterPage() {
               WebkitTextFillColor: 'transparent',
               margin: '0 0 4px',
             }}>
-              Tạo tài khoản
+              Create Account
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.83em', margin: 0 }}>
-              Bắt đầu hành trình nghiên cứu của bạn
+              Begin your research journey
             </p>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {[
               { id: 'reg-email', label: 'Email', type: 'email', value: email, setter: setEmail, placeholder: 'you@example.com' },
-              { id: 'reg-password', label: 'Mật khẩu', type: 'password', value: password, setter: setPassword, placeholder: '••••••••' },
-              { id: 'reg-confirm', label: 'Xác nhận mật khẩu', type: 'password', value: confirm, setter: setConfirm, placeholder: '••••••••' },
+              { id: 'reg-password', label: 'Password', type: 'password', value: password, setter: setPassword, placeholder: '••••••••' },
+              { id: 'reg-confirm', label: 'Confirm Password', type: 'password', value: confirm, setter: setConfirm, placeholder: '••••••••' },
             ].map(field => (
               <div key={field.id}>
                 <label htmlFor={field.id} style={{
@@ -163,16 +163,16 @@ export default function RegisterPage() {
                     strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
-                  Đang đăng ký...
+                  Registering...
                 </>
-              ) : 'Tạo tài khoản'}
+              ) : 'Create Account'}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.82em', color: 'var(--text-muted)' }}>
-            Đã có tài khoản?{' '}
+            Already have an account?{' '}
             <Link href="/login" style={{ color: 'var(--text-accent)', textDecoration: 'none', fontWeight: 500 }}>
-              Đăng nhập
+              Sign In
             </Link>
           </p>
         </div>

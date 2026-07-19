@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-// Stitch screen: "Thông tin cá nhân — Personal Information"
+// Stitch screen: "Personal Information"
 // Sections: Profile card + form fields, Security (password + 2FA toggle)
 
 import { useRouter } from 'next/navigation';
@@ -17,15 +17,15 @@ const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 export default function ProfilePage() {
   const router = useRouter();
   const [twoFA, setTwoFA] = useState(true);
-  const [tags, setTags] = useState(['Trí tuệ nhân tạo', 'Xử lý ngôn ngữ tự nhiên', 'Học sâu']);
+  const [tags, setTags] = useState(['Artificial Intelligence', 'Natural Language Processing', 'Deep Learning']);
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: 'Nguyễn Văn A',
-    title: 'Tiến sĩ / Phó Giáo sư',
+    name: 'Nguyen Van A',
+    title: 'PhD / Associate Professor',
     email: 'a.nguyen@academic.edu.vn',
-    org: 'Viện Công nghệ Thông tin – Viện Hàn lâm KH&CN VN',
+    org: 'Institute of Information Technology – VAST',
     pwCurrent: '',
     pwNew: '',
     pwConfirm: '',
@@ -65,17 +65,17 @@ export default function ProfilePage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Lưu thông tin cá nhân thành công!
+          Profile updated successfully!
         </div>
       )}
 
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-          Thông tin cá nhân
+          Personal Information
         </h1>
         <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-          Cập nhật thông tin học thuật và thiết lập bảo mật mới cho tài khoản của bạn.
+          Update your academic details and configure new security settings for your account.
         </p>
       </div>
 
@@ -102,24 +102,24 @@ export default function ProfilePage() {
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '17px', fontWeight: 700, color: 'var(--on-surface)' }}>
-              TS. {formData.name}
+              Dr. {formData.name}
             </div>
             <span style={{
               fontSize: '10.5px', fontFamily: 'var(--font-label)', fontWeight: 700,
               background: 'var(--success-container)', color: 'var(--success)',
               padding: '2px 8px', borderRadius: '99px',
             }}>
-              ● ĐANG HOẠT ĐỘNG
+              ● ACTIVE
             </span>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           {[
-            { id: 'name',  label: 'Họ và tên',           value: formData.name, span: 1 },
-            { id: 'title', label: 'Chức danh / Học vị',  value: formData.title, span: 1 },
-            { id: 'email', label: 'Email học thuật',     value: formData.email, span: 1 },
-            { id: 'org',   label: 'Cơ quan / Tổ chức',   value: formData.org,   span: 1 },
+            { id: 'name',  label: 'Full Name',           value: formData.name, span: 1 },
+            { id: 'title', label: 'Academic Title / Degree',  value: formData.title, span: 1 },
+            { id: 'email', label: 'Academic Email',     value: formData.email, span: 1 },
+            { id: 'org',   label: 'Organization / Institution',   value: formData.org,   span: 1 },
           ].map(f => (
             <div key={f.id} style={{ gridColumn: `span ${f.span}` }}>
               <label htmlFor={f.id} style={{
@@ -141,7 +141,7 @@ export default function ProfilePage() {
           {/* Research interest tags */}
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px' }}>
-              Lĩnh vực nghiên cứu quan tâm
+              Research Areas of Interest
             </label>
             <div style={{
               display: 'flex', flexWrap: 'wrap', gap: '6px',
@@ -185,13 +185,13 @@ export default function ProfilePage() {
                 }}
                 id="add-tag-btn"
                 onClick={() => {
-                  const newTag = prompt('Nhập lĩnh vực nghiên cứu mới:');
+                  const newTag = prompt('Enter new research area:');
                   if (newTag && newTag.trim() && !tags.includes(newTag.trim())) {
                     setTags([...tags, newTag.trim()]);
                   }
                 }}
               >
-                + Thêm lĩnh vực
+                + Add Area
               </button>
             </div>
           </div>
@@ -203,14 +203,14 @@ export default function ProfilePage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--on-surface-variant)"
             strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)' }}>Thiết lập bảo mật</span>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)' }}>Security Settings</span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
           {[
-            { id: 'pwCurrent', label: 'Mật khẩu hiện tại', type: 'password', value: formData.pwCurrent, placeholder: '••••••••••••' },
-            { id: 'pwNew',     label: 'Mật khẩu mới',       type: 'password', value: formData.pwNew, placeholder: 'Nhập mật khẩu mới' },
-            { id: 'pwConfirm', label: 'Xác nhận mật khẩu mới', type: 'password', value: formData.pwConfirm, placeholder: 'Xác nhận lại' },
+            { id: 'pwCurrent', label: 'Current Password', type: 'password', value: formData.pwCurrent, placeholder: '••••••••••••' },
+            { id: 'pwNew',     label: 'New Password',       type: 'password', value: formData.pwNew, placeholder: 'Enter new password' },
+            { id: 'pwConfirm', label: 'Confirm New Password', type: 'password', value: formData.pwConfirm, placeholder: 'Confirm password' },
           ].map(f => (
             <div key={f.id}>
               <label htmlFor={f.id} style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px' }}>
@@ -250,10 +250,10 @@ export default function ProfilePage() {
             </div>
             <div>
               <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)' }}>
-                Xác thực 2 yếu tố (2FA)
+                Two-Factor Authentication (2FA)
               </div>
               <div style={{ fontSize: '12px', color: 'var(--on-surface-variant)' }}>
-                Bảo vệ tài khoản bằng mã bảo mật điện thoại
+                Secure your account using mobile verification codes
               </div>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
 
       {/* Action buttons */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '8px' }}>
-        <button className="btn btn-secondary" id="profile-cancel-btn" onClick={handleCancel}>Huỷ bỏ</button>
+        <button className="btn btn-secondary" id="profile-cancel-btn" onClick={handleCancel}>Cancel</button>
         <button 
           className="btn btn-primary" 
           id="profile-save-btn" 
@@ -271,7 +271,7 @@ export default function ProfilePage() {
           disabled={isSaving}
           style={{ opacity: isSaving ? 0.7 : 1, minWidth: '120px' }}
         >
-          {isSaving ? 'Đang lưu...' : 'Lưu thông tin'}
+          {isSaving ? 'Saving...' : 'Save Profile'}
         </button>
       </div>
     </div>

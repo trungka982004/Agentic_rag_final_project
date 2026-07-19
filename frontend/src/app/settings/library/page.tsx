@@ -10,16 +10,16 @@ import {
 } from '@/services/api';
 
 const AI_STATUS = {
-  done:     { label: 'Đã phân tích', bg: 'var(--success-container)', color: 'var(--success)' },
-  indexing: { label: 'Đang phân tích...', bg: 'var(--warning-container)', color: 'var(--warning)' },
-  pending:  { label: 'Chờ phân tích', bg: 'var(--surface-container)', color: 'var(--on-surface-variant)' },
+  done:     { label: 'Analyzed', bg: 'var(--success-container)', color: 'var(--success)' },
+  indexing: { label: 'Analyzing...', bg: 'var(--warning-container)', color: 'var(--warning)' },
+  pending:  { label: 'Pending analysis', bg: 'var(--surface-container)', color: 'var(--on-surface-variant)' },
 };
 
 const DOMAINS = [
-  { id: 'it', label: 'CNTT', icon: 'CodeIcon', desc: 'Công nghệ thông tin & Máy tính' },
-  { id: 'math', label: 'Toán học', icon: 'CalculatorIcon', desc: 'Toán học lý thuyết & ứng dụng' },
-  { id: 'physics', label: 'Vật lý', icon: 'AtomIcon', desc: 'Vật lý học & Năng lượng cao' },
-  { id: 'electronics', label: 'Điện tử', icon: 'CpuIcon', desc: 'Kỹ thuật điện tử & Vi mạch' },
+  { id: 'it', label: 'CS', icon: 'CodeIcon', desc: 'Computer Science & IT' },
+  { id: 'math', label: 'Mathematics', icon: 'CalculatorIcon', desc: 'Theoretical & Applied Mathematics' },
+  { id: 'physics', label: 'Physics', icon: 'AtomIcon', desc: 'Physics & High Energy' },
+  { id: 'electronics', label: 'Electronics', icon: 'CpuIcon', desc: 'Electronics & Microcircuits' },
 ];
 
 // Custom SVGs for modern design
@@ -194,7 +194,7 @@ export default function DocumentLibraryPage() {
             id: domainId,
             label,
             icon: 'BookOpenIcon',
-            desc: `Chủ đề tự chọn: ${label}`,
+            desc: `Custom Category: ${label}`,
           });
         }
       });
@@ -217,7 +217,7 @@ export default function DocumentLibraryPage() {
       setError(null);
     } catch (err: any) {
       console.error(err);
-      setError('Không thể tải danh sách tài liệu.');
+      setError('Failed to load documents list.');
     } finally {
       setLoading(false);
     }
@@ -239,10 +239,10 @@ export default function DocumentLibraryPage() {
       const highlightDoc = params.get('highlight_doc');
 
       if (action === 'add_snippet') {
-        setSuccessMsg('Chế độ tạo đoạn trích mới: Kéo chọn bất kỳ văn bản nào trong PDF để lưu thành đoạn trích.');
+        setSuccessMsg('New snippet mode: Drag and select any text in the PDF to save it as a snippet.');
         window.history.replaceState({}, document.title, window.location.pathname);
       } else if (highlightDoc) {
-        setSuccessMsg(`Đang hiển thị ngữ cảnh đầy đủ cho tài liệu "${highlightDoc}". Các đoạn trích đã được highlight.`);
+        setSuccessMsg(`Showing full context for document "${highlightDoc}". Snippets have been highlighted.`);
         setSearch(highlightDoc.replace('.pdf', '')); // Filter list for simulated context
         window.history.replaceState({}, document.title, window.location.pathname);
       }
@@ -270,7 +270,7 @@ export default function DocumentLibraryPage() {
     const id = slugify(newDomainName);
     
     if (DOMAINS.some(d => d.id === id) || customDomains.some(d => d.id === id)) {
-      alert('Chủ đề này đã tồn tại!');
+      alert('This category already exists!');
       return;
     }
     
@@ -278,7 +278,7 @@ export default function DocumentLibraryPage() {
       id,
       label: newDomainName.trim(),
       icon: 'BookOpenIcon',
-      desc: `Chủ đề tự chọn: ${newDomainName.trim()}`,
+      desc: `Custom Category: ${newDomainName.trim()}`,
     };
     
     const updated = [...customDomains, newDomain];
@@ -308,7 +308,7 @@ export default function DocumentLibraryPage() {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (!file.name.endsWith('.pdf')) {
-          setUploadQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'error', error: 'Chỉ hỗ trợ PDF' } : item));
+          setUploadQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'error', error: 'Only PDF is supported' } : item));
           continue;
         }
         
@@ -318,19 +318,19 @@ export default function DocumentLibraryPage() {
           successCount++;
         } catch (err: any) {
           console.error(err);
-          setUploadQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'error', error: 'Lỗi máy chủ' } : item));
+          setUploadQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'error', error: 'Server error' } : item));
         }
       }
       
       if (successCount > 0) {
-        setSuccessMsg(`Tải lên thành công ${successCount} tài liệu! AI đang tiến hành phân tích tài liệu mới trong nền.`);
+        setSuccessMsg(`Successfully uploaded ${successCount} documents! AI is analyzing new documents in the background.`);
         fetchDocs();
       } else {
-        setError('Tải lên tài liệu thất bại.');
+        setError('Failed to upload document.');
       }
     } catch (err: any) {
       console.error(err);
-      setError('Tải lên tài liệu thất bại.');
+      setError('Failed to upload document.');
     } finally {
       setUploading(false);
       setTimeout(() => {
@@ -367,16 +367,16 @@ export default function DocumentLibraryPage() {
       setSuccessMsg(null);
       if (type === 'single' && docId) {
         await apiDeleteDocumentsBulk([docId]);
-        setSuccessMsg(`Đã xóa tài liệu "${filename}" thành công.`);
+        setSuccessMsg(`Document "${filename}" deleted successfully.`);
       } else if (type === 'bulk') {
         await apiDeleteDocumentsBulk(selectedDocIds);
-        setSuccessMsg(`Đã xóa ${selectedDocIds.length} tài liệu thành công.`);
+        setSuccessMsg(`Deleted ${selectedDocIds.length} documents successfully.`);
         setSelectedDocIds([]);
       }
       await fetchDocs();
     } catch (err: any) {
       console.error(err);
-      setError(type === 'single' ? 'Lỗi khi xóa tài liệu.' : 'Lỗi khi xóa tài liệu hàng loạt.');
+      setError(type === 'single' ? 'Error deleting document.' : 'Error deleting documents in bulk.');
     } finally {
       setLoading(false);
     }
@@ -449,10 +449,10 @@ export default function DocumentLibraryPage() {
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-          Thư viện tài liệu
+          Document Library
         </h1>
         <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-          Quản lý kho tài nguyên nghiên cứu khoa học và cấu hình các kho tri thức cho RAG Workflow.
+          Manage scientific research resources and configure knowledge bases for the RAG Workflow.
         </p>
       </div>
 
@@ -525,7 +525,7 @@ export default function DocumentLibraryPage() {
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
             }}>
-              1. Chọn chủ đề tải lên
+              1. Select Category for Upload
             </h2>
             <div style={{ 
               display: 'flex',
@@ -557,7 +557,7 @@ export default function DocumentLibraryPage() {
                       e.preventDefault();
                       setDragOverDomain(null);
                       const docId = e.dataTransfer.getData('text/plain');
-                      const docName = e.dataTransfer.getData('docName') || 'tài liệu';
+                      const docName = e.dataTransfer.getData('docName') || 'document';
                       if (!docId) return;
                       const sourceDomain = docId.split('::')[0];
                       if (sourceDomain.toLowerCase() === domain.id.toLowerCase()) return;
@@ -567,11 +567,11 @@ export default function DocumentLibraryPage() {
                         setError(null);
                         setSuccessMsg(null);
                         await apiReassignDocument(docId, domain.id);
-                        setSuccessMsg(`Đã di chuyển tài liệu "${docName}" sang chủ đề "${domain.label}" thành công.`);
+                        setSuccessMsg(`Successfully moved document "${docName}" to category "${domain.label}".`);
                         await fetchDocs();
                       } catch (err: any) {
                         console.error(err);
-                        setError('Lỗi khi di chuyển tài liệu sang chủ đề khác.');
+                        setError('Error moving document to another category.');
                       } finally {
                         setLoading(false);
                       }
@@ -661,7 +661,7 @@ export default function DocumentLibraryPage() {
                       fontFamily: 'var(--font-label)',
                       flexShrink: 0,
                     }}>
-                      {count} tệp
+                      {count} {count === 1 ? 'file' : 'files'}
                     </span>
                   </div>
                 );
@@ -677,7 +677,7 @@ export default function DocumentLibraryPage() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <input
                   type="text"
-                  placeholder="Thêm chủ đề mới..."
+                  placeholder="Add new category..."
                   value={newDomainName}
                   onChange={e => setNewDomainName(e.target.value)}
                   onKeyDown={e => {
@@ -713,7 +713,7 @@ export default function DocumentLibraryPage() {
                   onMouseEnter={e => e.currentTarget.style.filter = 'brightness(0.95)'}
                   onMouseLeave={e => e.currentTarget.style.filter = ''}
                 >
-                  + Thêm
+                  + Add
                 </button>
               </div>
             </div>
@@ -736,7 +736,7 @@ export default function DocumentLibraryPage() {
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
             }}>
-              2. Tải lên chủ đề:{' '}
+              2. Upload to Category:{' '}
               <span style={{ color: 'var(--primary-container)', fontWeight: 700 }}>
                 {allDomains.find(d => d.id === selectedDomain)?.label}
               </span>
@@ -820,15 +820,15 @@ export default function DocumentLibraryPage() {
                   fontFamily: 'var(--font-display)',
                 }}>
                   {uploading 
-                    ? 'Đang xử lý...' 
-                    : 'Kéo thả PDF hoặc click duyệt tệp'}
+                    ? 'Processing...' 
+                    : 'Drag & Drop PDF or click to browse'}
                 </div>
                 <div style={{
                   fontSize: '11px',
                   color: 'var(--on-surface-variant)',
                   marginTop: '2px',
                 }}>
-                  Hỗ trợ PDF, tối đa 50MB
+                  Supports PDF, up to 50MB
                 </div>
               </div>
             </div>
@@ -851,7 +851,7 @@ export default function DocumentLibraryPage() {
                 letterSpacing: '0.05em',
                 fontFamily: 'var(--font-label)',
               }}>
-                Tiến trình tải lên
+                Upload Progress
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {uploadQueue.map((item, idx) => (
@@ -883,14 +883,14 @@ export default function DocumentLibraryPage() {
                       {item.status === 'uploading' && (
                         <>
                           <div className="spinner" style={{ width: '8px', height: '8px', border: '1.5px solid var(--primary-container)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                          <span style={{ color: 'var(--primary-container)' }}>Đang tải...</span>
+                          <span style={{ color: 'var(--primary-container)' }}>Uploading...</span>
                         </>
                       )}
                       {item.status === 'success' && (
-                        <span style={{ color: 'var(--success)' }}>Thành công</span>
+                        <span style={{ color: 'var(--success)' }}>Success</span>
                       )}
                       {item.status === 'error' && (
-                        <span style={{ color: 'var(--error)' }} title={item.error}>Thất bại</span>
+                        <span style={{ color: 'var(--error)' }} title={item.error}>Failed</span>
                       )}
                     </div>
                   </div>
@@ -927,7 +927,7 @@ export default function DocumentLibraryPage() {
               {selectedDocIds.length > 0 ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <span style={{ fontSize: '13.5px', color: 'var(--on-surface)', fontWeight: 600 }}>
-                    Đã chọn <strong style={{ color: 'var(--primary-container)' }}>{selectedDocIds.length}</strong> tài liệu
+                    Selected <strong style={{ color: 'var(--primary-container)' }}>{selectedDocIds.length}</strong> documents
                   </span>
                   <button
                     onClick={handleBulkDelete}
@@ -947,12 +947,12 @@ export default function DocumentLibraryPage() {
                     }}
                   >
                     <TrashIcon size={13} />
-                    Xóa các tệp đã chọn
+                    Delete selected files
                   </button>
                 </div>
               ) : (
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 600, color: 'var(--on-surface)' }}>
-                  Kho lưu trữ tài nguyên nghiên cứu
+                  Research Resource Repository
                 </h2>
               )}
               
@@ -960,7 +960,7 @@ export default function DocumentLibraryPage() {
                 id="doc-search"
                 className="input input-search"
                 style={{ width: '240px' }}
-                placeholder="Tìm kiếm tài liệu..."
+                placeholder="Search documents..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -974,7 +974,7 @@ export default function DocumentLibraryPage() {
               paddingBottom: '2px',
             }}>
               {[
-                { id: 'all', label: 'Tất cả', count: documents.length },
+                { id: 'all', label: 'All', count: documents.length },
                 ...allDomains.map(d => ({
                   id: d.id,
                   label: d.label,
@@ -1057,7 +1057,7 @@ export default function DocumentLibraryPage() {
                       style={{ cursor: 'pointer' }}
                     />
                   </th>
-                  {['TÊN TÀI LIỆU', 'CHỦ ĐỀ', 'NĂM', 'NGÀY THÊM', 'KÍCH THƯỚC', 'TRẠNG THÁI AI', 'THAO TÁC'].map(h => (
+                  {['DOCUMENT TITLE', 'CATEGORY', 'YEAR', 'DATE ADDED', 'SIZE', 'AI STATUS', 'ACTIONS'].map(h => (
                     <th key={h} style={{
                       padding: '10px 14px',
                       textAlign: 'left',
@@ -1079,13 +1079,13 @@ export default function DocumentLibraryPage() {
                   <tr>
                     <td colSpan={8} style={{ padding: '32px', textAlign: 'center', color: 'var(--on-surface-variant)', fontSize: '14px' }}>
                       <div style={{ display: 'inline-block', width: '20px', height: '20px', border: '3px solid var(--primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '8px' }} />
-                      <div>Đang tải tài nguyên nghiên cứu...</div>
+                      <div>Loading research resources...</div>
                     </td>
                   </tr>
                 ) : sortedAndFiltered.length === 0 ? (
                   <tr>
                     <td colSpan={8} style={{ padding: '32px', textAlign: 'center', color: 'var(--on-surface-variant)', fontSize: '13px' }}>
-                      Không tìm thấy tài liệu nào khớp trong thư viện.
+                      No matching documents found in library.
                     </td>
                   </tr>
                 ) : (
@@ -1200,7 +1200,7 @@ export default function DocumentLibraryPage() {
                               }}
                               onMouseEnter={e => e.currentTarget.style.background = 'var(--primary-container)'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                              title="Xem tài liệu"
+                              title="View Document"
                             >
                               <EyeIcon size={14} />
                             </button>
@@ -1220,7 +1220,7 @@ export default function DocumentLibraryPage() {
                               }}
                               onMouseEnter={e => e.currentTarget.style.background = 'var(--error-container)'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                              title="Xóa tài liệu"
+                              title="Delete Document"
                             >
                               <TrashIcon size={14} />
                             </button>
@@ -1245,9 +1245,9 @@ export default function DocumentLibraryPage() {
             color: 'var(--on-surface-variant)',
             background: 'var(--surface-container-low)',
           }}>
-            <span>Hiển thị <strong>{sortedAndFiltered.length}</strong> tài liệu</span>
+            <span>Showing <strong>{sortedAndFiltered.length}</strong> documents</span>
             <div>
-              <span>Tổng số: <strong>{sortedAndFiltered.length}</strong></span>
+              <span>Total: <strong>{sortedAndFiltered.length}</strong></span>
             </div>
           </div>
         </div>
@@ -1290,7 +1290,7 @@ export default function DocumentLibraryPage() {
               alignItems: 'center',
               gap: '8px',
             }}>
-              <span>⚠️</span> Xác nhận xóa tài liệu
+              <span>⚠️</span> Confirm Document Deletion
             </h3>
             <p style={{
               fontSize: '14.5px',
@@ -1299,9 +1299,9 @@ export default function DocumentLibraryPage() {
               margin: '0 0 20px 0',
             }}>
               {deleteModal.type === 'single' ? (
-                <>Bạn có chắc chắn muốn xóa vĩnh viễn tài liệu <strong>"{deleteModal.filename}"</strong>? Hành động này không thể hoàn tác.</>
+                <>Are you sure you want to permanently delete document <strong>"{deleteModal.filename}"</strong>? This action cannot be undone.</>
               ) : (
-                <>Bạn có chắc chắn muốn xóa vĩnh viễn <strong>{selectedDocIds.length}</strong> tài liệu đã chọn? Hành động này không thể hoàn tác.</>
+                <>Are you sure you want to permanently delete <strong>{selectedDocIds.length}</strong> selected documents? This action cannot be undone.</>
               )}
             </p>
             <div style={{
@@ -1327,7 +1327,7 @@ export default function DocumentLibraryPage() {
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-container-highest)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'var(--surface-container-high)'}
               >
-                Hủy bỏ
+                Cancel
               </button>
               <button
                 id="confirm-delete-btn"
@@ -1347,7 +1347,7 @@ export default function DocumentLibraryPage() {
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--error-hover, #a61c1c)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'var(--error)'}
               >
-                Xác nhận xóa
+                Confirm Delete
               </button>
             </div>
           </div>
@@ -1441,8 +1441,8 @@ export default function DocumentLibraryPage() {
               fontSize: '15px'
             }}>
               <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', marginBottom: '8px' }}>Mô phỏng nội dung tài liệu</h1>
-                <p style={{ color: '#666', fontStyle: 'italic' }}>Kéo chọn văn bản dưới đây để tạo đoạn trích (Snippet)</p>
+                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', marginBottom: '8px' }}>Simulated Document Content</h1>
+                <p style={{ color: '#666', fontStyle: 'italic' }}>Drag and select text below to create a snippet</p>
               </div>
 
               <p>
@@ -1457,7 +1457,7 @@ export default function DocumentLibraryPage() {
                 borderLeft: '3px solid var(--primary)',
                 cursor: 'text'
               }}>
-                <strong>Đoạn văn bản được highlight (Mô phỏng thao tác chọn chuột của người dùng).</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <strong>Highlighted text snippet (simulating user mouse selection).</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 
                 {/* Simulated Context Menu for Snippet Saving */}
                 <div style={{
@@ -1475,7 +1475,7 @@ export default function DocumentLibraryPage() {
                 }}>
                   <button 
                     onClick={() => {
-                      setSuccessMsg('Đã lưu đoạn trích thành công vào danh sách "Đoạn trích đã lưu"!');
+                      setSuccessMsg('Snippet successfully saved to "Saved Snippets"!');
                       setViewModal({ isOpen: false });
                     }}
                     style={{
@@ -1497,7 +1497,7 @@ export default function DocumentLibraryPage() {
                       <polyline points="17 21 17 13 7 13 7 21" />
                       <polyline points="7 3 7 8 15 8" />
                     </svg>
-                    Lưu đoạn trích
+                    Save Snippet
                   </button>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 'use client';
 
-// Stitch screen: "Kết nối học thuật — Academic Integration"
+// Stitch screen: "Academic Integration"
 // 2x2 grid: Zotero (connected), Mendeley (connected), Google Scholar (disconnected), ORCID ID (form)
 
 import { useState } from 'react';
@@ -55,7 +55,7 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
               background: status === 'connected' ? 'var(--success-container)' : 'var(--surface-container)',
               color: status === 'connected' ? 'var(--success)' : 'var(--on-surface-variant)',
             }}>
-              {status === 'connected' ? '● ĐANG KẾT NỐI' : '○ CHƯA KẾT NỐI'}
+              {status === 'connected' ? '● CONNECTED' : '○ DISCONNECTED'}
             </span>
           </div>
           {account && (
@@ -78,7 +78,7 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
               borderRadius: 'var(--radius-sm)',
               padding: '8px 10px',
             }}>
-              <div style={{ fontSize: '11px', color: 'var(--on-surface-variant)' }}>Tài khoản</div>
+              <div style={{ fontSize: '11px', color: 'var(--on-surface-variant)' }}>Account</div>
               <div style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--on-surface)', marginTop: '2px' }}>{account}</div>
             </div>
             <div style={{
@@ -86,7 +86,7 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
               borderRadius: 'var(--radius-sm)',
               padding: '8px 10px',
             }}>
-              <div style={{ fontSize: '11px', color: 'var(--on-surface-variant)' }}>Cập nhật lần cuối</div>
+              <div style={{ fontSize: '11px', color: 'var(--on-surface-variant)' }}>Last Updated</div>
               <div style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--on-surface)', marginTop: '2px' }}>{lastSync}</div>
             </div>
           </div>
@@ -98,7 +98,7 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
               onClick={onSync}
               disabled={isProcessing}
             >
-              {isProcessing ? 'Đang đồng bộ...' : 'Đồng bộ ngay'}
+              {isProcessing ? 'Syncing...' : 'Sync Now'}
             </button>
             <button 
               className="btn btn-danger" 
@@ -107,7 +107,7 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
               onClick={onDisconnect}
               disabled={isProcessing}
             >
-              Ngắt kết nối
+              Disconnect
             </button>
           </div>
         </>
@@ -125,7 +125,7 @@ function ServiceCard({ id, logo, name, status, account, lastSync, description, o
             onClick={onConnect}
             disabled={isProcessing}
           >
-            {isProcessing ? 'Đang kết nối...' : 'Kết nối tài khoản'}
+            {isProcessing ? 'Connecting...' : 'Connect Account'}
           </button>
         </>
       )}
@@ -142,8 +142,8 @@ export default function AcademicIntegrationPage() {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const [services, setServices] = useState([
-    { id: 'zotero', status: 'connected', account: 'nguyenvana_academic', lastSync: 'Tự động đồng bộ' },
-    { id: 'mendeley', status: 'connected', account: 'a.nguyen@mendeley.org', lastSync: '1 giờ trước' },
+    { id: 'zotero', status: 'connected', account: 'nguyenvana_academic', lastSync: 'Auto sync' },
+    { id: 'mendeley', status: 'connected', account: 'a.nguyen@mendeley.org', lastSync: '1 hour ago' },
     { id: 'scholar', status: 'disconnected', account: '', lastSync: '' }
   ]);
 
@@ -157,13 +157,13 @@ export default function AcademicIntegrationPage() {
     setTimeout(() => {
       if (action === 'disconnect') {
         setServices(services.map(s => s.id === id ? { ...s, status: 'disconnected', account: '', lastSync: '' } : s));
-        showNotification(`Đã ngắt kết nối ${id}`);
+        showNotification(`Disconnected ${id}`);
       } else if (action === 'connect') {
-        setServices(services.map(s => s.id === id ? { ...s, status: 'connected', account: `user_${id}@example.com`, lastSync: 'Vừa xong' } : s));
-        showNotification(`Đã kết nối thành công với ${id}`);
+        setServices(services.map(s => s.id === id ? { ...s, status: 'connected', account: `user_${id}@example.com`, lastSync: 'Just now' } : s));
+        showNotification(`Successfully connected to ${id}`);
       } else {
-        setServices(services.map(s => s.id === id ? { ...s, lastSync: 'Vừa xong' } : s));
-        showNotification(`Đã đồng bộ dữ liệu từ ${id}`);
+        setServices(services.map(s => s.id === id ? { ...s, lastSync: 'Just now' } : s));
+        showNotification(`Synced data from ${id}`);
       }
       setProcessingId(null);
     }, 1000);
@@ -173,7 +173,7 @@ export default function AcademicIntegrationPage() {
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
-      showNotification('Lưu thiết lập kết nối thành công!');
+      showNotification('Settings saved successfully!');
     }, 800);
   };
 
@@ -208,11 +208,10 @@ export default function AcademicIntegrationPage() {
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-          Kết nối học thuật
+          Academic Integration
         </h1>
         <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px', maxWidth: '560px' }}>
-          Quản lý và đồng bộ hóa các tài khoản nghiên cứu của bạn. Kết nối với các thư viện số và cơ sở dữ
-          liệu học thuật để tự động hóa quy trình thu thập tài liệu.
+          Manage and synchronize your research accounts. Connect with digital libraries and academic databases to automate the document collection process.
         </p>
       </div>
 
@@ -249,7 +248,7 @@ export default function AcademicIntegrationPage() {
           status={services.find(s => s.id === 'scholar')?.status as any}
           account={services.find(s => s.id === 'scholar')?.account}
           lastSync={services.find(s => s.id === 'scholar')?.lastSync}
-          description="Kết nối để tự động cập nhật danh sách trích dẫn và các bài báo từ Google Scholar vào hệ thống."
+          description="Connect to automatically update citation lists and articles from Google Scholar into the system."
           isProcessing={processingId === 'scholar'}
           onSync={() => handleServiceAction('scholar', 'sync')} 
           onDisconnect={() => handleServiceAction('scholar', 'disconnect')} 
@@ -272,12 +271,12 @@ export default function AcademicIntegrationPage() {
             <div>
               <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)' }}>ORCID ID</div>
               <div style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)' }}>
-                Xác thực danh tính nhà nghiên cứu học thuật
+                Verify academic researcher identity
               </div>
             </div>
           </div>
           <label style={{ fontSize: '12px', color: 'var(--on-surface-variant)', display: 'block', marginBottom: '6px' }}>
-            Mã số ORCID
+            ORCID Number
           </label>
           <input
             id="orcid-input"
@@ -295,12 +294,12 @@ export default function AcademicIntegrationPage() {
             onClick={() => {
               setProcessingId('orcid');
               setTimeout(() => {
-                showNotification(`Đã xác thực ORCID: ${orcid}`);
+                showNotification(`Verified ORCID: ${orcid}`);
                 setProcessingId(null);
               }, 1200);
             }}
           >
-            {processingId === 'orcid' ? 'Đang xác thực...' : 'Xác thực & Kết nối'}
+            {processingId === 'orcid' ? 'Verifying...' : 'Verify & Connect'}
           </button>
         </div>
       </div>
@@ -318,10 +317,10 @@ export default function AcademicIntegrationPage() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Nâng cấp Premium
+          Upgrade Premium
         </button>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="btn btn-secondary" id="academic-back-btn" onClick={handleCancel}>← Quay lại</button>
+          <button className="btn btn-secondary" id="academic-back-btn" onClick={handleCancel}>← Back</button>
           <button 
             className="btn btn-primary" 
             id="academic-save-btn" 
@@ -329,7 +328,7 @@ export default function AcademicIntegrationPage() {
             disabled={isSaving}
             style={{ opacity: isSaving ? 0.7 : 1, minWidth: '160px' }}
           >
-            {isSaving ? 'Đang lưu...' : 'Lưu thiết lập kết nối'}
+            {isSaving ? 'Saving...' : 'Save Connection Settings'}
           </button>
         </div>
       </div>

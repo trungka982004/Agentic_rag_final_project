@@ -66,25 +66,25 @@ export default function TopBar({ user, title, isConnected, sessionId }: Props) {
               display: 'inline-block',
             }} />
             <span style={{ fontSize: '11.5px', color: 'var(--on-surface-variant)' }}>
-              {isConnected ? 'Đã kết nối' : 'Đang kết nối lại...'}
+              {isConnected ? 'Connected' : 'Reconnecting...'}
             </span>
           </div>
         )}
       </div>
 
-      {/* Center: nav tabs — Tủ sách / Thiết lập */}
+      {/* Center: nav tabs — Library / Settings */}
       <nav className="nav-tabs" style={{ height: 'var(--topbar-height)' }}>
         <Link
           href="/chat"
           className={`nav-tab ${isChat ? 'nav-tab--active' : ''}`}
         >
-          Tủ sách
+          Library
         </Link>
         <Link
           href="/settings"
           className={`nav-tab ${isSettings ? 'nav-tab--active' : ''}`}
         >
-          Thiết lập
+          Settings
         </Link>
       </nav>
 
@@ -96,10 +96,10 @@ export default function TopBar({ user, title, isConnected, sessionId }: Props) {
           {isConnected !== false ? 'ACTIVE' : 'OFFLINE'}
         </span>
 
-        <button className="btn-icon" title="Trợ giúp" id="topbar-help-btn">
+        <button className="btn-icon" title="Help" id="topbar-help-btn">
           <Icon path={ICONS.help} size={17} />
         </button>
-        <button className="btn-icon" title="Chỉnh sửa" id="topbar-edit-btn">
+        <button className="btn-icon" title="Edit" id="topbar-edit-btn">
           <Icon path={ICONS.edit} size={17} />
         </button>
         <Link href="/settings/profile">

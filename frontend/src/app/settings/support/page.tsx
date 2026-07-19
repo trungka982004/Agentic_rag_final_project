@@ -4,38 +4,38 @@ import { useState } from 'react';
 
 const faqs = [
   {
-    q: 'Làm thế nào để kết nối thư viện Zotero của tôi?',
-    a: 'Truy cập Cấu hình hệ thống > Tích hợp > Chọn Zotero và nhập API Key của bạn.'
+    q: 'How do I connect my Zotero library?',
+    a: 'Go to System Configuration > Integrations > Select Zotero and enter your API Key.'
   },
   {
-    q: 'Dung lượng file PDF tối đa hệ thống hỗ trợ bao nhiêu?',
-    a: 'Hiện tại chúng tôi hỗ trợ các tệp lên đến 50MB mỗi tệp để đảm bảo tốc độ phân tích tối ưu.'
+    q: 'What is the maximum PDF file size supported by the system?',
+    a: 'We currently support files up to 50MB each to ensure optimal analysis speed.'
   },
   {
-    q: 'Làm thế nào để thay đổi định dạng của trích dẫn?',
-    a: 'Vào phần Trích dẫn, chọn phong cách (APA, IEEE, Harvard…) trong danh sách thả xuống phía trên bảng.'
+    q: 'How can I change the citation format?',
+    a: 'Go to the Citations section and select your style (APA, IEEE, Harvard...) from the dropdown menu above the table.'
   },
   {
-    q: 'Agent AI mất bao lâu để phân tích một tài liệu?',
-    a: 'Thường mất 30 giây đến 2 phút tùy kích thước tài liệu. Bạn sẽ thấy trạng thái "Đang phân tích" trong Thư viện.'
+    q: 'How long does the AI Agent take to analyze a document?',
+    a: 'It typically takes 30 seconds to 2 minutes depending on the document size. You will see an "Analyzing..." status in the Library.'
   },
   {
-    q: 'Tôi có thể xuất kết quả nghiên cứu sang Google Docs không?',
-    a: 'Có. Sau khi agent tạo báo cáo, nhấn nút "Xuất Google Docs" hiện ra dưới câu trả lời trong cửa sổ chat.'
+    q: 'Can I export research results to Google Docs?',
+    a: 'Yes. Once the agent generates a report, click the "Export to Google Docs" button that appears below the response in the chat window.'
   },
 ];
 
 const docs = [
-  { icon: '📄', title: 'Cẩm nang sử dụng', size: '2.1 MB', type: 'PDF' },
-  { icon: '❓', title: 'Tài liệu trợ giúp hệ thống', size: '1.8 MB', type: 'PDF' },
+  { icon: '📄', title: 'User Guide', size: '2.1 MB', type: 'PDF' },
+  { icon: '❓', title: 'System Support Documentation', size: '1.8 MB', type: 'PDF' },
 ];
 
 const CATEGORIES = [
-  'Lỗi đồng bộ tài liệu',
-  'Lỗi kết nối API',
-  'Vấn đề hiển thị',
-  'Góp ý tính năng mới',
-  'Khác',
+  'Document synchronization error',
+  'API connection error',
+  'Display or rendering issue',
+  'New feature request',
+  'Other',
 ];
 
 export default function SupportPage() {
@@ -60,10 +60,10 @@ export default function SupportPage() {
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
-          Trợ giúp &amp; Hỗ trợ
+          Help &amp; Support
         </h1>
         <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px', maxWidth: '540px' }}>
-          Tìm câu trả lời cho các thắc mắc thường gặp, tải tài liệu hướng dẫn hoặc liên hệ kỹ thuật.
+          Find answers to frequently asked questions, download manuals, or contact technical support.
         </p>
       </div>
 
@@ -85,7 +85,7 @@ export default function SupportPage() {
               </svg>
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-              Câu hỏi thường gặp
+              Frequently Asked Questions
             </span>
           </div>
 
@@ -138,7 +138,7 @@ export default function SupportPage() {
             color: 'var(--primary-container)', fontSize: '13px',
             fontFamily: 'var(--font-body)', padding: 0,
           }}>
-            Xem tất cả câu hỏi →
+            View all questions →
           </button>
         </div>
 
@@ -157,7 +157,7 @@ export default function SupportPage() {
               </svg>
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-              Tài liệu hướng dẫn
+              Manuals &amp; Guides
             </span>
           </div>
 
@@ -217,7 +217,7 @@ export default function SupportPage() {
                 </svg>
               </div>
               <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: 500 }}>
-                Video hướng dẫn cơ bản
+                Basic Video Tutorial
               </span>
             </div>
           </div>
@@ -242,11 +242,11 @@ export default function SupportPage() {
                 </svg>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-                Gửi yêu cầu hỗ trợ
+                Submit Support Request
               </span>
             </div>
             <p style={{ fontSize: '13px', color: 'var(--on-surface-variant)', lineHeight: '1.6', marginBottom: '16px' }}>
-              Đội ngũ kỹ thuật sẽ xem xét và phản hồi yêu cầu của bạn trong vòng 24 giờ làm việc. Vui lòng cung cấp chi tiết để được hỗ trợ tốt nhất.
+              Our technical team will review and respond to your request within 24 business hours. Please provide details to help us assist you better.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--on-surface-variant)' }}>
@@ -269,7 +269,7 @@ export default function SupportPage() {
           <div style={{ flex: 1, minWidth: '280px' }}>
             <div style={{ marginBottom: '12px' }}>
               <label style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px' }}>
-                Chủ đề
+                Subject
               </label>
               <select
                 id="support-category"
@@ -290,14 +290,14 @@ export default function SupportPage() {
 
             <div style={{ marginBottom: '12px' }}>
               <label style={{ display: 'block', fontSize: '12.5px', color: 'var(--on-surface-variant)', marginBottom: '5px' }}>
-                Mô tả vấn đề gặp phải
+                Describe the Issue
               </label>
               <textarea
                 id="support-message"
                 rows={4}
                 value={message}
                 onChange={e => setMessage(e.target.value)}
-                placeholder="Vui lòng mô tả vấn đề bạn gặp phải..."
+                placeholder="Please describe the issue you are experiencing..."
                 style={{
                   width: '100%', padding: '9px 12px',
                   border: '1px solid var(--outline-variant)',
@@ -319,7 +319,7 @@ export default function SupportPage() {
                 borderRadius: 'var(--radius-sm)',
                 fontSize: '13.5px', fontWeight: 500,
               }}>
-                ✓ Yêu cầu đã được gửi thành công. Chúng tôi sẽ phản hồi sớm nhất có thể!
+                ✓ Request submitted successfully. We will respond as soon as possible!
               </div>
             )}
 
@@ -333,7 +333,7 @@ export default function SupportPage() {
                 <line x1="22" y1="2" x2="11" y2="13" />
                 <polygon points="22 2 15 22 11 13 2 9 22 2" />
               </svg>
-              Gửi yêu cầu hỗ trợ
+              Submit Request
             </button>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function SupportPage() {
         flexWrap: 'wrap', gap: '8px',
       }}>
         <div style={{ display: 'flex', gap: '16px' }}>
-          {['Điều khoản dịch vụ', 'Chính sách bảo mật', 'Cộng đồng nghiên cứu'].map(l => (
+          {['Terms of Service', 'Privacy Policy', 'Research Community'].map(l => (
             <button key={l} style={{
               background: 'none', border: 'none', cursor: 'pointer',
               color: 'var(--on-surface-variant)', fontSize: '12px',

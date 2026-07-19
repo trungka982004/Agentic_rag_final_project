@@ -96,7 +96,7 @@ export function useWebSocket(sessionId: string | null) {
               list.push({
                 type: 'google_docs',
                 url: docUrl,
-                title: 'Mở trong Google Docs',
+                title: 'Open in Google Docs',
               });
             }
             const sheetUrl = rawLinks.sheets || rawLinks.google_sheets;
@@ -104,7 +104,7 @@ export function useWebSocket(sessionId: string | null) {
               list.push({
                 type: 'google_sheets',
                 url: sheetUrl,
-                title: 'Mở trong Google Sheets',
+                title: 'Open in Google Sheets',
               });
             }
             finalLinks = list;
@@ -140,7 +140,7 @@ export function useWebSocket(sessionId: string | null) {
       }
 
       case 'error': {
-        patchStreaming(`❌ **Lỗi:** ${event.message ?? 'Unknown error'}`, [], [], true);
+        patchStreaming(`❌ **Error:** ${event.message ?? 'Unknown error'}`, [], [], true);
         setIsThinking(false);
         resetStream();
         break;

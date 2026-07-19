@@ -136,7 +136,7 @@ export default function Sidebar({
     if (creating) return;
     setCreating(true);
     try {
-      const session = await apiCreateSession('Cuộc hội thoại mới');
+      const session = await apiCreateSession('New Conversation');
       onSessionCreated(session);
       router.push(`/chat/${session.id}`);
     } catch (e) {
@@ -250,17 +250,17 @@ export default function Sidebar({
           ) : (
             <Icon path={ICONS.plus} size={15} />
           )}
-          Cuộc hội thoại mới
+          New Conversation
         </button>
 
-        {/* ─── SECTION: Thêm tài liệu nghiên cứu (Ingestion Widget) ─── */}
+        {/* ─── SECTION: Add Research Document (Ingestion Widget) ─── */}
         <div style={{
           padding: '4px',
           borderBottom: '1px solid var(--outline-variant)',
           marginBottom: '12px'
         }}>
           <div className="sidebar-section-label" style={{ marginBottom: '6px' }}>
-            Thêm tài liệu nghiên cứu
+            Add Research Document
           </div>
           <div style={{
             border: '1.5px dashed rgba(0, 85, 212, 0.4)',
@@ -299,7 +299,7 @@ export default function Sidebar({
             {uploading ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
                 <div style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid var(--warning)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                <div style={{ fontWeight: 500 }}>Đang tải lên...</div>
+                <div style={{ fontWeight: 500 }}>Uploading...</div>
               </div>
             ) : (
               <>
@@ -319,10 +319,10 @@ export default function Sidebar({
                   Browse
                 </div>
                 <div style={{ color: 'var(--on-surface-variant)', fontSize: '10.5px', opacity: 0.8 }}>
-                  hoặc kéo thả tệp vào đây
+                  or drag &amp; drop files here
                 </div>
                 <div style={{ color: 'var(--error)', fontSize: '9px', fontWeight: 500, marginTop: '2px' }}>
-                  *Hỗ trợ định dạng .pdf
+                  *Supports .pdf format
                 </div>
               </>
             )}
@@ -341,11 +341,11 @@ export default function Sidebar({
                   for (let i = 0; i < files.length; i++) {
                     await apiUploadDocument(files[i], selectedDomain);
                   }
-                  alert('Tải lên thành công! AI đang tiến hành phân tích tài liệu mới trong nền.');
+                  alert('Upload successful! The AI is analyzing the document in the background.');
                   fetchDocs();
                 } catch (err) {
                   console.error(err);
-                  alert('Tải lên tài liệu thất bại.');
+                  alert('Document upload failed.');
                 } finally {
                   setUploading(false);
                 }
@@ -354,9 +354,9 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* ─── SECTION: Tủ sách khoa học (PDF files) ─── */}
+        {/* ─── SECTION: Scientific Library (PDF files) ─── */}
         <div className="sidebar-section-label" style={{ marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>TỦ SÁCH KHOA HỌC</span>
+          <span>SCIENTIFIC LIBRARY</span>
           <select
             value={selectedDomain}
             onChange={async (e) => {
@@ -377,10 +377,10 @@ export default function Sidebar({
               maxWidth: '120px',
             }}
           >
-            <option value="it">CNTT</option>
-            <option value="math">Toán học</option>
-            <option value="physics">Vật lý</option>
-            <option value="electronics">Điện tử</option>
+            <option value="it">Computer Science</option>
+            <option value="math">Mathematics</option>
+            <option value="physics">Physics</option>
+            <option value="electronics">Electronics</option>
             {customDomains.map(d => (
               <option key={d.id} value={d.id}>{d.label}</option>
             ))}
@@ -394,7 +394,7 @@ export default function Sidebar({
             color: 'var(--on-surface-variant)',
             textAlign: 'center',
           }}>
-            Chưa có tài liệu nào.
+            No documents yet.
           </div>
         ) : (
           <div style={{ marginBottom: '12px' }}>
@@ -410,10 +410,10 @@ export default function Sidebar({
                   if (doc.status === 'done') {
                     window.dispatchEvent(new CustomEvent('attach-document-to-chat', { detail: { name: doc.name } }));
                   } else {
-                    alert('Tài liệu đang trong quá trình lập chỉ mục, vui lòng đợi.');
+                    alert('Document is currently indexing, please wait.');
                   }
                 }}
-                title={doc.status === 'done' ? "Kéo thả vào Chat hoặc click để đính kèm sử dụng" : "Đang xử lý tài liệu..."}
+                title={doc.status === 'done' ? "Drag and drop to Chat or click to attach" : "Processing document..."}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -475,14 +475,14 @@ export default function Sidebar({
                   textDecoration: 'none',
                 }}
               >
-                Xem thêm ({filteredDocs.length - 5}) ▼
+                View more ({filteredDocs.length - 5}) ▼
               </Link>
             )}
           </div>
         )}
 
-        {/* ─── SECTION: Lịch sử trò chuyện ─── */}
-        <div className="sidebar-section-label" style={{ marginTop: '16px' }}>LỊCH SỬ HỘI THOẠI</div>
+        {/* ─── SECTION: Chat History ─── */}
+        <div className="sidebar-section-label" style={{ marginTop: '16px' }}>CHAT HISTORY</div>
 
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
@@ -495,7 +495,7 @@ export default function Sidebar({
             color: 'var(--on-surface-variant)',
             textAlign: 'center',
           }}>
-            Chưa có cuộc hội thoại nào.
+            No conversations yet.
           </div>
         ) : (
           <div>
@@ -522,7 +522,7 @@ export default function Sidebar({
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}>
-                        {session.title || 'Cuộc hội thoại mới'}
+                        {session.title || 'New Conversation'}
                       </div>
                       <div style={{ fontSize: '11px', color: 'var(--on-surface-variant)', opacity: 0.8 }}>
                         {formatRelativeTime(session.updated_at)}
@@ -534,7 +534,7 @@ export default function Sidebar({
                     <button
                       onClick={e => handleDelete(e, session.id)}
                       className="btn-icon"
-                      title="Xoá hội thoại"
+                      title="Delete conversation"
                       style={{
                         position: 'absolute',
                         right: '4px', top: '50%',
@@ -565,7 +565,7 @@ export default function Sidebar({
                   fontFamily: 'var(--font-label)',
                 }}
               >
-                {showAllChats ? 'Thu gọn ▲' : `Xem thêm (${sessions.length - 5}) ▼`}
+                {showAllChats ? 'Collapse ▲' : `View more (${sessions.length - 5}) ▼`}
               </button>
             )}
           </div>
@@ -578,10 +578,10 @@ export default function Sidebar({
         borderTop: '1px solid var(--outline-variant)',
         padding: '10px 8px',
       }}>
-        {/* Upgrade Pro button (as in Stitch designs) */}
+        {/* Upgrade Pro button */}
         <button className="upgrade-btn" style={{ marginBottom: '8px' }}>
           <Icon path={ICONS.zap} size={14} />
-          Nâng cấp Pro
+          Upgrade Pro
         </button>
 
         {/* User row + logout */}
@@ -615,7 +615,7 @@ export default function Sidebar({
             id="logout-btn"
             onClick={onLogout}
             className="btn-icon"
-            title="Đăng xuất"
+            title="Logout"
             style={{ flexShrink: 0 }}
           >
             <Icon path={ICONS.logout} size={15} />
