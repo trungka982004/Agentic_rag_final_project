@@ -1,5 +1,5 @@
 {
-  "run_timestamp": "2026-07-07 14:07:16",
+  "run_timestamp": "2026-07-23 19:32:46",
   "optimizations_tested": [
     "get_active_domains TTL cache"
   ],
@@ -15,14 +15,14 @@
       "benchmark": "get_active_domains_cache",
       "passed": 4,
       "total": 4,
-      "cold_read_avg_ms": 0.105,
-      "warm_cache_avg_ms": 0.000241,
-      "speedup": 438.0,
+      "cold_read_avg_ms": 0.264,
+      "warm_cache_avg_ms": 0.00049,
+      "speedup": 539.0,
       "results": [
         {
           "test_id": "DC-01",
           "name": "Cold-start read",
-          "avg_ms": 0.105,
+          "avg_ms": 0.264,
           "domains": [
             "electronics",
             "it",
@@ -35,9 +35,9 @@
         {
           "test_id": "DC-02",
           "name": "Warm cache read",
-          "avg_ms": 0.000241,
-          "max_ms": 0.0029,
-          "speedup_vs_cold": 438.4,
+          "avg_ms": 0.00049,
+          "max_ms": 0.0066,
+          "speedup_vs_cold": 538.8,
           "domains_consistent": true,
           "passed": true
         },
@@ -45,7 +45,7 @@
           "test_id": "DC-03",
           "name": "Cache invalidation",
           "cache_was_cleared": true,
-          "post_clear_read_ms": 0.091,
+          "post_clear_read_ms": 0.185,
           "domains_consistent": true,
           "passed": true
         },

@@ -50,9 +50,20 @@ async def test_concurrent_chat(client_id, email, password):
                     print(f"Client {client_id}: {data['type']}")
 
 async def main():
-    print("Testing with 1 client...")
-    await test_concurrent_chat(1, "test1@example.com", "pass123")
+    parser = argparse.ArgumentParser(description="Test websocket chat with multiple concurrent clients")
+    parser.add_argument("--clients", type=int, default=3, help="Number of concurrent clients to test")
+    args = parser.parse_args()
+
+    num_clients = args.clients
+    print(f"Testing with {num_clients} concurrent clients...")
+    
+    tasks = []
+    for i in range(1, num_clients + 1):
+        tasks.append(test_concurrent_chat(i, f"test{i}@example.com", f"pass123_{i}"))
+        
+    await asyncio.gather(*tasks)
     print("Test completed.")
 
 if __name__ == "__main__":
+    import argparse
     asyncio.run(main())
