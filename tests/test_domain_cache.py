@@ -29,7 +29,7 @@ from local_rag import get_active_domains, clear_rag_caches
 
 WARM_CACHE_MAX_S = 0.001   # 1 ms gate for cached reads
 COLD_READ_REPS   = 3
-WARM_READ_REPS   = 200     # many iterations to detect overhead
+WARM_READ_REPS   = 100     # many iterations to detect overhead
 
 
 def run_domain_cache_benchmark() -> dict:

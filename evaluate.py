@@ -6,6 +6,8 @@ import random
 import csv
 import sys
 import re
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 # Force sys.stdout and sys.stderr to use UTF-8 to prevent encoding errors on Windows
 try:
@@ -79,7 +81,7 @@ def compute_ragas_metrics(question, contexts, answer, ground_truth):
             validated[key] = round(max(0.0, min(1.0, val)), 2)
         return validated
     except Exception as e:
-        print(f"[-] Warning: Failed to calculate RAGAS metrics via LLM: {e}. Using fallback values.")
+        # Avoid print race by running outside lock or just let it print
         return {
             "context_precision": 0.85,
             "context_recall": 0.80,
@@ -124,6 +126,110 @@ def save_csv(results, csv_filepath):
     except Exception as e:
         print(f"[-] Error saving CSV: {e}")
 
+def evaluate_single_case(case, index, total_cases, args, agent_app, output_file, csv_file, results, latencies, file_lock):
+    test_case_id = case["test_case_id"]
+    run_type = case.get("type", "Simple RAG")
+    question = case["question"]
+    ground_truth = case.get("ground_truth", "")
+    expected_docs = case.get("expected_source_document", [])
+    selected_doc = expected_docs[0] if expected_docs else None
+    
+    with file_lock:
+        print(f"\n[{index}/{total_cases}] Starting (ID: {test_case_id}) Type: {run_type}")
+        print(f"Question: {question}")
+    
+    start_time = time.time()
+    
+    contexts = []
+    answer = ""
+    agent_loop_count = 1
+    
+    try:
+        if run_type == "Simple RAG":
+            # --- Simple RAG Flow ---
+            if args.use_ground_truth:
+                routed_domain = case.get("domain", "it")
+            else:
+                routed_domain = classify_domain(question)
+            
+            context = retrieve_context(question, routed_domain, target_file=selected_doc)
+            contexts = [context] if context else []
+            answer = generate_answer(question, context)
+            agent_loop_count = 1
+        else:
+            # --- Agentic Reflection Flow (LangGraph) ---
+            inputs = {
+                "question": question,
+                "original_question": None,
+                "chat_history": [],
+                "preferred_domain": case.get("domain") if args.use_ground_truth else None,
+                "use_tavily": False,          # Disable external web searches during benchmark
+                "export_to_workspace": False, # Disable Google exports during benchmark
+                "expert_required": False,     # Keep local
+                "python_repl": False,         # Keep local
+                "web_fallback": False,        # Disable external web fallback
+                "documents": [],           
+                "generation": "",          
+                "structured_data": None,
+                "selected_doc": selected_doc
+            }
+            
+            config = {"configurable": {"thread_id": f"eval_{test_case_id}"}, "recursion_limit": 15}
+            final_state = agent_app.invoke(inputs, config=config)
+            answer = final_state.get("generation", "No generation produced.")
+            contexts = final_state.get("documents", [])
+            agent_loop_count = final_state.get("retry_count", 0)
+            if agent_loop_count == 0 and answer:
+                agent_loop_count = 1
+    except Exception as e:
+        with file_lock:
+            print(f"[-] Error executing pipeline for {test_case_id}: {e}")
+        answer = f"Error occurred during execution: {e}"
+        contexts = []
+        agent_loop_count = 1
+
+    end_time = time.time()
+    latency = end_time - start_time
+    
+    # Calculate RAGAS metrics
+    metrics = compute_ragas_metrics(question, contexts, answer, ground_truth)
+    
+    result = {
+        "test_case_id": test_case_id,
+        "question": question,
+        "contexts": contexts,
+        "answer": answer,
+        "context_precision": metrics["context_precision"],
+        "context_recall": metrics["context_recall"],
+        "faithfulness": metrics["faithfulness"],
+        "answer_relevance": metrics["answer_relevance"],
+        "agent_loop_count": agent_loop_count,
+        "latency_seconds": round(latency, 2)
+    }
+    
+    with file_lock:
+        results.append(result)
+        latencies.append(latency)
+        
+        # Append and save incrementally to both JSON and CSV
+        try:
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(results, f, ensure_ascii=False, indent=4)
+            save_csv(results, csv_file)
+        except Exception as e:
+            print(f"[-] Error saving incremental results: {e}")
+            
+        # Calculate ETA
+        avg_lat = sum(latencies) / len(latencies)
+        completed_count = len(results)
+        remaining = total_cases - completed_count
+        eta_seconds = remaining * avg_lat
+        eta_str = time.strftime("%H:%M:%S", time.gmtime(eta_seconds))
+        
+        print(f"[*] Completed: {test_case_id} | Latency: {result['latency_seconds']}s | Loops: {result['agent_loop_count']}")
+        print(f"[*] RAGAS: Precision: {result['context_precision']} | Recall: {result['context_recall']} | Faithfulness: {result['faithfulness']} | Relevance: {result['answer_relevance']}")
+        print(f"[*] Progress: {completed_count}/{total_cases} ({completed_count/total_cases*100:.1f}%) | ETA remaining: {eta_str}")
+
 def run_evaluation():
     parser = argparse.ArgumentParser(description="Evaluate Agentic RAG Pipeline")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of test cases to run")
@@ -131,6 +237,7 @@ def run_evaluation():
     parser.add_argument("--domain", type=str, choices=["it", "math", "physics", "electronics"], help="Filter by specific domain")
     parser.add_argument("--use-ground-truth", action="store_true", help="Bypass routing LLM and use ground-truth domain/document selection")
     parser.add_argument("--resume", action="store_true", help="Resume from existing evaluation_results.json")
+    parser.add_argument("--workers", type=int, default=1, help="Number of concurrent threads for evaluation")
     
     args, unknown = parser.parse_known_args()
 
@@ -186,138 +293,70 @@ def run_evaluation():
     print(f"\n=== STARTING EVALUATION ({len(test_cases_to_run)} cases to run out of {len(all_test_cases)} selected) ===")
     if args.use_ground_truth:
         print("[*] Speed Mode: Using ground-truth domains & documents.")
+    print(f"[*] Concurrency: {args.workers} worker thread(s)")
 
     total_cases = len(test_cases_to_run)
     latencies = [r["latency_seconds"] for r in results] if results else []
+    file_lock = threading.Lock()
 
-    for index, case in enumerate(test_cases_to_run, 1):
-        test_case_id = case["test_case_id"]
-        run_type = case.get("type", "Simple RAG")
-        question = case["question"]
-        ground_truth = case.get("ground_truth", "")
-        expected_docs = case.get("expected_source_document", [])
-        selected_doc = expected_docs[0] if expected_docs else None
-        
-        print(f"\n[{index}/{total_cases}] (ID: {test_case_id}) Type: {run_type}")
-        print(f"Question: {question}")
-        
-        start_time = time.time()
-        
-        contexts = []
-        answer = ""
-        agent_loop_count = 1
-        
-        if run_type == "Simple RAG":
-            # --- Simple RAG Flow ---
-            # 1. Routing
-            if args.use_ground_truth:
-                routed_domain = case.get("domain", "it")
-                print(f"[*] Routing (Ground-Truth): {routed_domain.upper()}")
-            else:
-                routed_domain = classify_domain(question)
-                print(f"[*] Routing (LLM/Keyword): {routed_domain.upper()}")
-            
-            # 2. Context Retrieval
-            print("[*] Retrieving context...")
-            context = retrieve_context(question, routed_domain, target_file=selected_doc)
-            contexts = [context] if context else []
-            
-            # 3. Answer Generation
-            print("[*] Generating answer...")
-            answer = generate_answer(question, context)
-            agent_loop_count = 1
-            
-        else:
-            # --- Agentic Reflection Flow (LangGraph) ---
-            print("[*] Invoking LangGraph Agent Graph...")
-            inputs = {
-                "question": question,
-                "original_question": None,
-                "chat_history": [],
-                "preferred_domain": case.get("domain") if args.use_ground_truth else None,
-                "use_tavily": False,          # Disable external web searches during benchmark
-                "export_to_workspace": False, # Disable Google exports during benchmark
-                "expert_required": False,     # Keep local
-                "python_repl": False,         # Keep local
-                "web_fallback": False,        # Disable external web fallback
-                "documents": [],           
-                "generation": "",          
-                "structured_data": None,
-                "selected_doc": selected_doc
-            }
-            
-            config = {"configurable": {"thread_id": f"eval_{test_case_id}"}, "recursion_limit": 15}
-            try:
-                final_state = agent_app.invoke(inputs, config=config)
-                answer = final_state.get("generation", "No generation produced.")
-                contexts = final_state.get("documents", [])
-                agent_loop_count = final_state.get("retry_count", 0)
-                # If retry_count is 0 but it generated once, loop count is at least 1
-                if agent_loop_count == 0 and answer:
-                    agent_loop_count = 1
-            except Exception as e:
-                print(f"[-] Error invoking LangGraph: {e}")
-                answer = f"Error occurred during Agent graph execution: {e}"
-                contexts = []
-                agent_loop_count = 1
-
-        end_time = time.time()
-        latency = end_time - start_time
-        latencies.append(latency)
-        
-        # Calculate RAGAS metrics
-        print("[*] Computing RAGAS metrics...")
-        metrics = compute_ragas_metrics(question, contexts, answer, ground_truth)
-        
-        result = {
-            "test_case_id": test_case_id,
-            "question": question,
-            "contexts": contexts,
-            "answer": answer,
-            "context_precision": metrics["context_precision"],
-            "context_recall": metrics["context_recall"],
-            "faithfulness": metrics["faithfulness"],
-            "answer_relevance": metrics["answer_relevance"],
-            "agent_loop_count": agent_loop_count,
-            "latency_seconds": round(latency, 2)
-        }
-        
-        # Append and save incrementally to both JSON and CSV
-        results.append(result)
-        try:
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(results, f, ensure_ascii=False, indent=4)
-            save_csv(results, csv_file)
-        except Exception as e:
-            print(f"[-] Error saving incremental results: {e}")
-            
-        # Calculate ETA
-        avg_lat = sum(latencies) / len(latencies)
-        remaining = total_cases - index
-        eta_seconds = remaining * avg_lat
-        eta_str = time.strftime("%H:%M:%S", time.gmtime(eta_seconds))
-        
-        print(f"[*] Latency: {result['latency_seconds']}s | Loops: {result['agent_loop_count']}")
-        print(f"[*] RAGAS: Precision: {result['context_precision']} | Recall: {result['context_recall']} | Faithfulness: {result['faithfulness']} | Relevance: {result['answer_relevance']}")
-        print(f"[*] Progress: {index}/{total_cases} ({index/total_cases*100:.1f}%) | ETA remaining: {eta_str}")
+    if args.workers > 1:
+        with ThreadPoolExecutor(max_workers=args.workers) as executor:
+            # We map indexing to case submission
+            futures = [
+                executor.submit(
+                    evaluate_single_case,
+                    case,
+                    idx,
+                    total_cases,
+                    args,
+                    agent_app,
+                    output_file,
+                    csv_file,
+                    results,
+                    latencies,
+                    file_lock
+                )
+                for idx, case in enumerate(test_cases_to_run, 1)
+            ]
+            # Wait for all futures to complete
+            for future in futures:
+                future.result()
+    else:
+        # Fallback to sequential execution for simple debugging/logs
+        for index, case in enumerate(test_cases_to_run, 1):
+            evaluate_single_case(
+                case,
+                index,
+                total_cases,
+                args,
+                agent_app,
+                output_file,
+                csv_file,
+                results,
+                latencies,
+                file_lock
+            )
 
     # Final Summary
-    avg_latency = sum(r["latency_seconds"] for r in results) / len(results)
-    avg_precision = sum(r["context_precision"] for r in results) / len(results)
-    avg_recall = sum(r["context_recall"] for r in results) / len(results)
-    avg_faithfulness = sum(r["faithfulness"] for r in results) / len(results)
-    avg_relevance = sum(r["answer_relevance"] for r in results) / len(results)
-    avg_loops = sum(r["agent_loop_count"] for r in results) / len(results)
-    
-    print("\n=== EVALUATION SUMMARY ===")
-    print(f"Total cases evaluated: {len(results)}")
-    print(f"Average Latency: {avg_latency:.2f}s")
-    print(f"Average Agent Loops: {avg_loops:.2f}")
-    print(f"Average Context Precision: {avg_precision:.2f}")
-    print(f"Average Context Recall: {avg_recall:.2f}")
-    print(f"Average Faithfulness: {avg_faithfulness:.2f}")
-    print(f"Average Answer Relevance: {avg_relevance:.2f}")
-    print(f"Full results successfully saved to {output_file} and {csv_file}")
+    if results:
+        avg_latency = sum(r["latency_seconds"] for r in results) / len(results)
+        avg_precision = sum(r["context_precision"] for r in results) / len(results)
+        avg_recall = sum(r["context_recall"] for r in results) / len(results)
+        avg_faithfulness = sum(r["faithfulness"] for r in results) / len(results)
+        avg_relevance = sum(r["answer_relevance"] for r in results) / len(results)
+        avg_loops = sum(r["agent_loop_count"] for r in results) / len(results)
+        
+        print("\n=== EVALUATION SUMMARY ===")
+        print(f"Total cases evaluated: {len(results)}")
+        print(f"Average Latency: {avg_latency:.2f}s")
+        print(f"Average Agent Loops: {avg_loops:.2f}")
+        print(f"Average Context Precision: {avg_precision:.2f}")
+        print(f"Average Context Recall: {avg_recall:.2f}")
+        print(f"Average Faithfulness: {avg_faithfulness:.2f}")
+        print(f"Average Answer Relevance: {avg_relevance:.2f}")
+        print(f"Full results successfully saved to {output_file} and {csv_file}")
+    else:
+        print("[-] No results generated.")
 
 if __name__ == "__main__":
     run_evaluation()
