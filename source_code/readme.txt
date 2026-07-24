@@ -70,13 +70,21 @@ Agentic_rag_final_project/
 
 ## Installation & Setup
 
+### 1. Backend Setup
+
 1. **Clone the repository and navigate to the folder:**
    ```bash
    git clone <repository_url>
    cd Agentic_rag_final_project
    ```
 
-2. **Set up a virtual environment and activate it:**
+2. **Start the PostgreSQL Database:**
+   Start the PostgreSQL container running on port `5433` using Docker Compose:
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Set up a virtual environment and activate it:**
    ```bash
    python -m venv venv
    # On Windows:
@@ -85,52 +93,80 @@ Agentic_rag_final_project/
    source venv/bin/activate
    ```
 
-3. **Install dependencies:**
+4. **Install Backend dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Configure Environment Variables:**
-   Create a `.env` file in the root directory and add the following settings:
+5. **Configure Backend Environment Variables:**
+   Copy `.env.example` to `.env` or create a new `.env` file in the root directory:
    ```env
    # API Keys
    TAVILY_API_KEY=your_tavily_api_key_here
    
    # JWT Configuration
-   SECRET_KEY=your_jwt_secret_key_here
-   ALGORITHM=HS256
+   JWT_SECRET=your_jwt_secret_key_here
    ACCESS_TOKEN_EXPIRE_MINUTES=1440
    
    # Database Configuration (PostgreSQL on port 5433)
-   DATABASE_URL=postgresql://postgres:postgres@localhost:5433/agentic_rag
+   DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5433/agentic_rag
    ```
 
-5. **Start PostgreSQL:**
-   Ensure PostgreSQL is running and accessible at the connection string specified above.
+### 2. Frontend Setup
 
-## Usage
+1. **Navigate to the frontend directory:**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install Frontend dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Frontend Environment Variables:**
+   Copy `.env.local.example` to `.env.local`:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   Ensure `NEXT_PUBLIC_API_URL` points to your backend URL:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   ```
+
+---
+
+## Usage & Execution
 
 ### 1. Data Ingestion (Vectorizing Documents)
-Place your PDF files into the respective domain folders inside `data/raw/` (`it`, `math`, `physics`, `electronics`). Then run the ingestion script:
+Place your PDF files into the respective domain folders inside `data/raw/` (`it`, `math`, `physics`, `electronics`). Run the ingestion script:
 ```bash
 python ingestion.py
 ```
 This will process the documents and build the local ChromaDB indices.
 
-### 2. Run in CLI Mode
-Start the interactive terminal interface:
+### 2. Start the Backend API Server
+With your virtual environment active, start the FastAPI server via Uvicorn:
+```bash
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+```
+* The API docs will be available at `http://127.0.0.1:8000/docs`.
+
+### 3. Start the Frontend Application
+Navigate to the `frontend` directory and start the Next.js development server:
+```bash
+cd frontend
+npm run dev
+```
+* Access the web application at `http://localhost:3000`.
+
+### 4. Running in CLI Mode (Optional)
+If you wish to use the interactive terminal interface:
 ```bash
 python main.py
 ```
 
-### 3. Run the Backend API Server
-Start the FastAPI server via Uvicorn:
-```bash
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
-```
-The documentation is available at `http://127.0.0.1:8000/docs`.
-
-### 4. Test WebSockets Chat
+### 5. Test WebSockets Connection (Optional)
 Verify authentication and real-time streaming using the integrated test script:
 ```bash
 python test_websocket.py

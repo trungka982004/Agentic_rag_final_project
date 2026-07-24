@@ -14,6 +14,9 @@ from typing import List
 from uuid import UUID
 from datetime import datetime
 import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -282,7 +285,7 @@ def run_ingestion_background(domain: str):
         ingest_docs(target_domain=domain)
         clear_rag_caches()
     except Exception as e:
-        print(f"[Ingestion Background] Error: {e}")
+        logger.error(f"Ingestion Background Error: {e}")
 
 @app.get("/api/documents")
 def list_documents(current_user: User = Depends(get_current_user)):
@@ -352,15 +355,15 @@ def bulk_delete_documents(
                         db_source_path = find_exact_source_path(db, filename)
                         if db_source_path:
                             db.delete(where={"source": db_source_path})
-                            print(f"[Bulk Delete] Deleted vectors for {filename} from ChromaDB '{domain}_collection'.")
+                            logger.info(f"Bulk Delete: Deleted vectors for {filename} from ChromaDB '{domain}_collection'.")
                 except Exception as e:
-                    print(f"[Bulk Delete] Warning: Failed to delete vectors from ChromaDB: {e}")
+                    logger.warning(f"Bulk Delete Warning: Failed to delete vectors from ChromaDB: {e}")
                 
                 os.remove(file_path)
                 deleted_files.append(filename)
                 affected_domains.add(domain)
             except Exception as e:
-                print(f"[Bulk Delete] Error deleting {file_path}: {e}")
+                logger.error(f"Bulk Delete Error deleting {file_path}: {e}")
                 
     # Rebuild indexes for affected domains in background
     for domain in affected_domains:
@@ -408,9 +411,9 @@ def reassign_document(
                 db_source_path = find_exact_source_path(db, filename)
                 if db_source_path:
                     db.delete(where={"source": db_source_path})
-                    print(f"[Reassign] Deleted old vectors for {filename} from ChromaDB '{source_domain}_collection'.")
+                    logger.info(f"Reassign: Deleted old vectors for {filename} from ChromaDB '{source_domain}_collection'.")
         except Exception as e:
-            print(f"[Reassign] Warning: Failed to delete old vectors: {e}")
+            logger.warning(f"Reassign Warning: Failed to delete old vectors: {e}")
             
         # 2. Move file on disk
         shutil.move(source_path, target_path)

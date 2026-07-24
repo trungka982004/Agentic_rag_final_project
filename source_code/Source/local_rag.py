@@ -3,7 +3,7 @@ import sys
 import logging
 import re
 import time
-from typing import List, Optional
+from typing import List, Optional, Dict, Any, Union
 
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langchain_chroma import Chroma
@@ -20,24 +20,23 @@ except (ImportError, ModuleNotFoundError):
     try:
         from langchain_classic.retrievers import EnsembleRetriever
     except (ImportError, ModuleNotFoundError):
-        # Fallback if both fail, will error at runtime if used
         EnsembleRetriever = None
 
-# --- CONFIGURATION ---
 class Config:
-    DB_BASE_PATH = "db/vector_stores"
-    EMBEDDING_MODEL = "bge-m3"
-    LLM_MODEL = "qwen2.5:7b"
-    TEMPERATURE = 0
-    CONTEXT_WINDOW = 4096
-    MAX_TOKENS = 1024
-    KEEP_ALIVE = "5m"
+    """System-wide configuration parameters."""
+    DB_BASE_PATH: str = "db/vector_stores"
+    EMBEDDING_MODEL: str = "bge-m3"
+    LLM_MODEL: str = "qwen2.5:7b"
+    TEMPERATURE: float = 0.0
+    CONTEXT_WINDOW: int = 4096
+    MAX_TOKENS: int = 1024
+    KEEP_ALIVE: str = "5m"
 
-# Configure logging
+# Configure standard logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Initialize shared components
+# Initialize LLM and Embedding components
 try:
     embeddings = OllamaEmbeddings(model=Config.EMBEDDING_MODEL)
     llm = ChatOllama(
@@ -52,18 +51,20 @@ except Exception as e:
     embeddings = None
     llm = None
 
-# --- CACHES (declared before any function that references them) ---
-_db_cache: dict = {}
-_bm25_cache: dict = {}
-
-# Domain list cache with TTL (30 seconds) to avoid repeated disk reads per pipeline run
+# Global caches for optimization
+_db_cache: Dict[str, Chroma] = {}
+_bm25_cache: Dict[str, BM25Retriever] = {}
 _domains_cache: List[str] = []
 _domains_cache_ts: float = 0.0
-_DOMAINS_TTL = 30.0
+_DOMAINS_TTL: float = 30.0
 
 
 def get_active_domains() -> List[str]:
-    """Retrieves all active domain folder names dynamically from disk, with TTL-based caching."""
+    """Retrieves list of active domains from disk with TTL caching.
+
+    Returns:
+        A list of domain names.
+    """
     global _domains_cache, _domains_cache_ts
     now = time.monotonic()
     if _domains_cache and (now - _domains_cache_ts) < _DOMAINS_TTL:
@@ -83,22 +84,30 @@ def get_active_domains() -> List[str]:
         _domains_cache = domains
         _domains_cache_ts = now
         return domains
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Error reading domains from disk: {e}. Using defaults.")
         return defaults
 
 
-def clear_rag_caches():
-    """Clears the DB cache, BM25 cache and domain list cache to force reloading from disk."""
+def clear_rag_caches() -> None:
+    """Invalidates all runtime RAG cache structures."""
     global _db_cache, _bm25_cache, _domains_cache, _domains_cache_ts
     _db_cache.clear()
     _bm25_cache.clear()
     _domains_cache = []
     _domains_cache_ts = 0.0
-    logger.info("[*] All RAG caches have been successfully invalidated.")
+    logger.info("All RAG caches have been successfully invalidated.")
 
 
 def get_vector_db(domain: str) -> Optional[Chroma]:
-    """Loads the specific ChromaDB for a given domain, using a memory cache to prevent recreation."""
+    """Retrieves or instantiates the Chroma vector store for a domain.
+
+    Args:
+        domain: Domain target string.
+
+    Returns:
+        The cached Chroma instance or None if not found.
+    """
     if domain in _db_cache:
         return _db_cache[domain]
 
@@ -117,11 +126,18 @@ def get_vector_db(domain: str) -> Optional[Chroma]:
 
 
 def classify_domain(query: str) -> str:
-    """Classifies the user query into one of the pre-defined or custom domains using fast routing and LLM fallback."""
+    """Classifies query topic into one of the active domains.
+
+    Args:
+        query: User input query.
+
+    Returns:
+        The matched domain name.
+    """
     query_lower = query.lower()
     active_domains = get_active_domains()
 
-    # Fast Keyword Routing
+    # Heuristics based fast-routing
     if any(kw in query_lower for kw in ["it", "network", "code", "python", "programming", "algorithm", "software", "computer", "deep learning", "machine learning", "resnet", "bert", "mapreduce", "transformer"]):
         return "it"
     if any(kw in query_lower for kw in ["math", "integral", "derivative", "equation", "riemann", "prime", "theorem", "entropy", "algebra"]):
@@ -131,13 +147,12 @@ def classify_domain(query: str) -> str:
     if any(kw in query_lower for kw in ["electronics", "circuit", "transistor", "neuromorphic", "hardware", "sensor", "voltage", "neuronal"]):
         return "electronics"
 
-    # Check custom domain name matching directly in query
     for d in active_domains:
         if d in query_lower or d.replace("_", " ") in query_lower or d.replace("-", " ") in query_lower:
             return d
 
     if not llm:
-        return "physics"  # Fallback
+        return "physics"
 
     categories_str = ", ".join(f"'{d}'" for d in active_domains)
     prompt = ChatPromptTemplate.from_template(f"""
@@ -153,7 +168,7 @@ def classify_domain(query: str) -> str:
     try:
         domain = chain.invoke({"query": query}).strip().lower()
         if domain not in active_domains:
-            logger.info(f"LLM returned unknown domain '{domain}'. Falling back to 'physics'.")
+            logger.info(f"LLM returned unknown domain '{domain}'. Defaulting to 'physics'.")
             return "physics"
         return domain
     except Exception as e:
@@ -162,7 +177,15 @@ def classify_domain(query: str) -> str:
 
 
 def find_exact_source_path(db: Chroma, target_file: str) -> Optional[str]:
-    """Finds the exact source path string stored in ChromaDB that matches target_file."""
+    """Resolves the absolute source path of a document inside Chroma DB metadata.
+
+    Args:
+        db: Active ChromaDB instance.
+        target_file: Document base filename.
+
+    Returns:
+        The resolved source path or None.
+    """
     try:
         db_data = db.get()
         if db_data and db_data.get('metadatas'):
@@ -177,7 +200,17 @@ def find_exact_source_path(db: Chroma, target_file: str) -> Optional[str]:
 
 
 def get_bm25_retriever(db: Chroma, domain: str, k: int = 5, target_file: str = None) -> Optional[BM25Retriever]:
-    """Creates a BM25 retriever from the documents stored in a ChromaDB instance, utilizing caching."""
+    """Generates a cached BM25 sparse retriever from documents in the ChromaDB.
+
+    Args:
+        db: Active ChromaDB instance.
+        domain: Domain target string.
+        k: Chunk return limit.
+        target_file: Restricting filter source path.
+
+    Returns:
+        BM25Retriever instance or None.
+    """
     cache_key = f"{domain}_{target_file}" if target_file else domain
     if cache_key in _bm25_cache:
         retriever = _bm25_cache[cache_key]
@@ -217,10 +250,19 @@ def get_bm25_retriever(db: Chroma, domain: str, k: int = 5, target_file: str = N
 
 
 def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[str] = None) -> str:
-    """Retrieves context using Hybrid Search (BM25 + Vector) with dynamic weights and deduplication."""
+    """Executes Hybrid Search combining BM25 and Vector retrievals.
+
+    Args:
+        query: User search query.
+        domain: Target document domain.
+        k: Target retrieval limit.
+        target_file: Explicit target filename if specified.
+
+    Returns:
+        Formatted context string containing sources.
+    """
     query_lower = query.lower()
 
-    # If target_file is explicitly provided, find which domain folder it belongs to
     if target_file:
         found_domain = None
         for d in get_active_domains():
@@ -230,21 +272,19 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
                 break
         if found_domain:
             domain = found_domain
-            logger.info(f"[*] Explicitly targeting PDF '{target_file}' in domain '{domain}'.")
+            logger.info(f"Explicitly targeting PDF '{target_file}' in domain '{domain}'.")
         else:
-            logger.warning(f"[*] Explicit target PDF '{target_file}' not found in raw data directories.")
+            logger.warning(f"Explicit target PDF '{target_file}' not found in raw data directories.")
     else:
-        # Fallback: detect target PDF filename or name (with or without extension) in query to override domain routing
         found_override = False
         for d in get_active_domains():
             domain_path = os.path.join("data/raw", d)
             if os.path.exists(domain_path):
                 for file in os.listdir(domain_path):
                     if file.lower().endswith(".pdf"):
-                        # Check for full name or name without extension (minimum 5 chars to avoid tiny false matches)
                         name_without_ext = file[:-4]
                         if file.lower() in query_lower or (len(name_without_ext) > 5 and name_without_ext.lower() in query_lower):
-                            logger.info(f"[*] Found target PDF '{file}' in domain '{d}' on disk mentioned in query. Overriding retrieval domain from '{domain}' to '{d}'.")
+                            logger.info(f"Found target PDF '{file}' in domain '{d}' on disk. Overriding domain to '{d}'.")
                             domain = d
                             target_file = file
                             found_override = True
@@ -256,22 +296,19 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
     if not db:
         return "No database found for this domain."
 
-    # Construct metadata filter if target_file is specified
-    search_kwargs = {"k": k}
+    search_kwargs: Dict[str, Any] = {"k": k}
     if target_file:
         target_path = find_exact_source_path(db, target_file) or os.path.join("data/raw", domain, target_file)
         search_kwargs["filter"] = {"source": target_path}
-        logger.info(f"[*] Restricting ChromaDB search to target PDF: {target_path}")
+        logger.info(f"Restricting ChromaDB search to target PDF: {target_path}")
 
-        # Check if the query is a summary/overview request
         summary_keywords = ["tóm tắt", "tóm lược", "sơ lược", "giới thiệu", "khái quát", "summarize", "summary", "overview", "introduction", "intro"]
         is_summary_req = any(kw in query_lower for kw in summary_keywords)
 
         if is_summary_req:
-            logger.info(f"[*] Summary request detected for target PDF. Retrieving sorted pages directly.")
+            logger.info("Summary request detected for target PDF. Retrieving sorted pages directly.")
             all_chunks_data = db.get(where={"source": target_path})
             if all_chunks_data and all_chunks_data.get('documents'):
-                # Package them as Document objects
                 all_docs = [
                     Document(
                         page_content=content,
@@ -279,20 +316,16 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
                     )
                     for i, content in enumerate(all_chunks_data['documents'])
                 ]
-                # Sort documents by page number
                 all_docs.sort(key=lambda d: d.metadata.get('page', 0))
 
-                # If total documents is small (e.g. <= 15), return all of them
                 selected_docs = all_docs if len(all_docs) <= 15 else all_docs[:k]
-
-                # Format context string
                 formatted_chunks = []
                 for doc in selected_docs:
                     src = doc.metadata.get('source', 'Unknown Source')
                     page = doc.metadata.get('page', 'Unknown Page')
                     formatted_chunks.append(f"--- Source: {src} (Page {page}) ---\n{doc.page_content}")
 
-                logger.info(f"[*] Direct page retrieval selected {len(selected_docs)} chunks from target PDF.")
+                logger.info(f"Direct page retrieval selected {len(selected_docs)} chunks from target PDF.")
                 return "\n\n".join(formatted_chunks)
 
     vector_retriever = db.as_retriever(search_kwargs=search_kwargs)
@@ -300,16 +333,14 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
 
     try:
         if bm25_retriever and EnsembleRetriever:
-            # Dynamic weights calculation based on query characteristics
-            query_lower = query.lower()
             semantic_indicators = ["giải thích", "tại sao", "như thế nào", "ý nghĩa", "khái niệm", "what is", "why", "how", "explain", "describe", "mô tả"]
             is_semantic = any(ind in query_lower for ind in semantic_indicators)
 
             if is_semantic:
-                logger.info("[*] Semantic query detected. Using dense-heavy weights [0.3 BM25, 0.7 Vector].")
+                logger.info("Semantic query detected. Using dense-heavy weights [0.3 BM25, 0.7 Vector].")
                 weights = [0.3, 0.7]
             else:
-                logger.info("[*] Keyword-precise query detected. Using sparse-heavy weights [0.6 BM25, 0.4 Vector].")
+                logger.info("Keyword-precise query detected. Using sparse-heavy weights [0.6 BM25, 0.4 Vector].")
                 weights = [0.6, 0.4]
 
             ensemble_retriever = EnsembleRetriever(
@@ -326,7 +357,7 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
     if not filtered_docs:
         return "No relevant information found in the database."
 
-    # Deduplicate retrieved documents based on page content snippets to save tokens and prevent context clutter
+    # Deduplicate overlapping context chunks
     seen_contents = set()
     unique_docs = []
     for d in filtered_docs:
@@ -336,7 +367,7 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
             unique_docs.append(d)
 
     final_docs = unique_docs[:k]
-    logger.info(f"[*] Retrieved {len(final_docs)} unique documents after deduplication.")
+    logger.info(f"Retrieved {len(final_docs)} unique documents after deduplication.")
 
     return "\n\n".join([
         f"--- Source: {d.metadata.get('source', 'Unknown')} (Page {d.metadata.get('page', '?')}) ---\n{d.page_content}"
@@ -345,7 +376,15 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
 
 
 def generate_answer(query: str, context: str) -> str:
-    """Generates an answer using the LLM with a specialized academic prompt."""
+    """Generates structured answer using LLM from provided context.
+
+    Args:
+        query: User input query.
+        context: Context facts text.
+
+    Returns:
+        Response string from the LLM.
+    """
     if not llm:
         return "LLM not initialized."
 

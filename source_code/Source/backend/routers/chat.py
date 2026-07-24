@@ -1,5 +1,10 @@
 import json
+import logging
+import asyncio
+import re
+import os
 from uuid import UUID
+from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
 from sqlalchemy.orm import Session
 import jwt as pyjwt
@@ -9,26 +14,48 @@ from backend.models import User, ChatSession, Message
 from backend.auth import SECRET_KEY, ALGORITHM, get_current_user
 from agent.graph import create_agent_graph
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(
     prefix="/api/ws",
     tags=["WebSocket Chat"]
 )
 
-# Initialize LangGraph
+# Initialize LangGraph compilation
 agent_app = create_agent_graph()
 
-async def get_current_user_ws(token: str, db: Session) -> User:
+async def get_current_user_ws(token: str, db: Session) -> Optional[User]:
+    """Extracts and validates user from JWT token during WebSocket handshake.
+
+    Args:
+        token: Authorization token string.
+        db: Database session.
+
+    Returns:
+        The matched User database object or None.
+    """
     try:
         payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             return None
-    except Exception:
+    except Exception as e:
+        logger.warning(f"WebSocket token validation failed: {e}")
         return None
     user = db.query(User).filter(User.email == email).first()
     return user
 
+
 def generate_chat_summary(question: str, answer: str) -> str:
+    """Generates a concise 6-word summary of the first turn to serve as chat session title.
+
+    Args:
+        question: User query.
+        answer: Agent response.
+
+    Returns:
+        A short title string.
+    """
     try:
         from local_rag import llm
         if llm:
@@ -42,23 +69,34 @@ def generate_chat_summary(question: str, answer: str) -> str:
             response = llm.invoke(prompt)
             summary = response.content.strip().replace('"', '').replace("'", "")
             summary = summary.rstrip(".")
-            if summary and len(summary) > 3 and len(summary) < 60:
+            if summary and 3 < len(summary) < 60:
                 return summary
     except Exception as e:
-        print(f"[Summary Generation] Error: {e}")
-    # Fallback
+        logger.error(f"Error generating chat session summary: {e}")
+    
     return question[:40] + "..." if len(question) > 40 else question
 
+
 @router.websocket("/chat/{session_id}")
-async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db: Session = Depends(get_db)):
+async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db: Session = Depends(get_db)) -> None:
+    """Handles real-time WebSocket chat connections, streaming LangGraph nodes, and persisting history.
+
+    Args:
+        websocket: Active WebSocket channel.
+        session_id: Session identifier.
+        token: JWT auth token.
+        db: Database session.
+    """
     user = await get_current_user_ws(token, db)
     if not user:
-        await websocket.close(code=1008) # Policy Violation
+        logger.warning(f"Unauthorized WebSocket access attempt for session {session_id}.")
+        await websocket.close(code=1008)
         return
 
-    # Verify session belongs to user
+    # Verify session ownership
     session = db.query(ChatSession).filter(ChatSession.id == session_id, ChatSession.user_id == user.id).first()
     if not session:
+        logger.warning(f"Forbidden WebSocket session access for user {user.email} and session {session_id}.")
         await websocket.close(code=1008)
         return
 
@@ -68,7 +106,8 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
         try:
             await websocket.send_json(payload)
             return True
-        except Exception:
+        except Exception as e:
+            logger.debug(f"Failed to send JSON over WebSocket: {e}")
             return False
 
     try:
@@ -95,16 +134,16 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             if not question:
                 continue
 
-            # Save user message to DB
+            # Save user prompt
             user_msg = Message(session_id=session.id, role="user", content=question)
             db.add(user_msg)
             db.commit()
 
-            # Retrieve chat history
+            # Retrieve prior session context
             messages = db.query(Message).filter(Message.session_id == session.id).order_by(Message.created_at).all()
             chat_history = []
             
-            # Group into user-agent pairs
+            # Format to user-agent pairs
             current_user_msg = None
             for msg in messages:
                 if msg.role == "user":
@@ -113,7 +152,6 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                     chat_history.append({"user": current_user_msg, "agent": msg.content})
                     current_user_msg = None
 
-            # Prepare graph inputs
             inputs = {
                 "question": question,
                 "original_question": None,
@@ -132,17 +170,15 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
 
             config = {"configurable": {"thread_id": str(session.id)}, "recursion_limit": 10}
 
-            # Send a processing start event
             if not await safe_send({"type": "status", "message": "Agent processing started..."}):
                 break
 
             state = {}
-            # Stream events from LangGraph
+            # Stream execution nodes in real-time
             try:
                 async for event in agent_app.astream(inputs, config=config, stream_mode="updates"):
-                    # Event is a dictionary where keys are node names and values are the returned state updates
                     for node_name, node_state in event.items():
-                        print(f"[WS Debug] node_name: {node_name}, type(node_state): {type(node_state)}, node_state: {repr(node_state)}")
+                        logger.info(f"LangGraph executed node: {node_name}")
                         if not await safe_send({
                             "type": "node_update",
                             "node": node_name,
@@ -153,19 +189,16 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                             state.update(node_state)
                 final_state = state
             except Exception as e:
-                import traceback
-                traceback.print_exc()
+                logger.error(f"Error during LangGraph streaming: {e}", exc_info=True)
                 await safe_send({"type": "error", "message": f"Error during processing: {str(e)}"})
                 continue
 
             if final_state is None:
-                # Fallback if streaming didn't emit anything (shouldn't happen)
                 final_state = await agent_app.ainvoke(inputs, config=config)
 
-            # Get final outputs
             generation = final_state.get("generation", "No answer generated.")
             export_links = final_state.get("export_links", {})
-            original_question = final_state.get("original_question")  # Non-None if query was corrected
+            original_question = final_state.get("original_question")
             corrected_question = final_state.get("question") if original_question else None
             flags = {
                 "expert_required": final_state.get("expert_required"),
@@ -174,7 +207,7 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                 "export_to_workspace": final_state.get("export_to_workspace")
             }
 
-            # Save agent message to DB
+            # Save generated agent response
             agent_msg = Message(
                 session_id=session.id, 
                 role="agent", 
@@ -184,34 +217,28 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
             )
             db.add(agent_msg)
 
-            # Update session title if it's the first message – done ASYNCHRONOUSLY
-            # so the WebSocket response is never delayed by the title-generation LLM call.
             is_first_message = session.title in ["New Conversation", "New Chat"]
 
             db.commit()
             db.refresh(agent_msg)
 
-            # Send final response to WebSocket immediately (before title update)
             if not await safe_send({
                 "type": "final_answer",
                 "id": str(agent_msg.id),
                 "content": generation,
                 "export_links": export_links,
                 "flags": flags,
-                # Correction metadata — frontend can use this for "Did you mean?" UI
                 "original_question": original_question,
                 "corrected_question": corrected_question,
             }):
                 break
 
-            # Now generate & persist the session title in the background (non-blocking)
+            # Handle title condensation asynchronously in background
             if is_first_message:
-                import asyncio
                 from backend.database import get_db as _get_db_factory
-                async def _update_title_bg(q: str, ans: str, sess_id):
+                async def _update_title_bg(q: str, ans: str, sess_id: UUID) -> None:
                     try:
                         title = generate_chat_summary(q, ans)
-                        # Open a fresh DB session for the background task
                         bg_db = next(_get_db_factory())
                         try:
                             from backend.models import ChatSession as _CS
@@ -223,24 +250,33 @@ async def websocket_chat(websocket: WebSocket, session_id: UUID, token: str, db:
                         finally:
                             bg_db.close()
                     except Exception as _e:
-                        print(f"[Background Title] Error: {_e}")
+                        logger.error(f"Background title generation failed: {_e}")
                 asyncio.create_task(_update_title_bg(question, generation, session.id))
 
     except WebSocketDisconnect:
-        print(f"Client disconnected from session: {session_id}")
+        logger.info(f"Client disconnected from session: {session_id}")
+
 
 @router.post("/messages/{message_id}/export")
 def export_message(
     message_id: UUID,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
-):
-    # Fetch the message
+) -> Dict[str, Any]:
+    """Trigger manual export of a specific assistant response.
+
+    Args:
+        message_id: Message UUID.
+        current_user: Logged-in User.
+        db: Database session.
+
+    Returns:
+        Export URLs dictionary.
+    """
     msg = db.query(Message).filter(Message.id == message_id).first()
     if not msg:
         raise HTTPException(status_code=404, detail="Message not found")
         
-    # Check session owner
     session = db.query(ChatSession).filter(ChatSession.id == msg.session_id, ChatSession.user_id == current_user.id).first()
     if not session:
         raise HTTPException(status_code=403, detail="Not authorized to access this message")
@@ -248,7 +284,6 @@ def export_message(
     if msg.role != "agent":
         raise HTTPException(status_code=400, detail="Only agent responses can be exported")
         
-    # Find the preceding user message to get the question context
     preceding_user_msg = db.query(Message).filter(
         Message.session_id == msg.session_id,
         Message.created_at < msg.created_at,
@@ -258,19 +293,15 @@ def export_message(
     question = preceding_user_msg.content if preceding_user_msg else "Scientific Query"
     generation = msg.content
     
-    # Run the export logic
-    import re
-    import os
     from tools.mermaid_renderer import render_mermaid_to_image
     from tools.google_workspace import export_to_google_docs, export_to_google_sheets, upload_image_to_drive, _get_google_credentials
     
-    # Verify google workspace credentials and throw descriptive errors
     try:
         creds = _get_google_credentials()
         if not creds:
             raise HTTPException(
                 status_code=400,
-                detail="Google Workspace credentials are not configured or token is expired. Please check credentials.json/token.json or re-authenticate."
+                detail="Google Workspace credentials are not configured. Please add credentials.json/token.json."
             )
     except Exception as e:
         raise HTTPException(
@@ -293,14 +324,13 @@ def export_message(
                     except Exception:
                         pass
 
-        # Helper function to generate a title
-        def generate_short_title(text: str, prefix: str = "doc") -> str:
+        def generate_short_title_helper(text: str, prefix: str = "doc") -> str:
             clean = re.sub(r'[^\w\s-]', '', text).strip()
             words = clean.split()
             title_words = words[:5]
             return f"SIS_{prefix.upper()}_" + "_".join(title_words)
             
-        doc_title = generate_short_title(question, "docs")
+        doc_title = generate_short_title_helper(question, "docs")
         clean_content = re.sub(r"```mermaid\s*(.*?)\s*```", "", generation, flags=re.DOTALL).strip()
         
         doc_content = f"QUESTION:\n{question}\n\n"
@@ -313,7 +343,7 @@ def export_message(
         if "Error" in doc_result or "Credentials" in doc_result:
             raise Exception(doc_result)
         
-        sheet_title = generate_short_title(question, "sheets")
+        sheet_title = generate_short_title_helper(question, "sheets")
         clean_generation = re.sub(r"```mermaid\s*(.*?)\s*```", "[Diagram Rendered in Doc]", generation, flags=re.DOTALL).strip()
         
         sheet_data = [
@@ -326,7 +356,6 @@ def export_message(
         if "Error" in sheet_result or "Credentials" in sheet_result:
             raise Exception(sheet_result)
         
-        # Extract links from results
         export_links = {"docs": None, "sheets": None}
         doc_match = re.search(r"https?://\S+", doc_result)
         if doc_match:
@@ -335,7 +364,6 @@ def export_message(
         if sheet_match:
             export_links["sheets"] = sheet_match.group(0).rstrip(".")
             
-        # Update message in db
         msg.export_links = export_links
         db.add(msg)
         db.commit()
