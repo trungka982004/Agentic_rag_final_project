@@ -454,8 +454,8 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '10px 14px',
-                      background: link.type === 'google_docs' ? 'var(--primary-fixed)' : 'var(--success-container)',
-                      color: link.type === 'google_docs' ? 'var(--on-primary-container)' : 'var(--success)',
+                      background: link.type === 'google_docs' ? 'var(--primary)' : 'var(--success-container)',
+                      color: link.type === 'google_docs' ? 'var(--on-primary)' : 'var(--success)',
                       borderRadius: 'var(--radius-sm)',
                       textDecoration: 'none',
                       fontSize: '13px',
@@ -499,8 +499,8 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                   style={{
                     width: '100%',
                     padding: '10px 16px',
-                    background: 'var(--primary-container)',
-                    color: 'var(--on-primary-container)',
+                    background: 'var(--primary)',
+                    color: 'var(--on-primary)',
                     border: 'none',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '13px',
@@ -512,8 +512,8 @@ export default function ScientificConsole({ selectedMessage, onUpdateMessageLink
                     gap: '8px',
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={e => { if (!isExporting) e.currentTarget.style.background = 'var(--primary)'; }}
-                  onMouseLeave={e => { if (!isExporting) e.currentTarget.style.background = 'var(--primary-container)'; }}
+                  onMouseEnter={e => { if (!isExporting) e.currentTarget.style.background = 'var(--primary-container)'; }}
+                  onMouseLeave={e => { if (!isExporting) e.currentTarget.style.background = 'var(--primary)'; }}
                 >
                   {isExporting ? (
                     <>
