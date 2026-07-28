@@ -172,5 +172,27 @@ Verify authentication and real-time streaming using the integrated test script:
 python test_websocket.py
 ```
 
+### 6. Pipeline Evaluation (Benchmark & Metrics)
+To run the evaluation script over the test cases:
+```bash
+python evaluate.py
+```
+To resume a paused/stopped evaluation:
+```bash
+python evaluate.py --resume
+```
+
+#### Evaluation Summary (Latest Benchmark)
+- **Total cases evaluated:** 150
+- **Average Latency:** 226.50s
+- **Average Agent Loops:** 1.18
+- **Average Context Precision:** 0.56
+- **Average Context Recall:** 0.54
+- **Average Faithfulness:** 0.62
+- **Average Answer Relevance:** 0.73
+
+Detailed benchmarks are exported incrementally to `evaluation_results.json` and `evaluation_results.csv`.
+
 ## License
 MIT License
+
