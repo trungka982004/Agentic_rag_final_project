@@ -506,6 +506,8 @@ export default function DocumentLibraryPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: '24px',
+          position: 'sticky',
+          top: '28px',
         }}>
           
           {/* Domain Selection Section */}
@@ -1033,7 +1035,7 @@ export default function DocumentLibraryPage() {
           </div>
 
           {/* Table itself */}
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: 'auto', maxHeight: 'calc(100vh - 350px)', overflowY: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
               <thead>
                 <tr style={{ background: 'var(--surface-container-low)' }}>
@@ -1042,7 +1044,11 @@ export default function DocumentLibraryPage() {
                     width: '40px',
                     padding: '10px 14px',
                     borderBottom: '1px solid var(--outline-variant)',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1,
+                    background: 'var(--surface-container-low)',
                   }}>
                     <input
                       type="checkbox"
@@ -1068,6 +1074,10 @@ export default function DocumentLibraryPage() {
                       letterSpacing: '0.06em',
                       borderBottom: '1px solid var(--outline-variant)',
                       whiteSpace: 'nowrap',
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1,
+                      background: 'var(--surface-container-low)',
                     }}>
                       {h}
                     </th>

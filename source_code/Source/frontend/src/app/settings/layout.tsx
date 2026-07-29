@@ -136,15 +136,6 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             </div>
           ))}
         </div>
-
-        {/* Upgrade button */}
-        <div style={{ padding: '10px 8px', borderTop: '1px solid var(--outline-variant)' }}>
-          <button className="upgrade-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
-            Upgrade Pro
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}

@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
-// Stitch screen: "Personal Information"
-// Sections: Profile card + form fields, Security (password + 2FA toggle)
-
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { apiUpdateProfile, apiUploadAvatar } from '@/services/api';
 
 const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
   <label className="toggle" style={{ cursor: 'pointer' }}>
@@ -15,11 +13,13 @@ const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 );
 
 export default function ProfilePage() {
+  const { user, refetch } = useAuth();
   const router = useRouter();
   const [twoFA, setTwoFA] = useState(true);
   const [tags, setTags] = useState(['Artificial Intelligence', 'Natural Language Processing', 'Deep Learning']);
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   const [formData, setFormData] = useState({
     name: 'Nguyen Van A',
@@ -31,14 +31,62 @@ export default function ProfilePage() {
     pwConfirm: '',
   });
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (user?.profile) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.profile?.name || 'Nguyen Van A',
+        title: user.profile?.title || 'PhD / Associate Professor',
+        email: user.profile?.email || user.email || 'a.nguyen@academic.edu.vn',
+        org: user.profile?.org || 'Institute of Information Technology – VAST',
+      }));
+      if (user.profile.avatar_url) {
+        setAvatarUrl(user.profile.avatar_url);
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('profile_data');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed.tags) setTags(parsed.tags);
+        if (parsed.twoFA !== undefined) setTwoFA(parsed.twoFA);
+      } catch (e) {
+        console.error('Failed to parse saved profile data', e);
+      }
+    }
+  }, []);
+
+  const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      await apiUpdateProfile({
+        name: formData.name,
+        title: formData.title,
+        email: formData.email,
+        org: formData.org,
+        avatar_url: avatarUrl,
+      });
+
+      localStorage.setItem('profile_data', JSON.stringify({
+        tags,
+        twoFA
+      }));
+
+      if (refetch) {
+        await refetch();
+      }
+
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }, 800);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save profile.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -83,26 +131,77 @@ export default function ProfilePage() {
       <div className="card" style={{ marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
           {/* Avatar */}
-          <div style={{
-            width: '56px', height: '56px', borderRadius: '50%',
-            background: 'var(--primary-container)',
-            color: 'var(--on-primary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '22px', fontWeight: 700, fontFamily: 'var(--font-display)',
-            flexShrink: 0, position: 'relative',
-          }}>
-            {formData.name.charAt(0).toUpperCase()}
+          <div 
+            onClick={() => document.getElementById('avatar-upload-input')?.click()}
+            style={{
+              width: '56px', height: '56px', borderRadius: '50%',
+              background: 'var(--primary-container)',
+              color: 'var(--on-primary)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '22px', fontWeight: 700, fontFamily: 'var(--font-display)',
+              flexShrink: 0, position: 'relative',
+              cursor: 'pointer',
+            }}
+            title="Click to change avatar"
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              formData.name.charAt(0).toUpperCase()
+            )}
+            
+            {/* Camera hover icon overlay */}
+            <div className="avatar-hover-overlay" style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background: 'rgba(0, 0, 0, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: 0,
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            
             {/* Active badge */}
             <span style={{
               position: 'absolute', bottom: 0, right: 0,
               width: '14px', height: '14px', borderRadius: '50%',
               background: 'var(--success)',
               border: '2px solid var(--surface-container-lowest)',
+              zIndex: 2,
             }} />
+            
+            <input 
+              id="avatar-upload-input" 
+              type="file" 
+              accept="image/*" 
+              style={{ display: 'none' }} 
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  try {
+                    const res = await apiUploadAvatar(file);
+                    setAvatarUrl(res.avatar_url);
+                  } catch (err) {
+                    console.error(err);
+                    alert('Failed to upload avatar.');
+                  }
+                }
+              }}
+            />
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '17px', fontWeight: 700, color: 'var(--on-surface)' }}>
-              Dr. {formData.name}
+              {formData.name}
             </div>
             <span style={{
               fontSize: '10.5px', fontFamily: 'var(--font-label)', fontWeight: 700,

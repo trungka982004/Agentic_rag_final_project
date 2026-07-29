@@ -60,6 +60,31 @@ export async function apiGetMe(): Promise<User> {
 }
 
 // ============================================================
+// PROFILE
+// ============================================================
+export interface ProfileUpdateInput {
+  name?: string;
+  title?: string;
+  email?: string;
+  org?: string;
+  avatar_url?: string;
+}
+
+export async function apiUpdateProfile(data: ProfileUpdateInput): Promise<any> {
+  const res = await api.put('/api/profile', data);
+  return res.data;
+}
+
+export async function apiUploadAvatar(file: File): Promise<{ avatar_url: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await api.post<{ avatar_url: string }>('/api/profile/avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+}
+
+// ============================================================
 // SESSIONS
 // ============================================================
 export async function apiListSessions(): Promise<ChatSession[]> {

@@ -17,17 +17,18 @@ import shutil
 import logging
 
 logger = logging.getLogger(__name__)
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, BackgroundTasks
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, BackgroundTasks, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from backend.database import engine, Base, get_db
-from backend.models import User, ChatSession, Message
+from backend.models import User, ChatSession, Message, Profile
 from backend.schemas import (
     UserCreate, UserResponse, Token,
     ChatSessionCreate, ChatSessionResponse, ChatSessionDetailResponse,
-    MessageResponse
+    MessageResponse, ProfileResponse, ProfileUpdate
 )
 from backend.auth import (
     get_password_hash, verify_password, create_access_token, get_current_user
@@ -35,7 +36,10 @@ from backend.auth import (
 
 from backend.routers import chat
 
-# Automatically create tables in PostgreSQL if they don't exist
+# Create static/avatars directory if not exists
+os.makedirs("static/avatars", exist_ok=True)
+
+# Automatically create tables in PostgreSQL/SQLite if they don't exist
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -43,6 +47,8 @@ app = FastAPI(
     description="Backend API for the Agentic RAG Web Application with Authentication and Database Persistence.",
     version="1.0.0"
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Configure CORS for Next.js or Vite Frontend
 app.add_middleware(
@@ -173,8 +179,62 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/api/auth/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)):
+def get_me(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Ensure profile relationship exists in DB
+    if not current_user.profile:
+        profile = Profile(user_id=current_user.id)
+        db.add(profile)
+        db.commit()
+        db.refresh(current_user)
     return current_user
+
+@app.put("/api/profile", response_model=ProfileResponse)
+def update_profile(
+    profile_in: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+    if not profile:
+        profile = Profile(user_id=current_user.id)
+        db.add(profile)
+    
+    update_data = profile_in.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(profile, field, value)
+        
+    db.commit()
+    db.refresh(profile)
+    return profile
+
+@app.post("/api/profile/avatar")
+def upload_avatar(
+    request: Request,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+        
+    ext = os.path.splitext(file.filename)[1]
+    filename = f"{current_user.id}_{int(datetime.utcnow().timestamp())}{ext}"
+    file_path = os.path.join("static/avatars", filename)
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    base_url = str(request.base_url).rstrip("/")
+    avatar_url = f"{base_url}/static/avatars/{filename}"
+    
+    profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+    if not profile:
+        profile = Profile(user_id=current_user.id)
+        db.add(profile)
+    profile.avatar_url = avatar_url
+    db.commit()
+    
+    return {"avatar_url": avatar_url}
 
 
 # --- CHAT SESSION ENDPOINTS ---

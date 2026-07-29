@@ -112,8 +112,13 @@ export default function TopBar({ user, title, isConnected, sessionId }: Props) {
             fontSize: '12px', fontWeight: 700,
             cursor: 'pointer',
             border: '2px solid var(--outline-variant)',
+            overflow: 'hidden',
           }}>
-            {user?.email?.[0]?.toUpperCase() ?? 'U'}
+            {user?.profile?.avatar_url ? (
+              <img src={user.profile.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              user?.profile?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'
+            )}
           </div>
         </Link>
       </div>

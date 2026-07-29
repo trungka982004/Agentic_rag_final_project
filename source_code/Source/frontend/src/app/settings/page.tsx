@@ -175,9 +175,32 @@ function ChatExportsPanel() {
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function GeneralOverviewPage() {
   const { user } = useAuth();
+  const [localSettings, setLocalSettings] = useState<{
+    tags?: string[];
+    twoFA?: boolean;
+  } | null>(null);
 
-  const initial = user?.email?.[0]?.toUpperCase() ?? 'U';
-  const emailPrefix = user?.email?.split('@')[0] ?? 'User';
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('profile_data');
+    if (savedProfile) {
+      try {
+        setLocalSettings(JSON.parse(savedProfile));
+      } catch (e) {
+        console.error('Failed to parse local settings data', e);
+      }
+    }
+  }, []);
+
+  const profileName = user?.profile?.name || 'Nguyen Van A';
+  const profileTitle = user?.profile?.title || 'PhD / Associate Professor';
+  const profileEmail = user?.profile?.email || user?.email || 'a.nguyen@academic.edu.vn';
+  const profileOrg = user?.profile?.org || 'Institute of Information Technology – VAST';
+  const avatarUrl = user?.profile?.avatar_url || '';
+  
+  const profileTags = localSettings?.tags || ['AI', 'NLP', 'Deep Learning'];
+  const is2FAEnabled = localSettings?.twoFA !== false;
+
+  const initial = profileName[0]?.toUpperCase() ?? 'U';
 
   return (
     <div style={{
@@ -210,15 +233,20 @@ export default function GeneralOverviewPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '20px', fontWeight: 700, color: 'var(--on-primary)',
           border: '3px solid rgba(255,255,255,0.3)',
+          overflow: 'hidden',
         }}>
-          {initial}
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            initial
+          )}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--on-surface)', fontFamily: 'var(--font-display)' }}>
-            Dr. Nguyen Van A
+            {profileName}
           </div>
           <div style={{ fontSize: '13px', color: 'var(--on-surface-variant)', marginTop: '2px' }}>
-            {user?.email ?? 'Not Logged In'} · PhD / Associate Professor
+            {profileEmail} · {profileTitle}
           </div>
           <div style={{ marginTop: '6px' }}>
             <span style={{
@@ -248,13 +276,13 @@ export default function GeneralOverviewPage() {
           icon="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"
           href="/settings/profile"
         >
-          <InfoRow label="Full Name" value="Nguyen Van A" />
-          <InfoRow label="Academic Title / Degree" value="PhD / Associate Professor" />
-          <InfoRow label="Academic Email" value="a.nguyen@academic.edu.vn" />
-          <InfoRow label="Organization / Institution" value="Institute of Information Technology – VAST" />
+          <InfoRow label="Full Name" value={profileName} />
+          <InfoRow label="Academic Title / Degree" value={profileTitle} />
+          <InfoRow label="Academic Email" value={profileEmail} />
+          <InfoRow label="Organization / Institution" value={profileOrg} />
           <InfoRow label="Research Area" value={
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-              {['AI', 'NLP', 'Deep Learning'].map(t => (
+              {profileTags.map(t => (
                 <span key={t} className="chip" style={{ fontSize: '11px' }}>{t}</span>
               ))}
             </div>
@@ -270,9 +298,10 @@ export default function GeneralOverviewPage() {
           <InfoRow label="Two-Factor Authentication" value={
             <span style={{
               fontSize: '11px', fontFamily: 'var(--font-label)', fontWeight: 600,
-              background: 'var(--success-container)', color: 'var(--success)',
+              background: is2FAEnabled ? 'var(--success-container)' : 'var(--surface-container)',
+              color: is2FAEnabled ? 'var(--success)' : 'var(--on-surface-variant)',
               padding: '2px 8px', borderRadius: '99px',
-            }}>Enabled</span>
+            }}>{is2FAEnabled ? 'Enabled' : 'Disabled'}</span>
           } />
           <InfoRow label="Zotero" value={
             <span style={{

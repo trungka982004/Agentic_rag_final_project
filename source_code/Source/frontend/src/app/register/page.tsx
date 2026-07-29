@@ -10,6 +10,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -44,138 +46,234 @@ export default function RegisterPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--bg-base)',
-      padding: '24px',
+      background: 'var(--surface-container-low)',
     }}>
+      {/* Card */}
       <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,92,246,0.08) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
-
-      <div className="animate-fade-in" style={{ width: '100%', maxWidth: '400px', position: 'relative', zIndex: 1 }}>
-        <div style={{
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '40px 36px',
-          boxShadow: 'var(--shadow-lg)',
-        }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: 'var(--radius-lg)',
-              background: 'linear-gradient(135deg, #2d1b69 0%, #1e3a5f 100%)',
-              border: '1px solid rgba(139,92,246,0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.6em',
-              margin: '0 auto 16px',
-              boxShadow: '0 0 20px rgba(139,92,246,0.25)',
-            }}>
-              ✨
-            </div>
-            <h1 style={{
-              fontSize: '1.3em',
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #c4b5fd, #93c5fd)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              margin: '0 0 4px',
-            }}>
-              Create Account
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.83em', margin: 0 }}>
-              Begin your research journey
-            </p>
+        width: '100%',
+        maxWidth: '420px',
+        background: 'var(--surface-container-lowest)',
+        border: '1px solid var(--outline-variant)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '40px 36px',
+        boxShadow: 'var(--shadow-2)',
+      }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          {/* Logo box */}
+          <div style={{
+            width: '44px', height: '44px',
+            background: 'var(--primary-container)',
+            borderRadius: 'var(--radius-md)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 16px',
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9.5 2a6 6 0 0 1 5.5 8.5M9.5 2A6 6 0 0 0 4 8.5c0 3.1 2 5.7 4.8 6.5M9.5 2v3M15 10.5A6 6 0 0 1 9.5 17M15 10.5A6 6 0 0 0 21 8.5c0-3.3-2.7-6-6-6M15 10.5v3M9.5 17v5M9.5 17H5m4.5 5H5m9.5-7v5m0-5h4m-4 5h4" />
+            </svg>
           </div>
-
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {[
-              { id: 'reg-email', label: 'Email', type: 'email', value: email, setter: setEmail, placeholder: 'you@example.com' },
-              { id: 'reg-password', label: 'Password', type: 'password', value: password, setter: setPassword, placeholder: '••••••••' },
-              { id: 'reg-confirm', label: 'Confirm Password', type: 'password', value: confirm, setter: setConfirm, placeholder: '••••••••' },
-            ].map(field => (
-              <div key={field.id}>
-                <label htmlFor={field.id} style={{
-                  display: 'block', fontSize: '0.8em', color: 'var(--text-secondary)',
-                  marginBottom: '6px', fontWeight: 500,
-                }}>
-                  {field.label}
-                </label>
-                <input
-                  id={field.id}
-                  type={field.type}
-                  value={field.value}
-                  onChange={e => field.setter(e.target.value)}
-                  placeholder={field.placeholder}
-                  required
-                  style={{
-                    width: '100%', padding: '10px 14px',
-                    background: 'var(--bg-elevated)',
-                    border: '1px solid var(--border-muted)',
-                    borderRadius: 'var(--radius-md)',
-                    color: 'var(--text-primary)', fontSize: '0.9em',
-                    outline: 'none', transition: 'border-color 0.2s',
-                    boxSizing: 'border-box',
-                  }}
-                  onFocus={e => (e.target.style.borderColor = 'rgba(139,92,246,0.5)')}
-                  onBlur={e => (e.target.style.borderColor = 'var(--border-muted)')}
-                />
-              </div>
-            ))}
-
-            {error && (
-              <div style={{
-                padding: '10px 14px',
-                background: 'rgba(239,68,68,0.08)',
-                border: '1px solid rgba(239,68,68,0.25)',
-                borderRadius: 'var(--radius-md)',
-                color: '#fca5a5', fontSize: '0.82em',
-              }}>
-                ⚠️ {error}
-              </div>
-            )}
-
-            <button
-              id="register-submit-btn"
-              type="submit"
-              disabled={loading}
-              style={{
-                padding: '12px',
-                background: loading
-                  ? 'var(--bg-overlay)'
-                  : 'linear-gradient(135deg, var(--accent-secondary), var(--accent-primary))',
-                border: 'none', borderRadius: 'var(--radius-md)',
-                color: '#fff', fontSize: '0.9em', fontWeight: 600,
-                cursor: loading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: loading ? 'none' : '0 4px 14px rgba(139,92,246,0.4)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              }}
-            >
-              {loading ? (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                  </svg>
-                  Registering...
-                </>
-              ) : 'Create Account'}
-            </button>
-          </form>
-
-          <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.82em', color: 'var(--text-muted)' }}>
-            Already have an account?{' '}
-            <Link href="/login" style={{ color: 'var(--text-accent)', textDecoration: 'none', fontWeight: 500 }}>
-              Sign In
-            </Link>
+          <div style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '11px',
+            fontWeight: 600,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--on-surface-variant)',
+            marginBottom: '4px',
+          }}>
+            Intelligent Research Agent
+          </div>
+          <h1 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '22px',
+            fontWeight: 700,
+            color: 'var(--on-surface)',
+            margin: 0,
+          }}>
+            Create Account
+          </h1>
+          <p style={{ fontSize: '13.5px', color: 'var(--on-surface-variant)', marginTop: '6px' }}>
+            Begin your research journey
           </p>
         </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div>
+            <label htmlFor="reg-email" style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--on-surface)',
+              marginBottom: '6px',
+            }}>Email</label>
+            <input
+              id="reg-email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="reg-password" style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--on-surface)',
+              marginBottom: '6px',
+            }}>Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="reg-password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="input"
+                style={{ paddingRight: '40px', width: '100%' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--on-surface-variant)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px',
+                }}
+              >
+                {showPassword ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="reg-confirm" style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--on-surface)',
+              marginBottom: '6px',
+            }}>Confirm Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="reg-confirm"
+                type={showConfirm ? 'text' : 'password'}
+                value={confirm}
+                onChange={e => setConfirm(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="input"
+                style={{ paddingRight: '40px', width: '100%' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--on-surface-variant)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px',
+                }}
+              >
+                {showConfirm ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div style={{
+              padding: '10px 14px',
+              background: 'var(--error-container)',
+              border: '1px solid rgba(186,26,26,0.2)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--error)',
+              fontSize: '13px',
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button
+            id="register-submit-btn"
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary"
+            style={{
+              width: '100%',
+              padding: '11px',
+              marginTop: '4px',
+              justifyContent: 'center',
+            }}
+          >
+            {loading ? (
+              <>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Registering...
+              </>
+            ) : 'Create Account'}
+          </button>
+        </form>
+
+        <p style={{
+          textAlign: 'center',
+          marginTop: '20px',
+          fontSize: '13px',
+          color: 'var(--on-surface-variant)',
+        }}>
+          Already have an account?{' '}
+          <Link href="/login" style={{
+            color: 'var(--primary-container)',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}>
+            Sign In
+          </Link>
+        </p>
       </div>
     </div>
   );
