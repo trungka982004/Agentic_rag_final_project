@@ -1,10 +1,19 @@
 // ============================================================
 // AUTH
 // ============================================================
+export interface Profile {
+  name?: string;
+  title?: string;
+  email?: string;
+  org?: string;
+  avatar_url?: string;
+}
+
 export interface User {
   id: string;
   email: string;
   created_at: string;
+  profile?: Profile;
 }
 
 export interface AuthTokens {

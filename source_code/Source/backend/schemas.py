@@ -16,10 +16,28 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6, description="Password must be at least 6 characters")
 
+class ProfileResponse(BaseModel):
+    name: Optional[str] = None
+    title: Optional[str] = None
+    email: Optional[str] = None
+    org: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    title: Optional[str] = None
+    email: Optional[str] = None
+    org: Optional[str] = None
+    avatar_url: Optional[str] = None
+
 class UserResponse(BaseModel):
     id: UUID
     email: EmailStr
     created_at: datetime
+    profile: Optional[ProfileResponse] = None
 
     class Config:
         from_attributes = True

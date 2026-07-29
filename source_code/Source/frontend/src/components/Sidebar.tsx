@@ -578,12 +578,6 @@ export default function Sidebar({
         borderTop: '1px solid var(--outline-variant)',
         padding: '10px 8px',
       }}>
-        {/* Upgrade Pro button */}
-        <button className="upgrade-btn" style={{ marginBottom: '8px' }}>
-          <Icon path={ICONS.zap} size={14} />
-          Upgrade Pro
-        </button>
-
         {/* User row + logout */}
         <div style={{
           display: 'flex',

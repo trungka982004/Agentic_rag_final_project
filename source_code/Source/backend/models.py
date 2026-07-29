@@ -15,6 +15,7 @@ class User(Base):
 
     # Relationships
     sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
+    profile = relationship("Profile", uselist=False, back_populates="user", cascade="all, delete-orphan")
 
 
 class ChatSession(Base):
@@ -43,3 +44,18 @@ class Message(Base):
 
     # Relationships
     session = relationship("ChatSession", back_populates="messages")
+
+
+class Profile(Base):
+    __tablename__ = "profiles"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    name = Column(String(255), nullable=True)
+    title = Column(String(255), nullable=True)
+    email = Column(String(255), nullable=True)
+    org = Column(String(255), nullable=True)
+    avatar_url = Column(String(500), nullable=True)
+
+    # Relationships
+    user = relationship("User", back_populates="profile")
