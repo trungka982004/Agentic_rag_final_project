@@ -71,7 +71,7 @@ def get_active_domains() -> List[str]:
         return _domains_cache
 
     raw_path = "data/raw"
-    defaults = ["it", "math", "physics", "electronics"]
+    defaults = ["it", "math", "physics", "electronics", "economics", "law", "medicine", "agriculture", "construction"]
     if not os.path.exists(raw_path):
         _domains_cache = defaults
         _domains_cache_ts = now
@@ -146,13 +146,23 @@ def classify_domain(query: str) -> str:
         return "physics"
     if any(kw in query_lower for kw in ["electronics", "circuit", "transistor", "neuromorphic", "hardware", "sensor", "voltage", "neuronal"]):
         return "electronics"
+    if any(kw in query_lower for kw in ["economic", "economics", "kinh tế", "finance", "lãi suất", "tài chính", "ngân hàng", "gdp", "lạm phát", "thị trường"]):
+        return "economics"
+    if any(kw in query_lower for kw in ["law", "pháp luật", "luật", "bộ luật", "pháp lý", "hợp đồng", "tố tụng", "hiến pháp", "quy định", "nghị định"]):
+        return "law"
+    if any(kw in query_lower for kw in ["medicine", "medical", "y học", "y tế", "dược", "bệnh học", "chẩn đoán", "điều trị", "lâm sàng", "bệnh nhân", "thuốc"]):
+        return "medicine"
+    if any(kw in query_lower for kw in ["agriculture", "agricultural", "nông nghiệp", "cây trồng", "nông sản", "đất đai", "phân bón", "sâu bệnh", "trồng trọt", "chăn nuôi"]):
+        return "agriculture"
+    if any(kw in query_lower for kw in ["construction", "xây dựng", "kết cấu", "bê tông", "kiến trúc", "công trình", "thi công", "vật liệu xây dựng", "bim"]):
+        return "construction"
 
     for d in active_domains:
         if d in query_lower or d.replace("_", " ") in query_lower or d.replace("-", " ") in query_lower:
             return d
 
     if not llm:
-        return "physics"
+        return active_domains[0] if active_domains else "it"
 
     categories_str = ", ".join(f"'{d}'" for d in active_domains)
     prompt = ChatPromptTemplate.from_template(f"""
