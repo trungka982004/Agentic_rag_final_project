@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useId } from 'react';
 import { createPortal } from 'react-dom';
 
 interface MermaidRendererProps {
@@ -18,9 +18,11 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  // Generate a random stable ID for this render session.
+  // Generate a deterministic, hydration-safe ID for this render session using React's useId().
   // Mermaid IDs must start with a letter and contain only alphanumeric characters.
-  const idRef = useRef(`m${Math.random().toString(36).slice(2, 11)}`);
+  const reactId = useId();
+  const elementId = `m${reactId.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const idRef = useRef(elementId);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,13 +48,16 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
             mermaidInitialized_v2 = true;
           }
 
-          const cleanChart = chart.trim();
+          // Auto-fix unquoted node labels with parens/special characters: e.g. A[Label (with parens)] -> A["Label (with parens)"]
+          const sanitizedChart = chart
+            .trim()
+            .replace(/(\b[A-Za-z0-9_-]+)\[([^"\n\]]+)\]/g, (_match, id, label) => `${id}["${label}"]`);
 
           // Render without passing a hidden container parameter.
           // Mermaid calculates element widths and heights using SVG getBBox(),
           // which requires the rendering node to be visible in the DOM.
           // By default, mermaid.render will insert a temporary container, render, and return the SVG.
-          const { svg: renderedSvg } = await mermaid.render(idRef.current, cleanChart);
+          const { svg: renderedSvg } = await mermaid.render(idRef.current, sanitizedChart);
 
           if (!cancelled) {
             setSvg(renderedSvg);

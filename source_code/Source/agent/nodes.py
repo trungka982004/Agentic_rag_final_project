@@ -16,12 +16,13 @@ from tools.google_workspace import export_to_google_docs, export_to_google_sheet
 from tools.mermaid_renderer import render_mermaid_to_image
 from tools.formatter import format_agent_output, parse_markdown_table
 from tools.query_normalizer import normalize_query
-from local_rag import classify_domain, retrieve_context, llm, logger
+from langchain_ollama import ChatOllama
+from local_rag import classify_domain, retrieve_context, llm, logger, Config
 
 # Constants for query routing heuristics
 EXPERT_KEYWORDS = ["compare", "latest", "news", "trend", "so sánh", "mới nhất", "xu hướng", "tin tức"]
-PYTHON_KEYWORDS = ["python", "code", "tính toán", "calculate", "giải phương trình", "vẽ biểu đồ", "plot"]
-EXPORT_KEYWORDS = ["export", "xuất", "lưu", "google docs", "google sheets", "báo cáo", "report", "document", "doc", "sheet", "excel"]
+PYTHON_KEYWORDS = ["python code", "chạy python", "tính toán python", "vẽ biểu đồ python", "run python"]
+EXPORT_KEYWORDS = ["export to google", "xuất sang google", "xuất google docs", "xuất google sheets", "xuất file docs", "xuất file sheets", "lưu vào google docs", "lưu vào google sheets", "export docs", "export sheets"]
 
 
 def parse_json_from_llm(raw_output: str) -> Dict[str, Any]:
@@ -134,21 +135,12 @@ def router_node(state: GraphState) -> Dict[str, Any]:
         domain = classify_domain(question)
         logger.info(f"Classified Domain: {domain.upper()}")
     
-    # Initialize all flags as ON, and check heuristics to disable them
-    expert_required = True
-    python_repl = True
+    q_lower = question.lower()
+    expert_required = any(kw in q_lower for kw in EXPERT_KEYWORDS)
+    python_repl = any(kw in q_lower for kw in PYTHON_KEYWORDS)
     web_fallback = True
-    export_to_workspace = True
+    export_to_workspace = any(kw in q_lower for kw in EXPORT_KEYWORDS)
     
-    if not any(kw in question.lower() for kw in EXPERT_KEYWORDS):
-        expert_required = False
-        
-    if not any(kw in question.lower() for kw in PYTHON_KEYWORDS):
-        python_repl = False
-        
-    if not any(kw in question.lower() for kw in EXPORT_KEYWORDS):
-        export_to_workspace = False
-        
     logger.info(f"Routing flags -> expert_required: {expert_required}, python_repl: {python_repl}, web_fallback: {web_fallback}, export_to_workspace: {export_to_workspace}")
         
     return {
@@ -304,7 +296,7 @@ def generate_node(state: GraphState) -> Dict[str, Any]:
     2. NEVER mention "Google Forms", "API", or "environment details".
     3. If calculation results are present in [CONTEXT], use them as the primary answer.
     4. If a Python code execution result is present in [CONTEXT], focus on explaining the result and output. DO NOT repeat or rewrite the raw Python code block (```python ... ```) in your answer.
-    5. You MUST ALWAYS provide the detailed textual report first. If a diagram is requested or appropriate, append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. The Mermaid diagram MUST act ONLY as a visual summary of the detailed text you already provided above. Do not rely on the diagram to convey new information.
+    5. You MUST ALWAYS provide the detailed textual report first. If a diagram is requested or appropriate, append EXACTLY ONE Mermaid code block wrapped in ```mermaid at the very end of your answer. The Mermaid diagram MUST act ONLY as a visual summary of the detailed text you already provided above. ALWAYS enclose node label text in double quotes inside brackets (e.g. A["Label text (with details)"] --> B["Other label"]) to ensure valid Mermaid syntax. Do not rely on the diagram to convey new information.
     6. ABSOLUTELY NO TEXT OR EXPLANATION should be generated after the Mermaid code block. The Mermaid block MUST be the absolute final element of your response.
     7. Do not repeat information redundantly, but ensure the topic is thoroughly explained.
     8. NEVER explain the rules, reference your system instructions, or mention any prompt constraints to the user. Do not output any meta-commentary or reflection notes. Just output the clean final answer.
@@ -327,21 +319,36 @@ def generate_node(state: GraphState) -> Dict[str, Any]:
     
     try:
         response = chain.invoke({"question": question, "context": context, "history": history_str})
-        formatted_response = format_agent_output(response)
-        
-        # Populate structured_data from tables
-        structured_data = parse_markdown_table(formatted_response)
-        if structured_data:
-            logger.info(f"Automatically parsed comparison table for Sheets: {len(structured_data)} rows.")
-            
-        return {
-            "generation": formatted_response,
-            "structured_data": structured_data,
-            "retry_count": retry_count + 1
-        }
     except Exception as e:
-        logger.error(f"Generation node failed: {e}")
-        return {"generation": "Error occurred during generation.", "retry_count": retry_count + 1}
+        logger.warning(f"Primary LLM generation failed: {e}. Retrying with CPU fallback LLM (num_gpu=0)...")
+        try:
+            fallback_llm = ChatOllama(
+                model=Config.LLM_MODEL,
+                temperature=Config.TEMPERATURE,
+                num_ctx=Config.CONTEXT_WINDOW,
+                num_predict=Config.MAX_TOKENS,
+                keep_alive=Config.KEEP_ALIVE,
+                num_gpu=0
+            )
+            fallback_chain = prompt | fallback_llm | StrOutputParser()
+            response = fallback_chain.invoke({"question": question, "context": context, "history": history_str})
+            logger.info("CPU fallback LLM generation succeeded.")
+        except Exception as retry_err:
+            logger.error(f"Fallback generation also failed: {retry_err}")
+            return {"generation": "Error occurred during generation.", "retry_count": retry_count + 1}
+
+    formatted_response = format_agent_output(response)
+    
+    # Populate structured_data from tables
+    structured_data = parse_markdown_table(formatted_response)
+    if structured_data:
+        logger.info(f"Automatically parsed comparison table for Sheets: {len(structured_data)} rows.")
+        
+    return {
+        "generation": formatted_response,
+        "structured_data": structured_data,
+        "retry_count": retry_count + 1
+    }
 
 
 def python_repl_node(state: GraphState) -> Dict[str, Any]:
