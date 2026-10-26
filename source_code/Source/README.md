@@ -160,6 +160,14 @@ npm run dev
 ```
 * Access the web application at `http://localhost:3000`.
 
+#### Default Test Accounts
+Use the pre-configured test credentials below to instantly log in and test the system:
+
+| Email | Password | Role / Description | Historical Context |
+| :--- | :--- | :--- | :---: |
+| **`test@example.com`** | `password` | **Primary Researcher Account** (Recommended) | 4 sessions (11 messages) |
+| **`test1@example.com`** | `pass123_1` | **Secondary Benchmark & WebSocket Tester** | 3 sessions (6 messages) |
+
 ### 4. Running in CLI Mode (Optional)
 If you wish to use the interactive terminal interface:
 ```bash

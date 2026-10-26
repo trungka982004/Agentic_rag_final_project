@@ -14,7 +14,8 @@ db/
 
 # Data folder (PDFs, etc.)
 data/
-
+science_paper_assets/
+overleaf_packages/
 # Python
 __pycache__/
 *.py[cod]
