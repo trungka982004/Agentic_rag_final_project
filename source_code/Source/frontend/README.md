@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Multi-Domain Agentic RAG — Web Client Frontend
 
-## Getting Started
+[![Next.js: 14](https://img.shields.io/badge/Next.js-14.2-black.svg?logo=next.dot.js&logoColor=white)](https://nextjs.org)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC.svg?logo=tailwind_css&logoColor=white)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-First, run the development server:
+The interactive web client application for the **Multi-Domain Agentic RAG Platform**, engineered with Next.js 14 App Router, TypeScript, and TailwindCSS. It provides real-time WebSocket state streaming, live reasoning telemetry badges, KaTeX mathematical formula rendering, and 1-click Google Workspace export.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🌟 Key Features
+
+1. **Real-Time WebSocket State Synchronization:**
+   - Connects to `/api/ws/chat/{session_id}` for bidirectional streaming.
+   - Dynamically visualizes LangGraph execution steps as live badges (`[Router: Computer Science]` $\rightarrow$ `[Hybrid Search: bge-m3 + BM25]` $\rightarrow$ `[Grader: Pass]` $\rightarrow$ `[Generator: Qwen2.5 7B]`).
+2. **Academic Markdown & LaTeX Formula Rendering:**
+   - Native integration with `react-markdown`, `remark-math`, and `rehype-katex` for instantaneous rendering of inline and block mathematical formulas.
+   - Syntax-highlighted code blocks with copy-to-clipboard functionality.
+3. **Multi-Domain Repository Selector:**
+   - Dedicated UI panel for toggling between the 8 specialized knowledge domains (CS, Electronics, Math, Physics, Agriculture, Economics, Law, Medicine).
+   - Document upload and indexing progress indicators.
+4. **Research Workspace & Scientific Console:**
+   - Real-time token generation throughput counter (tokens/s).
+   - Direct 1-click export of synthesized reports to Google Docs and Google Sheets via OAuth2.
+
+---
+
+## 📁 Frontend Project Structure
+
+```text
+frontend/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── layout.tsx          # Root layout & font configurations
+│   │   ├── page.tsx            # Main chat interface & workspace
+│   │   ├── login/              # Authentication & JWT sign-in
+│   │   └── globals.css         # Tailwind global styles
+│   ├── components/             # Reusable UI components
+│   │   ├── ChatStream.tsx      # WebSocket chat message & token streaming
+│   │   ├── ReasoningBadge.tsx  # Dynamic node state visualization badges
+│   │   ├── DomainSelector.tsx  # Multi-domain knowledge base switcher
+│   │   ├── LatexRenderer.tsx   # KaTeX mathematical equation parser
+│   │   └── ExportModal.tsx     # Google Workspace export controller
+│   ├── hooks/                  # Custom React hooks
+│   │   └── useWebSocketChat.ts # WebSocket lifecycle, reconnection & state buffer
+│   └── lib/                    # API client helpers & utility functions
+├── public/                     # Static assets & brand icons
+├── Dockerfile                  # Container build specification
+├── package.json                # Node dependencies & build scripts
+├── tailwind.config.ts          # TailwindCSS styling configuration
+└── tsconfig.json               # TypeScript compiler rules
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Prerequisites
+- Node.js 18.17+ or Node.js 20+
+- Running backend instance (default: `http://localhost:8000`)
 
-## Learn More
+### 2. Configuration
+Copy the sample environment configuration:
+```bash
+cp .env.local.example .env.local
+```
+Ensure `.env.local` points to the FastAPI backend:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_WS_URL=ws://localhost:8000
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Installation & Run
+```bash
+# Install dependencies
+npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Start development server
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Or build for production
+npm run build
+npm run start
+```
+Access the client interface at `http://localhost:3000`.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🐳 Docker Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The frontend is containerized using a multi-stage Dockerfile:
+```bash
+docker build -t agentic-frontend .
+docker run -p 3000:3000 agentic-frontend
+```
+Or launched seamlessly as part of the complete stack via root `docker-compose.yml`.

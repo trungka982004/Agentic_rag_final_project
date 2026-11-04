@@ -14,8 +14,17 @@ db/
 
 # Data folder (PDFs, etc.)
 data/
-science_paper_assets/
-overleaf_packages/
+# LaTeX build artifacts & temporary files
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+science_paper_assets/archive_legacy_drafts/
 # Python
 __pycache__/
 *.py[cod]
