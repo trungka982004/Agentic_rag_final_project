@@ -67,10 +67,20 @@ _MERMAID_STRICT_PATTERN = re.compile(
 )
 
 
+def fix_unquoted_mermaid_labels(mermaid_code: str) -> str:
+    """
+    Fixes unquoted Mermaid node labels containing special characters
+    like parentheses (), slashes /, plus signs +, etc. by enclosing them in double quotes.
+    E.g.: A[Text (with parens)] -> A["Text (with parens)"]
+    """
+    pattern_bracket = re.compile(r'(\b[A-Za-z0-9_-]+)\[([^"\n\]]+)\]')
+    return pattern_bracket.sub(r'\1["\2"]', mermaid_code)
+
+
 def normalize_mermaid(text: str) -> str:
     """
     Ensures all Mermaid diagram blocks are enclosed in standard fenced code blocks
-    (```mermaid ... ```) so that the frontend can render them properly.
+    (```mermaid ... ```) and sanitizes node labels to prevent parse errors.
 
     If the LLM outputs "mermaid:\n<code>", this function wraps it correctly.
 
@@ -80,16 +90,17 @@ def normalize_mermaid(text: str) -> str:
     Returns:
         Normalized text.
     """
-    # If standard ```mermaid already exists, keep as-is
-    if _MERMAID_STRICT_PATTERN.search(text):
-        return text
-
-    # If loose syntax is detected, wrap it
-    def _wrap(m: re.Match) -> str:
+    def _fix_block(m: re.Match) -> str:
         inner = m.group(1).strip()
-        return f"```mermaid\n{inner}\n```"
+        fixed_code = fix_unquoted_mermaid_labels(inner)
+        return f"```mermaid\n{fixed_code}\n```"
 
-    text = _MERMAID_LOOSE_PATTERN.sub(_wrap, text)
+    # If standard ```mermaid already exists, sanitize its code
+    if _MERMAID_STRICT_PATTERN.search(text):
+        return _MERMAID_STRICT_PATTERN.sub(_fix_block, text)
+
+    # If loose syntax is detected, wrap and sanitize it
+    text = _MERMAID_LOOSE_PATTERN.sub(_fix_block, text)
     return text
 
 

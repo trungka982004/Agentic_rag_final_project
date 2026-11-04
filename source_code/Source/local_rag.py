@@ -28,9 +28,10 @@ class Config:
     EMBEDDING_MODEL: str = "bge-m3"
     LLM_MODEL: str = "qwen2.5:7b"
     TEMPERATURE: float = 0.0
-    CONTEXT_WINDOW: int = 4096
+    CONTEXT_WINDOW: int = int(os.getenv("CONTEXT_WINDOW", "3072"))
     MAX_TOKENS: int = 1024
     KEEP_ALIVE: str = "5m"
+    NUM_GPU: Optional[int] = int(os.getenv("OLLAMA_NUM_GPU")) if os.getenv("OLLAMA_NUM_GPU") is not None else None
 
 # Configure standard logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -38,14 +39,20 @@ logger = logging.getLogger(__name__)
 
 # Initialize LLM and Embedding components
 try:
-    embeddings = OllamaEmbeddings(model=Config.EMBEDDING_MODEL)
-    llm = ChatOllama(
-        model=Config.LLM_MODEL,
-        temperature=Config.TEMPERATURE,
-        num_ctx=Config.CONTEXT_WINDOW,
-        num_predict=Config.MAX_TOKENS,
-        keep_alive=Config.KEEP_ALIVE
-    )
+    embedding_kwargs = {"model": Config.EMBEDDING_MODEL}
+    llm_kwargs = {
+        "model": Config.LLM_MODEL,
+        "temperature": Config.TEMPERATURE,
+        "num_ctx": Config.CONTEXT_WINDOW,
+        "num_predict": Config.MAX_TOKENS,
+        "keep_alive": Config.KEEP_ALIVE
+    }
+    if Config.NUM_GPU is not None:
+        embedding_kwargs["num_gpu"] = Config.NUM_GPU
+        llm_kwargs["num_gpu"] = Config.NUM_GPU
+
+    embeddings = OllamaEmbeddings(**embedding_kwargs)
+    llm = ChatOllama(**llm_kwargs)
 except Exception as e:
     logger.error(f"Failed to initialize Ollama components: {e}")
     embeddings = None

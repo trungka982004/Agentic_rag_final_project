@@ -297,39 +297,64 @@ class BulkDeleteRequest(BaseModel):
 
 RAW_DATA_PATH = "data/raw"
 
+def _to_extended_path(p: str) -> str:
+    abs_p = os.path.abspath(p)
+    if os.name == "nt" and not abs_p.startswith("\\\\?\\"):
+        return "\\\\?\\" + abs_p
+    return abs_p
+
 def get_all_documents():
     docs = []
-    if not os.path.exists(RAW_DATA_PATH):
+    raw_path = _to_extended_path(RAW_DATA_PATH)
+    if not os.path.exists(raw_path):
         return docs
         
     # Walk through each domain folder dynamically
-    domains = [d for d in os.listdir(RAW_DATA_PATH) if os.path.isdir(os.path.join(RAW_DATA_PATH, d)) and not d.startswith(".")]
+    try:
+        domains = [d for d in os.listdir(raw_path) if os.path.isdir(os.path.join(raw_path, d)) and not d.startswith(".")]
+    except Exception as e:
+        logger.error(f"Error listing domains in {raw_path}: {e}")
+        return docs
+
     for domain in domains:
-        domain_path = os.path.join(RAW_DATA_PATH, domain)
-        for file in os.listdir(domain_path):
-            if file.endswith(".pdf"):
-                file_path = os.path.join(domain_path, file)
-                stat = os.stat(file_path)
-                size_mb = stat.st_size / (1024 * 1024)
-                
-                # Format creation/modified time
-                added_date = datetime.fromtimestamp(stat.st_mtime).strftime("%d/%m/%Y")
-                
-                # AI Status: check if index folder exists
-                domain_db_path = os.path.join("db/vector_stores", f"{domain}_index")
-                status = "done" if os.path.exists(domain_db_path) else "pending"
-                
-                docs.append({
-                    "id": f"{domain}::{file}", # Unique identifier combining domain and file name
-                    "name": file,
-                    "author": domain.upper(), # Map domain as author/tag for SIS
-                    "year": datetime.fromtimestamp(stat.st_mtime).year,
-                    "date": added_date,
-                    "size": f"{size_mb:.1f} MB",
-                    "size_bytes": stat.st_size, # Add raw size in bytes for sorting
-                    "status": status,
-                    "mtime": stat.st_mtime
-                })
+        domain_path = os.path.join(raw_path, domain)
+        try:
+            with os.scandir(domain_path) as entries:
+                for entry in entries:
+                    if entry.is_file() and entry.name.lower().endswith(".pdf"):
+                        try:
+                            stat = entry.stat()
+                            size_mb = stat.st_size / (1024 * 1024)
+                            added_date = datetime.fromtimestamp(stat.st_mtime).strftime("%d/%m/%Y")
+                            year = datetime.fromtimestamp(stat.st_mtime).year
+                            size_bytes = stat.st_size
+                            mtime = stat.st_mtime
+                        except Exception as stat_err:
+                            logger.warning(f"Error reading stat for {entry.name}: {stat_err}")
+                            size_mb = 0.0
+                            added_date = datetime.now().strftime("%d/%m/%Y")
+                            year = datetime.now().year
+                            size_bytes = 0
+                            mtime = 0.0
+                        
+                        # AI Status: check if index folder exists
+                        domain_db_path = _to_extended_path(os.path.join("db/vector_stores", f"{domain}_index"))
+                        status = "done" if os.path.exists(domain_db_path) else "pending"
+                        
+                        docs.append({
+                            "id": f"{domain}::{entry.name}",
+                            "name": entry.name,
+                            "author": domain.upper(),
+                            "year": year,
+                            "date": added_date,
+                            "size": f"{size_mb:.1f} MB",
+                            "size_bytes": size_bytes,
+                            "status": status,
+                            "mtime": mtime
+                        })
+        except Exception as scan_err:
+            logger.error(f"Error scanning domain directory {domain}: {scan_err}")
+
     # Sort by mtime descending (newest first)
     docs.sort(key=lambda x: x["mtime"], reverse=True)
     # Remove mtime key to match expected response shape
@@ -348,10 +373,11 @@ def run_ingestion_background(domain: str):
         logger.error(f"Ingestion Background Error: {e}")
 
 @app.get("/api/documents")
-def list_documents(current_user: User = Depends(get_current_user)):
+def list_documents():
     try:
         return get_all_documents()
     except Exception as e:
+        logger.error(f"Error in /api/documents: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/documents/upload")

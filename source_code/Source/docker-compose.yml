@@ -1,34 +1,29 @@
 version: "3.9"
 
-# ============================================================
-# Agentic RAG – Optimised Docker Compose
-# Changes vs the original bare `docker run` approach:
-#   1. Named volumes  → data survives container recreation
-#   2. Resource limits → prevents the DB from hogging RAM/CPU
-#   3. Health-check   → other services wait until Postgres is
-#      actually accepting connections (not just "started")
-#   4. Restart policy → auto-recover from crashes / host reboot
-#   5. Separate network → containers talk over an isolated bridge
-#   6. Logging caps   → stop logs from filling the disk
-# ============================================================
+# ==============================================================================
+# Multi-Domain Tiered Agentic RAG – 1-Click Fullstack Docker Compose
+# Architecture:
+#   1. postgres: Persistent relational DB for users, sessions, and chat logs
+#   2. backend:  FastAPI Gateway + LangGraph State Engine + ChromaDB Vector Store
+#   3. frontend: Next.js 14 Client UI with Real-time WebSocket Streaming
+# ==============================================================================
 
 services:
 
-  # ── PostgreSQL ─────────────────────────────────────────────
+  # ── 1. PostgreSQL Database ──────────────────────────────────
   postgres:
-    image: postgres:16-alpine          # alpine = smaller image
+    image: postgres:16-alpine
     container_name: agentic-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: agentic_rag
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
-      # Tune shared_buffers for a modest dev workload
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
     ports:
       - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data    # named volume – survives restarts
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d agentic_rag"]
       interval: 10s
@@ -50,44 +45,64 @@ services:
     networks:
       - rag_net
 
-# ── (Optional) Redis – uncomment if you want a shared search-result cache
-# that survives process restarts, rather than the in-process dict cache.
-#
-#  redis:
-#    image: redis:7-alpine
-#    container_name: agentic-redis
-#    restart: unless-stopped
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - redisdata:/data
-#    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 320M
-#          cpus: "0.5"
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-size: "10m"
-#        max-file: "2"
-#    networks:
-#      - rag_net
+  # ── 2. FastAPI + LangGraph Backend Gateway ──────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agentic-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://postgres:mysecretpassword@postgres:5432/agentic_rag"
+      OLLAMA_BASE_URL: "http://host.docker.internal:11434"
+      JWT_SECRET: "agentic_rag_super_secret_jwt_key_2026"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./db:/app/db                      # ChromaDB vector collections
+      - ./data:/app/data                  # Research papers corpus
+    depends_on:
+      postgres:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Access host Ollama GPU server
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+          cpus: "2.0"
+    networks:
+      - rag_net
 
-# ── Volumes ────────────────────────────────────────────────
+  # ── 3. Next.js 14 Frontend UI ───────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: agentic-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+      NEXT_PUBLIC_WS_URL: "ws://localhost:8000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+          cpus: "1.0"
+    networks:
+      - rag_net
+
+# ── Volumes ──────────────────────────────────────────────────
 volumes:
   pgdata:
     driver: local
-  # redisdata:
-  #   driver: local
 
-# ── Network ────────────────────────────────────────────────
+# ── Isolated Bridge Network ──────────────────────────────────
 networks:
   rag_net:
     driver: bridge
