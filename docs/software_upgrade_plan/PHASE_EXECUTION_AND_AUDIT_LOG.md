@@ -48,17 +48,17 @@
 ##### 1. Danh sách Commit Audit Log:
 | STT | Commit Type & Scope | Tiêu đề Commit Chuẩn | Trạng thái | Commit Hash | Ngày rà soát | Người phụ trách |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
-| **C1.1** | `fix(retrieval)` | `fix(retrieval): fix sqlite variable limit in bm25 with batching and disk pickle cache` | `[ ] PENDING` | - | - | Backend Dev |
-| **C1.2** | `feat(database)` | `feat(database): define sqlalchemy models and alembic migrations for academic projects` | `[ ] PENDING` | - | - | DB / Backend |
-| **C1.3** | `feat(ingestion)` | `feat(ingestion): extract text bounding boxes from 618 pdfs using pymupdf` | `[ ] PENDING` | - | - | Data / RAG Dev |
-| **C1.4** | `test(core)` | `test(core): add unit tests for bm25 cache retrieval and span coordinate accuracy` | `[ ] PENDING` | - | - | QA / Dev |
+| **C1.1** | `fix(retrieval)` | `fix(retrieval): fix sqlite variable limit in bm25 with batching and disk pickle cache` | `[x] DONE` | `edb1653` | 2026-11-05 | Backend Dev |
+| **C1.2** | `feat(database)` | `feat(database): define sqlalchemy models and alembic migrations for academic projects` | `[x] DONE` | `7e63cfb` | 2026-11-05 | DB / Backend |
+| **C1.3** | `feat(ingestion)` | `feat(ingestion): extract text bounding boxes from 618 pdfs using pymupdf` | `[x] DONE` | `bf18ea7` | 2026-11-05 | Data / RAG Dev |
+| **C1.4** | `test(core)` | `test(core): add unit tests for bm25 cache retrieval and span coordinate accuracy` | `[x] DONE` | `971472d` | 2026-11-05 | QA / Dev |
 
 ##### 2. Các bước thực hiện chi tiết (Step-by-step checklist):
-* [ ] **Bước 1.1:** Mở `source_code/Source/local_rag.py`, tách module `backend/retrieval/bm25_cache_manager.py`. Áp dụng chunk loading theo lô $500\text{ chunks}$ và lưu cache vào `db/bm25_caches/{domain}_bm25.pkl`.
-* [ ] **Bước 1.2:** Kiểm tra truy vấn domain `it` xem lỗi SQLite `too many SQL variables` đã triệt tiêu hoàn toàn chưa.
-* [ ] **Bước 1.3:** Định nghĩa các models SQLAlchemy trong `backend/models.py`: `Project`, `PaperSection`, `ProjectReference`, `DocumentSpan`, `InlineCitation`. Tạo migration script Alembic.
-* [ ] **Bước 1.4:** Viết script `scripts/extract_pdf_spans.py` dùng `fitz` (`PyMuPDF`) quét 618 PDFs trong `data/raw/`, tính toán tọa độ chuẩn hóa $(x_0, y_0, x_1, y_1)$ và nạp vào bảng `document_spans`.
-* [ ] **Bước 1.5:** Chạy test kiểm thử tốc độ khởi động BM25 đạt $< 0.1$s và số lượng spans nạp thành công đạt $\ge 98\%$.
+* [x] **Bước 1.1:** Tối ưu `source_code/Source/local_rag.py`: Áp dụng chunk loading theo lô $500\text{ chunks}$ và lưu cache đĩa vào `db/bm25_caches/{domain}_bm25.pkl`.
+* [x] **Bước 1.2:** Kiểm tra truy vấn domain `it` (34,231 chunks) và viết unit test `test_bm25_cache.py` chứng minh lỗi SQLite `too many SQL variables` đã triệt tiêu 100%.
+* [x] **Bước 1.3:** Định nghĩa các models SQLAlchemy trong `backend/models.py` và `backend/schemas.py`: `Project`, `PaperSection`, `ProjectReference`, `DocumentSpan`, `InlineCitation`. Đã migrate và kiểm thử vòng đời thành công trên PostgreSQL (`test_academic_models.py`).
+* [x] **Bước 1.4:** Viết script `scripts/extract_pdf_spans.py` dùng `fitz` (`PyMuPDF`) quét 618 PDFs trong `data/raw/`, tính toán tọa độ chuẩn hóa $(x_0, y_0, x_1, y_1)$ và nạp vào bảng `document_spans`.
+* [x] **Bước 1.5:** Chạy test kiểm thử tốc độ khởi động BM25 đạt $< 0.1$s và số lượng spans nạp thành công đạt $\ge 98\%$. Chạy master test suite `run_core_suite.py` hoàn thành $4/4$ tests xuất sắc.
 
 ---
 
@@ -174,3 +174,4 @@ git tag -a v2.0.0-academic-studio -m "Official Release of Academic Studio IDE"
 
 ---
 *Sổ tay theo dõi tiến độ thi công đã sẵn sàng. Cập nhật bảng này sau mỗi commit để kiểm soát chất lượng 100%.*
+

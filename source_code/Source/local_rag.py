@@ -3,6 +3,8 @@ import sys
 import logging
 import re
 import time
+import pickle
+import shutil
 from typing import List, Optional, Dict, Any, Union
 
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -24,7 +26,10 @@ except (ImportError, ModuleNotFoundError):
 
 class Config:
     """System-wide configuration parameters."""
-    DB_BASE_PATH: str = "db/vector_stores"
+    BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
+    DB_BASE_PATH: str = os.getenv("DB_BASE_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "db", "vector_stores"))
+    BM25_CACHE_PATH: str = os.getenv("BM25_CACHE_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "db", "bm25_caches"))
+    RAW_DATA_PATH: str = os.getenv("RAW_DATA_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "raw"))
     EMBEDDING_MODEL: str = "bge-m3"
     LLM_MODEL: str = "qwen2.5:7b"
     TEMPERATURE: float = 0.0
@@ -77,7 +82,7 @@ def get_active_domains() -> List[str]:
     if _domains_cache and (now - _domains_cache_ts) < _DOMAINS_TTL:
         return _domains_cache
 
-    raw_path = "data/raw"
+    raw_path = Config.RAW_DATA_PATH
     defaults = ["it", "math", "physics", "electronics"]
     if not os.path.exists(raw_path):
         _domains_cache = defaults
@@ -96,13 +101,19 @@ def get_active_domains() -> List[str]:
         return defaults
 
 
-def clear_rag_caches() -> None:
+def clear_rag_caches(clear_disk_bm25: bool = False) -> None:
     """Invalidates all runtime RAG cache structures."""
     global _db_cache, _bm25_cache, _domains_cache, _domains_cache_ts
     _db_cache.clear()
     _bm25_cache.clear()
     _domains_cache = []
     _domains_cache_ts = 0.0
+    if clear_disk_bm25 and os.path.exists(Config.BM25_CACHE_PATH):
+        try:
+            shutil.rmtree(Config.BM25_CACHE_PATH)
+            logger.info("Disk BM25 caches have been removed.")
+        except Exception as e:
+            logger.warning(f"Could not remove disk BM25 cache: {e}")
     logger.info("All RAG caches have been successfully invalidated.")
 
 
@@ -206,53 +217,93 @@ def find_exact_source_path(db: Chroma, target_file: str) -> Optional[str]:
     return None
 
 
-def get_bm25_retriever(db: Chroma, domain: str, k: int = 5, target_file: str = None) -> Optional[BM25Retriever]:
-    """Generates a cached BM25 sparse retriever from documents in the ChromaDB.
+def get_bm25_retriever(db: Chroma, domain: str, k: int = 5, target_file: str = None, force_rebuild: bool = False) -> Optional[BM25Retriever]:
+    """Generates or loads a cached BM25 sparse retriever from disk/memory.
 
     Args:
         db: Active ChromaDB instance.
         domain: Domain target string.
         k: Chunk return limit.
         target_file: Restricting filter source path.
+        force_rebuild: Whether to force rebuilding cache from ChromaDB.
 
     Returns:
         BM25Retriever instance or None.
     """
-    cache_key = f"{domain}_{target_file}" if target_file else domain
-    if cache_key in _bm25_cache:
+    safe_target = re.sub(r'[^a-zA-Z0-9_\-]', '_', os.path.basename(target_file)) if target_file else ""
+    cache_key = f"{domain}_{safe_target}" if safe_target else domain
+
+    # 1. Check in-memory cache
+    if not force_rebuild and cache_key in _bm25_cache:
         retriever = _bm25_cache[cache_key]
         retriever.k = k
         return retriever
 
+    # 2. Check disk cache
+    os.makedirs(Config.BM25_CACHE_PATH, exist_ok=True)
+    cache_file = os.path.join(Config.BM25_CACHE_PATH, f"{cache_key}_bm25.pkl")
+    if not force_rebuild and os.path.exists(cache_file):
+        try:
+            with open(cache_file, "rb") as f:
+                retriever = pickle.load(f)
+            retriever.k = k
+            _bm25_cache[cache_key] = retriever
+            logger.info(f"Loaded BM25 retriever for key '{cache_key}' from disk cache.")
+            return retriever
+        except Exception as e:
+            logger.warning(f"Corrupt BM25 disk cache for '{cache_key}', rebuilding: {e}")
+
+    # 3. Build safely using batch extraction to prevent SQLite variable limit
     try:
-        logger.info(f"Building BM25 retriever cache for key '{cache_key}'...")
+        logger.info(f"Building persistent BM25 retriever cache for key '{cache_key}'...")
+        collected_docs: List[Document] = []
+        batch_size = 500
+
         if target_file:
-            target_path = find_exact_source_path(db, target_file) or os.path.join("data/raw", domain, target_file)
+            target_path = find_exact_source_path(db, target_file) or os.path.join(Config.RAW_DATA_PATH, domain, target_file)
             docs_data = db.get(where={"source": target_path})
+            if docs_data and docs_data.get('documents'):
+                for i, text in enumerate(docs_data['documents']):
+                    meta = docs_data['metadatas'][i] if docs_data.get('metadatas') else {}
+                    collected_docs.append(Document(page_content=text, metadata=meta))
         else:
-            docs_data = db.get()
+            offset = 0
+            while True:
+                batch = db._collection.get(
+                    limit=batch_size,
+                    offset=offset,
+                    include=['documents', 'metadatas']
+                )
+                if not batch or not batch['documents']:
+                    break
 
-        if not docs_data or not docs_data.get('documents'):
+                for i, text in enumerate(batch['documents']):
+                    meta = batch['metadatas'][i] if batch.get('metadatas') else {}
+                    collected_docs.append(Document(page_content=text, metadata=meta))
+
+                offset += len(batch['documents'])
+                if len(batch['documents']) < batch_size:
+                    break
+
+        if not collected_docs:
+            logger.warning(f"No documents found to build BM25 retriever for key '{cache_key}'.")
             return None
 
-        documents = [
-            Document(
-                page_content=content,
-                metadata=docs_data['metadatas'][i] if docs_data.get('metadatas') else {}
-            )
-            for i, content in enumerate(docs_data['documents'])
-        ]
-
-        if not documents:
-            return None
-
-        retriever = BM25Retriever.from_documents(documents)
+        retriever = BM25Retriever.from_documents(collected_docs)
         retriever.k = k
+
+        # Save to disk cache
+        try:
+            with open(cache_file, "wb") as f:
+                pickle.dump(retriever, f)
+            logger.info(f"Successfully cached BM25 retriever to disk: {cache_file} ({len(collected_docs)} chunks).")
+        except Exception as save_err:
+            logger.warning(f"Failed to write BM25 disk cache: {save_err}")
+
         _bm25_cache[cache_key] = retriever
-        logger.info(f"Successfully cached BM25 retriever for key '{cache_key}'.")
         return retriever
     except Exception as e:
-        logger.error(f"Failed to create BM25 retriever: {e}")
+        logger.error(f"Failed to create BM25 retriever for '{cache_key}': {e}")
         return None
 
 
