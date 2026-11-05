@@ -6,6 +6,7 @@ import { apiListProjects, apiCreateProject, apiGetProject } from '@/services/api
 import { ProjectSidebar } from '@/components/studio/Zone1_Outline/ProjectSidebar';
 import { AcademicEditor } from '@/components/studio/Zone2_Canvas/AcademicEditor';
 import { Zone3Pane } from '@/components/studio/Zone3_Verifier/Zone3Pane';
+import { ExportModal } from '@/components/studio/ExportModal';
 import { Loader2, Download, PanelsTopLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,6 +21,7 @@ export default function StudioPage() {
     isZone3Open,
   } = useStudioStore();
   const [loading, setLoading] = useState(true);
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Drag-to-resize states
   const [isDraggingLeft, setIsDraggingLeft] = useState(false);
@@ -231,7 +233,7 @@ export default function StudioPage() {
             Chat View
           </Link>
           <button
-            onClick={() => alert('PDF / LaTeX export compilation is configured in Phase 5!')}
+            onClick={() => setIsExportOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white transition-colors shadow-sm"
           >
             <Download className="w-3.5 h-3.5" />
@@ -273,6 +275,7 @@ export default function StudioPage() {
         {/* Zone 3: Grounded PDF Verifier & AI Copilot */}
         <Zone3Pane />
       </div>
+      <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
     </div>
   );
 }

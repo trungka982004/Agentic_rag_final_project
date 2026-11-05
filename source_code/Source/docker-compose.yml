@@ -60,8 +60,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./db:/app/db                      # ChromaDB vector collections
-      - ./data:/app/data                  # Research papers corpus
+      - ./db:/app/db                      # ChromaDB vector collections & BM25 caches
+      - ./data:/app/data                  # Research papers corpus (618 PDFs)
+      - ./temp_assets:/app/temp_assets    # Compiled preprints & Overleaf packages
     depends_on:
       postgres:
         condition: service_healthy

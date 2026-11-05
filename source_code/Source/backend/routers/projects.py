@@ -4,7 +4,8 @@ from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -15,6 +16,7 @@ from backend.schemas import (
     ProjectReferenceCreate, ProjectReferenceResponse
 )
 from backend.auth import get_current_user
+from backend.export_service import build_project_latex_source, compile_pdf_in_app, generate_overleaf_zip_bundle
 
 logger = logging.getLogger(__name__)
 
@@ -257,3 +259,79 @@ def attach_reference(
     db.commit()
     db.refresh(new_ref)
     return new_ref
+
+# --- COMPILATION & OVERLEAF EXPORT ---
+
+@router.post("/{project_id}/compile")
+def compile_project_pdf(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Compiles project LaTeX source into camera-ready PDF preprint."""
+    project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    sections = db.query(PaperSection).filter(PaperSection.project_id == project_id).all()
+    references = db.query(ProjectReference).filter(ProjectReference.project_id == project_id).all()
+
+    latex_src, bib_src = build_project_latex_source(project, sections, references)
+    pdf_path = compile_pdf_in_app(str(project_id), latex_src, bib_src)
+
+    return FileResponse(
+        pdf_path,
+        media_type="application/pdf",
+        filename=f"paper_{project.id}.pdf"
+    )
+
+@router.get("/{project_id}/export/overleaf")
+def export_overleaf_zip(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Generates an Overleaf-compatible ZIP package containing main.tex, references.bib, and IEEE/ACM templates."""
+    project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    sections = db.query(PaperSection).filter(PaperSection.project_id == project_id).all()
+    references = db.query(ProjectReference).filter(ProjectReference.project_id == project_id).all()
+
+    latex_src, bib_src = build_project_latex_source(project, sections, references)
+    zip_buffer = generate_overleaf_zip_bundle(str(project_id), latex_src, bib_src)
+
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename=overleaf_project_{project_id}.zip"}
+    )
+
+@router.get("/{project_id}/export/latex")
+def export_latex_source(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Returns raw generated LaTeX source for the manuscript."""
+    project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    sections = db.query(PaperSection).filter(PaperSection.project_id == project_id).all()
+    references = db.query(ProjectReference).filter(ProjectReference.project_id == project_id).all()
+
+    latex_src, _ = build_project_latex_source(project, sections, references)
+    return Response(content=latex_src, media_type="text/plain")
+
+@router.get("/{project_id}/export/bibtex")
+def export_bibtex_source(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Returns aggregated BibTeX bibliography for all project citations."""
+    references = db.query(ProjectReference).filter(ProjectReference.project_id == project_id).all()
+    _, bib_src = build_project_latex_source(None, [], references)
+    return Response(content=bib_src, media_type="text/plain")
