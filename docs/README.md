@@ -29,6 +29,7 @@ Engineering specifications outlining the transition to enterprise-grade fullstac
 | **[`03_FRONTEND_AND_UX.md`](software_upgrade_plan/03_FRONTEND_AND_UX.md)** | Next.js 14 design system, Tailwind styling, and live telemetry rendering. |
 | **[`04_API_AND_WEBSOCKET_SPECS.md`](software_upgrade_plan/04_API_AND_WEBSOCKET_SPECS.md)** | Contract specifications for REST endpoints and bidirectional WebSocket streaming. |
 | **[`05_IMPLEMENTATION_ROADMAP.md`](software_upgrade_plan/05_IMPLEMENTATION_ROADMAP.md)** | Phase-by-phase development timeline and milestone criteria. |
+| **[`06_FUNCTIONAL_REQUIREMENTS_V1_V2.md`](software_upgrade_plan/06_FUNCTIONAL_REQUIREMENTS_V1_V2.md)** | Comprehensive Functional Requirements Specification (FRS) covering both Version 1.0 (Interactive Chatbot) and Version 2.0 (Academic Studio IDE) with Evolution & RTM matrices. |
 
 ---
 

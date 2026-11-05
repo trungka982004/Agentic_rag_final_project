@@ -119,3 +119,4 @@ async def studio_websocket_endpoint(
             await websocket.send_json({"type": "error", "message": str(e)})
         except Exception:
             pass
+

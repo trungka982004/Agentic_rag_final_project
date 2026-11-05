@@ -66,3 +66,4 @@ export const BoundingBoxHighlighter: React.FC<BoundingBoxOverlayProps> = ({
     </div>
   );
 };
+

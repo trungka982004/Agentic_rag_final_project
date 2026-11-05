@@ -81,3 +81,4 @@ export const FloatingAIToolbar: React.FC<FloatingAIToolbarProps> = ({
     </div>
   );
 };
+
