@@ -15,6 +15,7 @@ Bộ tài liệu này định nghĩa chi tiết toàn bộ kiến trúc phần m
 | **03** | [**03_FRONTEND_AND_UX.md**](./03_FRONTEND_AND_UX.md) | **Thiết kế Giao diện & Trải nghiệm Người dùng:** Cấu trúc Component 3-Zone trên Next.js 14; tích hợp trình soạn thảo Novel.sh/Tiptap với Slash commands (`/math`, `/cite`, `/table`); bộ đọc PDF song song `react-pdf` với lớp phủ Bounding Box. |
 | **04** | [**04_API_AND_WEBSOCKET_SPECS.md**](./04_API_AND_WEBSOCKET_SPECS.md) | **Đặc tả Giao diện Lập trình (API & WebSocket):** Chi tiết các RESTful Endpoints quản lý dự án, tài liệu, trích dẫn; cấu trúc Payload WebSocket Streaming cho tương tác Copilot thời gian thực. |
 | **05** | [**05_IMPLEMENTATION_ROADMAP.md**](./05_IMPLEMENTATION_ROADMAP.md) | **Lộ trình Triển khai Kỹ thuật:** Phân bổ công việc chi tiết qua 5 Sprints (từ xử lý Core Engine/DB, tích hợp Canvas Editor, hoàn thiện Split-PDF Verifier, đến đóng gói Docker 1-Click). |
+| **LOG** | [**PHASE_EXECUTION_AND_AUDIT_LOG.md**](./PHASE_EXECUTION_AND_AUDIT_LOG.md) | **Sổ tay Thi công & Rà soát Commit (Audit Tracker):** Quản lý chi tiết từng bước, checklist kiểm thử và 22 Commit chuẩn hóa qua 5 Feature Branches phục vụ nghiệm thu liên tục. |
 
 ---
 
