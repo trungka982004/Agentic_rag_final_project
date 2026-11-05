@@ -133,7 +133,7 @@ class DocumentSpan(Base):
     bbox_x1 = Column(Float, nullable=False)
     bbox_y1 = Column(Float, nullable=False)
     text_content = Column(Text, nullable=False)
-    chunk_id = Column(String(100), nullable=True, index=True)
+    chunk_id = Column(String(500), nullable=True, index=True)
 
     # Relationships
     citations = relationship("InlineCitation", back_populates="span")
