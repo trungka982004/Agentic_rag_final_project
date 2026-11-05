@@ -22,6 +22,7 @@ export const ProjectSidebar: React.FC = () => {
     setActiveSectionId,
     references,
     setZone3View,
+    zone1Width,
   } = useStudioStore();
 
   const [newSectionTitle, setNewSectionTitle] = useState('');
@@ -50,7 +51,7 @@ export const ProjectSidebar: React.FC = () => {
   const totalWords = sections.reduce((acc, s) => acc + (s.word_count || 0), 0);
 
   return (
-    <aside className="w-64 h-full bg-neutral-900 border-r border-neutral-800 flex flex-col select-none text-neutral-300">
+    <aside className="h-full bg-neutral-900 border-r border-neutral-800 flex flex-col select-none text-neutral-300 flex-shrink-0" style={{ width: `${zone1Width}px` }}>
       {/* Project Title Header */}
       <div className="p-4 border-b border-neutral-800">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-purple-400 mb-1">
