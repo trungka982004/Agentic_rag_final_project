@@ -55,3 +55,48 @@ def literature_matrix_node(state: GraphState) -> Dict[str, Any]:
         "documents": docs,
         "generation": generation
     }
+
+
+# Prompt 2: Smart Citation Suggester & BibTeX Extractor
+CITATION_SUGGEST_PROMPT = """You are a grounded Academic Citation and Bibliographical Indexer.
+Analyze the provided draft paragraph, ground its factual claims in the retrieved literature, and insert accurate in-text \\cite{{key}} citations.
+
+Draft Paragraph:
+{draft_text}
+
+Available Academic Corpus Context:
+{documents}
+
+Instructions:
+1. Rewrite the draft paragraph inserting \\cite{{bibtex_key}} immediately after any claim, empirical metric, or architectural formulation supported by the context.
+2. Underneath the paragraph, output a ```bibtex code block containing clean BibTeX entries for all cited papers.
+3. If an assertion is not grounded in the corpus, flag it with [Citation Needed].
+"""
+
+def citation_suggest_node(state: GraphState) -> Dict[str, Any]:
+    """Scans draft text, queries literature corpus, and injects grounded \\cite{} tags and BibTeX entries."""
+    logger.info("Executing studio node: citation_suggest_node")
+    draft_text = state.get("question", "")
+    domain = state.get("domain", "it")
+    docs = state.get("documents", [])
+
+    if not docs:
+        docs = retrieve_context(draft_text, domain=domain, top_k=5)
+
+    context_str = "\n\n---\n\n".join(docs[:5]) if docs else "No local documents available."
+    prompt = ChatPromptTemplate.from_template(CITATION_SUGGEST_PROMPT)
+    chain = prompt | llm | StrOutputParser()
+
+    try:
+        generation = chain.invoke({
+            "draft_text": draft_text,
+            "documents": context_str
+        })
+    except Exception as e:
+        logger.error(f"Error in citation_suggest_node: {e}")
+        generation = f"Failed to suggest citations: {str(e)}"
+
+    return {
+        "documents": docs,
+        "generation": generation
+    }
