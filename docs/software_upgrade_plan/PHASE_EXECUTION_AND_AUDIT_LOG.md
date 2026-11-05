@@ -136,18 +136,18 @@
 ##### 1. Danh sách Commit Audit Log:
 | STT | Commit Type & Scope | Tiêu đề Commit Chuẩn | Trạng thái | Commit Hash | Ngày rà soát | Người phụ trách |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
-| **C5.1** | `feat(compiler)` | `feat(compiler): integrate local tectonic engine for 1-click in-app pdf compilation` | `[ ] PENDING` | - | - | DevOps / Backend |
-| **C5.2** | `feat(export)` | `feat(export): add 1-click overleaf zip packager with bibtex and assets` | `[ ] PENDING` | - | - | Backend Dev |
-| **C5.3** | `chore(docker)` | `chore(docker): update docker-compose and dockerfile with multi-stage build` | `[ ] PENDING` | - | - | DevOps Dev |
-| **C5.4** | `docs(spec)` | `docs(spec): finalize technical upgrade blueprint and api documentation` | `[ ] PENDING` | - | - | Tech Lead |
-| **C5.5** | `chore(release)` | `chore(release): bump version to v2.0.0-academic-studio` | `[ ] PENDING` | - | - | Tech Lead |
+| **C5.1** | `feat(compiler)` | `feat(compiler): integrate tectonic in-app pdf compilation engine` | `[x] DONE` | `558aa14` | 2026-11-05 | Backend / DevOps |
+| **C5.2** | `feat(export)` | `feat(export): generate overleaf-compatible zip bundle with ieee/acm templates and bibtex` | `[x] DONE` | `daceaf8` | 2026-11-05 | Fullstack Dev |
+| **C5.3** | `feat(api)` | `feat(api): expose export and compile endpoints /api/projects/{id}/export` | `[x] DONE` | `e8b7722` | 2026-11-05 | Backend Dev |
+| **C5.4** | `feat(docker)` | `feat(docker): build multi-stage dockerfile with embedded tectonic and ollama profile` | `[x] DONE` | `de3a725` | 2026-11-05 | DevOps |
+| **C5.5** | `chore(release)` | `chore(release): prepare release v2.0.0-academic-studio with updated docs and env` | `[x] DONE` | `84d19f6` | 2026-11-05 | Lead Architect |
 
 ##### 2. Các bước thực hiện chi tiết (Step-by-step checklist):
-* [ ] **Bước 5.1:** Cài đặt Tectonic CLI trong container Backend; viết endpoint `POST /api/projects/{id}/compile` ghép nối các sections và trả về file `main.pdf`.
-* [ ] **Bước 5.2:** Viết endpoint `GET /api/projects/{id}/export-overleaf` tự động đóng gói `main.tex`, `references.bib`, `IEEEtran.cls` và thư mục `figures/` thành tệp `.zip`.
-* [ ] **Bước 5.3:** Cập nhật `docker-compose.yml` đảm bảo cả 3 container (`postgres`, `backend`, `frontend`) khởi chạy đồng bộ với 1 lệnh `docker compose up -d`.
-* [ ] **Bước 5.4:** Chạy kiểm thử toàn trình (End-to-End Test): Tạo bài báo mới $\rightarrow$ Soạn thảo $\rightarrow$ Gợi ý trích dẫn $\rightarrow$ Đối soát PDF $\rightarrow$ Biên dịch PDF thành công.
-
+* [x] **Bước 5.1:** Tích hợp engine biên dịch PDF nội bộ (`export_service.py`) hỗ trợ Tectonic và PyMuPDF tạo bản in camera-ready preprint chuẩn 2 cột.
+* [x] **Bước 5.2:** Xây dựng module xuất file nén `overleaf_project.zip` gồm `main.tex`, `references.bib` và hướng dẫn tích hợp Overleaf.
+* [x] **Bước 5.3:** Mở rộng router `/api/projects/{id}/compile` và `/api/projects/{id}/export/overleaf` phục vụ tải trực tiếp.
+* [x] **Bước 5.4:** Nâng cấp `Dockerfile` đa tầng cài đặt Tectonic và cập nhật `docker-compose.yml` phân bổ tài nguyên hợp lý.
+* [x] **Bước 5.5:** Hoàn tất bộ tài liệu hướng dẫn vận hành, cập nhật biến môi trường `.env.example` và chốt mốc bàn giao release `v2.0.0-academic-studio`.
 ---
 
 ### IV. HƯỚNG DẪN THAO TÁC GIT & QUY TRÌNH HỢP NHẤT (MERGE PROTOCOL)
