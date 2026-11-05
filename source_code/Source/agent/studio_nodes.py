@@ -136,3 +136,50 @@ def tone_polish_node(state: GraphState) -> Dict[str, Any]:
     return {
         "generation": generation
     }
+
+
+# Prompt 4: Reviewer-2 Grounding Auditor (Anti-Hallucination)
+REVIEWER2_AUDIT_PROMPT = """You are "Reviewer #2" - an exceptionally rigorous peer-reviewer assessing factual grounding and hallucination prevention.
+
+Paper Draft Excerpt:
+{draft_text}
+
+Retrieved Ground-Truth Literature Evidence:
+{documents}
+
+Perform a sentence-by-sentence verification audit:
+1. Categorize each major factual assertion into:
+   - [VERIFIED GROUNDED]: Explicitly supported by the literature.
+   - [PARTIALLY SUPPORTED]: Plausible but lacks direct quantitative backing in the cited text.
+   - [POTENTIAL HALLUCINATION]: Unsupported or directly contradicted by the retrieved text.
+2. Calculate an overall "Grounding Confidence Score" from 0% to 100%.
+3. Give concrete actionable recommendations to ensure 100% camera-ready verifiability.
+"""
+
+def reviewer2_audit_node(state: GraphState) -> Dict[str, Any]:
+    """Simulates an uncompromising Reviewer-2 auditor checking factual grounding and hallucination."""
+    logger.info("Executing studio node: reviewer2_audit_node")
+    draft_text = state.get("question", "")
+    domain = state.get("domain", "it")
+    docs = state.get("documents", [])
+
+    if not docs:
+        docs = retrieve_context(draft_text, domain=domain, top_k=5)
+
+    context_str = "\n\n---\n\n".join(docs[:5]) if docs else "No local ground-truth documents available."
+    prompt = ChatPromptTemplate.from_template(REVIEWER2_AUDIT_PROMPT)
+    chain = prompt | llm | StrOutputParser()
+
+    try:
+        generation = chain.invoke({
+            "draft_text": draft_text,
+            "documents": context_str
+        })
+    except Exception as e:
+        logger.error(f"Error in reviewer2_audit_node: {e}")
+        generation = f"Failed to execute Reviewer-2 grounding audit: {str(e)}"
+
+    return {
+        "documents": docs,
+        "generation": generation
+    }
