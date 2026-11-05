@@ -16,9 +16,11 @@ interface StudioState {
   // Active Citation & Grounding
   activeCitation: ActiveCitation | null;
 
-  // Split-Screen Layout & Active Tabs
+  // Split-Screen Layout & Resizable Panel Widths
   zone3View: 'verifier' | 'copilot' | 'references';
   isZone3Open: boolean;
+  zone1Width: number;
+  zone3Width: number;
 
   // Actions
   setProject: (project: Project) => void;
@@ -30,10 +32,12 @@ interface StudioState {
   setActiveCitation: (citation: ActiveCitation | null) => void;
   setZone3View: (view: 'verifier' | 'copilot' | 'references') => void;
   toggleZone3: (open?: boolean) => void;
+  setZone1Width: (width: number) => void;
+  setZone3Width: (width: number) => void;
   addReference: (ref: ProjectReference) => void;
 }
 
-export const useStudioStore = create<StudioState>((set, get) => ({
+export const useStudioStore = create<StudioState>((set) => ({
   currentProject: null,
   activeSectionId: null,
   sections: [],
@@ -46,6 +50,8 @@ export const useStudioStore = create<StudioState>((set, get) => ({
   activeCitation: null,
   zone3View: 'verifier',
   isZone3Open: true,
+  zone1Width: 260,
+  zone3Width: 460,
 
   setProject: (project) => {
     const sortedSections = project.sections
@@ -93,6 +99,9 @@ export const useStudioStore = create<StudioState>((set, get) => ({
     set((state) => ({
       isZone3Open: open !== undefined ? open : !state.isZone3Open,
     })),
+
+  setZone1Width: (width) => set({ zone1Width: Math.max(200, Math.min(420, width)) }),
+  setZone3Width: (width) => set({ zone3Width: Math.max(340, Math.min(700, width)) }),
 
   addReference: (ref) =>
     set((state) => ({

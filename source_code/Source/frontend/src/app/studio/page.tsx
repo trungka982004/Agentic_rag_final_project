@@ -1,17 +1,65 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useStudioStore } from '@/lib/studioStore';
 import { apiListProjects, apiCreateProject, apiGetProject } from '@/services/api';
 import { ProjectSidebar } from '@/components/studio/Zone1_Outline/ProjectSidebar';
 import { AcademicEditor } from '@/components/studio/Zone2_Canvas/AcademicEditor';
 import { Zone3Pane } from '@/components/studio/Zone3_Verifier/Zone3Pane';
-import { Loader2, Sparkles, BookOpen, Download, PanelsTopLeft } from 'lucide-react';
+import { Loader2, Download, PanelsTopLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function StudioPage() {
-  const { currentProject, setProject } = useStudioStore();
+  const {
+    currentProject,
+    setProject,
+    zone1Width,
+    setZone1Width,
+    zone3Width,
+    setZone3Width,
+    isZone3Open,
+  } = useStudioStore();
   const [loading, setLoading] = useState(true);
+
+  // Drag-to-resize states
+  const [isDraggingLeft, setIsDraggingLeft] = useState(false);
+  const [isDraggingRight, setIsDraggingRight] = useState(false);
+
+  const handleMouseDownLeft = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDraggingLeft(true);
+  }, []);
+
+  const handleMouseDownRight = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDraggingRight(true);
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDraggingLeft) {
+        setZone1Width(e.clientX);
+      } else if (isDraggingRight) {
+        const newWidth = window.innerWidth - e.clientX;
+        setZone3Width(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingLeft(false);
+      setIsDraggingRight(false);
+    };
+
+    if (isDraggingLeft || isDraggingRight) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingLeft, isDraggingRight, setZone1Width, setZone3Width]);
 
   useEffect(() => {
     async function initProject() {
@@ -22,7 +70,7 @@ export default function StudioPage() {
           const full = await apiGetProject(projects[0].id);
           setProject(full);
         } else {
-          // Initialize a starter paper project
+          // Initialize starter paper project
           const created = await apiCreateProject({
             title: 'Empirical Evaluation of Tri-Tier Agentic RAG for Scientific Discovery',
             template_type: 'ieee_conference',
@@ -36,7 +84,6 @@ export default function StudioPage() {
         }
       } catch (err) {
         console.warn('Backend not ready or auth required, creating local mock project:', err);
-        // Fallback local mock to guarantee UI runs even in preview/unauthenticated state
         setProject({
           id: 'demo-proj-001',
           user_id: 'user-001',
@@ -158,7 +205,7 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-neutral-950 overflow-hidden font-sans">
+    <div className="h-screen w-screen flex flex-col bg-neutral-950 overflow-hidden font-sans select-none">
       {/* Studio Global Navigation Bar */}
       <header className="h-12 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between px-4 z-20 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -193,15 +240,35 @@ export default function StudioPage() {
         </div>
       </header>
 
-      {/* 3-Zone Academic Studio Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* 3-Zone Academic Studio Layout with Resizable Dividers */}
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Zone 1: Outline Tree */}
         <ProjectSidebar />
 
+        {/* Resizer Handle: Zone 1 <-> Zone 2 */}
+        <div
+          onMouseDown={handleMouseDownLeft}
+          className={`w-1 hover:w-1.5 bg-neutral-800 hover:bg-purple-500 cursor-col-resize transition-all z-10 flex-shrink-0 ${
+            isDraggingLeft ? 'bg-purple-500 w-1.5' : ''
+          }`}
+          title="Drag to resize Outline Pane"
+        />
+
         {/* Zone 2: WYSIWYG Academic Canvas */}
-        <main className="flex-1 h-full overflow-hidden">
+        <main className="flex-1 h-full overflow-hidden min-w-[320px]">
           <AcademicEditor />
         </main>
+
+        {/* Resizer Handle: Zone 2 <-> Zone 3 */}
+        {isZone3Open && (
+          <div
+            onMouseDown={handleMouseDownRight}
+            className={`w-1 hover:w-1.5 bg-neutral-800 hover:bg-purple-500 cursor-col-resize transition-all z-10 flex-shrink-0 ${
+              isDraggingRight ? 'bg-purple-500 w-1.5' : ''
+            }`}
+            title="Drag to resize PDF Verifier Pane"
+          />
+        )}
 
         {/* Zone 3: Grounded PDF Verifier & AI Copilot */}
         <Zone3Pane />
