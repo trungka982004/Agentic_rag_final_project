@@ -100,3 +100,39 @@ def citation_suggest_node(state: GraphState) -> Dict[str, Any]:
         "documents": docs,
         "generation": generation
     }
+
+
+# Prompt 3: Scientific Tone & Grammar Polish
+TONE_POLISH_PROMPT = """You are a senior academic editor for top-tier IEEE/ACM transactions and Springer Nature journals.
+Refine the following paragraph into formal, rigorous scientific prose.
+
+Input Text:
+{draft_text}
+
+Rules:
+1. Transform colloquial phrasing into formal academic English (e.g. "we tested a lot" -> "we conducted extensive empirical evaluation").
+2. Maintain objective third-person or precise first-person plural active voice.
+3. Format all mathematical variables into LaTeX math notation (e.g., $N$, $\\mathcal{{L}}_{{CE}}$, $\\mathbb{{R}}^d$).
+4. Retain all existing \\cite{{...}} references exactly in place.
+5. Provide the polished paragraph followed by a brief bullet list of key stylistic enhancements made.
+"""
+
+def tone_polish_node(state: GraphState) -> Dict[str, Any]:
+    """Refines rough draft sections into publication-grade IEEE/ACM scientific English."""
+    logger.info("Executing studio node: tone_polish_node")
+    draft_text = state.get("question", "")
+
+    prompt = ChatPromptTemplate.from_template(TONE_POLISH_PROMPT)
+    chain = prompt | llm | StrOutputParser()
+
+    try:
+        generation = chain.invoke({
+            "draft_text": draft_text
+        })
+    except Exception as e:
+        logger.error(f"Error in tone_polish_node: {e}")
+        generation = f"Failed to polish academic tone: {str(e)}"
+
+    return {
+        "generation": generation
+    }
