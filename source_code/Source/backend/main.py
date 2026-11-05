@@ -35,7 +35,7 @@ from backend.auth import (
     get_password_hash, verify_password, create_access_token, get_current_user
 )
 
-from backend.routers import chat, projects
+from backend.routers import chat, projects, studio_ws
 
 # Create static/avatars directory if not exists
 os.makedirs("static/avatars", exist_ok=True)
@@ -71,6 +71,7 @@ def health_check():
 
 app.include_router(chat.router)
 app.include_router(projects.router)
+app.include_router(studio_ws.router)
 
 # ---------------------------------------------------------------------------
 # CHAT EXPORTS DASHBOARD ENDPOINT
