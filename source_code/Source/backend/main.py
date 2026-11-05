@@ -10,7 +10,7 @@ except Exception:
 # Add parent directory to sys.path to allow importing backend module when run directly
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import List
+from typing import List, Optional, Dict, Any
 from uuid import UUID
 from datetime import datetime
 import shutil
@@ -19,12 +19,13 @@ import logging
 logger = logging.getLogger(__name__)
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, BackgroundTasks, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from backend.database import engine, Base, get_db
-from backend.models import User, ChatSession, Message, Profile
+from backend.models import User, ChatSession, Message, Profile, DocumentSpan
 from backend.schemas import (
     UserCreate, UserResponse, Token,
     ChatSessionCreate, ChatSessionResponse, ChatSessionDetailResponse,
@@ -380,6 +381,42 @@ def list_documents():
     except Exception as e:
         logger.error(f"Error in /api/documents: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/documents/{domain}/{doc_name:path}/pdf")
+def stream_document_pdf(domain: str, doc_name: str):
+    """Serve raw PDF binary file with Range header support for interactive PDF viewer."""
+    clean_domain = "".join(c for c in domain.lower() if c.isalnum() or c in ["-", "_"])
+    doc_path = os.path.join(RAW_DATA_PATH, clean_domain, doc_name)
+    if not os.path.exists(doc_path):
+        if not doc_name.endswith(".pdf"):
+            doc_path = os.path.join(RAW_DATA_PATH, clean_domain, f"{doc_name}.pdf")
+    if not os.path.exists(doc_path):
+        raise HTTPException(status_code=404, detail=f"PDF document '{doc_name}' not found in domain '{domain}'")
+    return FileResponse(doc_path, media_type="application/pdf", filename=os.path.basename(doc_path))
+
+@app.get("/api/documents/{domain}/{doc_name:path}/spans")
+def get_document_spans(domain: str, doc_name: str, page: Optional[int] = None, db: Session = Depends(get_db)):
+    """Retrieve indexed bounding boxes and ground truth text spans for PDF viewer highlighting."""
+    clean_domain = "".join(c for c in domain.lower() if c.isalnum() or c in ["-", "_"])
+    clean_name = doc_name.replace(".pdf", "")
+    query = db.query(DocumentSpan).filter(
+        DocumentSpan.domain == clean_domain,
+        DocumentSpan.doc_name.ilike(f"%{clean_name}%")
+    )
+    if page is not None:
+        query = query.filter(DocumentSpan.page_number == page)
+    spans = query.order_by(DocumentSpan.page_number, DocumentSpan.span_index).limit(200).all()
+    return [
+        {
+            "id": str(s.id),
+            "doc_name": s.doc_name,
+            "page_number": s.page_number,
+            "bbox": [s.bbox_x0, s.bbox_y0, s.bbox_x1, s.bbox_y1],
+            "raw_text": s.raw_text,
+            "span_index": s.span_index
+        }
+        for s in spans
+    ]
 
 @app.post("/api/documents/upload")
 def upload_document(
