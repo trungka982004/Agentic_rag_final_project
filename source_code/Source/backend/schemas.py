@@ -95,6 +95,24 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     pass
 
+class ProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    template_type: Optional[str] = None
+    target_venue: Optional[str] = None
+    primary_domain: Optional[str] = None
+    abstract_text: Optional[str] = None
+    keywords: Optional[List[str]] = None
+
+class ProjectReferenceCreate(BaseModel):
+    bibtex_key: str
+    title: str
+    authors: Optional[str] = None
+    year: Optional[int] = None
+    venue: Optional[str] = None
+    doi: Optional[str] = None
+    pdf_source_path: Optional[str] = None
+    bibtex_raw: str
+
 class PaperSectionResponse(BaseModel):
     id: UUID
     project_id: UUID

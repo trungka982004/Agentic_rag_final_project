@@ -70,17 +70,17 @@
 ##### 1. Danh sách Commit Audit Log:
 | STT | Commit Type & Scope | Tiêu đề Commit Chuẩn | Trạng thái | Commit Hash | Ngày rà soát | Người phụ trách |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
-| **C2.1** | `feat(editor)` | `feat(editor): integrate tiptap wysiwyg canvas editor with auto-save sync` | `[ ] PENDING` | - | - | Frontend Dev |
-| **C2.2** | `feat(editor)` | `feat(editor): implement slash commands for math blocks and academic tables` | `[ ] PENDING` | - | - | Frontend Dev |
-| **C2.3** | `feat(ui)` | `feat(ui): add floating ai toolbar for in-place tone refinement and evidence search` | `[ ] PENDING` | - | - | Frontend Dev |
-| **C2.4** | `refactor(frontend)` | `refactor(frontend): reorganize studio page layout to 3-zone topology` | `[ ] PENDING` | - | - | Frontend Dev |
+| **C2.1** | `feat(editor)` | `feat(editor): integrate tiptap wysiwyg canvas editor with auto-save sync` | `[x] DONE` | `ec3c789` | 2026-11-05 | Frontend Dev |
+| **C2.2** | `feat(editor)` | `feat(editor): implement slash commands for math blocks and academic tables` | `[x] DONE` | `da9786b` | 2026-11-05 | Frontend Dev |
+| **C2.3** | `feat(ui)` | `feat(ui): add floating ai toolbar for in-place tone refinement and evidence search` | `[x] DONE` | `dc160cd` | 2026-11-05 | Frontend Dev |
+| **C2.4** | `refactor(frontend)` | `refactor(frontend): reorganize studio page layout to 3-zone topology` | `[x] DONE` | `eab565d` | 2026-11-05 | Frontend Dev |
 
 ##### 2. Các bước thực hiện chi tiết (Step-by-step checklist):
-* [ ] **Bước 2.1:** Cài đặt các thư viện `@tiptap/react`, `@tiptap/pm`, `@tiptap/extension-mathematics` (KaTeX), `@tiptap/extension-table` vào `frontend/`.
-* [ ] **Bước 2.2:** Xây dựng component `frontend/src/components/studio/Zone2_Canvas/AcademicEditor.tsx`.
-* [ ] **Bước 2.3:** Thiết lập hook `useAutoSave` tự động đẩy nội dung Markdown cập nhật về endpoint `PUT /api/projects/{id}/sections/{section_id}` sau $2$s không gõ.
-* [ ] **Bước 2.4:** Hiện thực hóa Slash Command: khi người dùng gõ `/math` thì sinh khối KaTeX; gõ `/table` thì mở bảng so sánh; gõ `/cite` thì mở popup gợi ý trích dẫn.
-* [ ] **Bước 2.5:** Xây dựng `FloatingAIToolbar.tsx` hiện ra khi bôi đen văn bản để gọi tính năng chuốt câu hoặc tìm bằng chứng.
+* [x] **Bước 2.1:** Cài đặt các thư viện `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-table`, `katex`, `zustand` vào `frontend/`.
+* [x] **Bước 2.2:** Xây dựng component `frontend/src/components/studio/Zone2_Canvas/AcademicEditor.tsx`.
+* [x] **Bước 2.3:** Thiết lập hook `useAutoSave` tự động đẩy nội dung Markdown cập nhật về endpoint `PUT /api/projects/{id}/sections/{section_id}` sau $2$s không gõ.
+* [x] **Bước 2.4:** Hiện thực hóa Slash Command: khi người dùng gõ `/math` thì sinh khối KaTeX; gõ `/table` thì mở bảng so sánh; gõ `/cite` thì mở popup gợi ý trích dẫn; gõ `/algo` thì sinh pseudocode.
+* [x] **Bước 2.5:** Xây dựng `FloatingAIToolbar.tsx` hiện ra khi bôi đen văn bản để gọi tính năng chuốt câu (Polish Tone), tìm bằng chứng (Find Evidence), Condense, và Expand. Hoàn thiện layout 3-Zone chuẩn IDE tại `/studio`.
 
 ---
 
