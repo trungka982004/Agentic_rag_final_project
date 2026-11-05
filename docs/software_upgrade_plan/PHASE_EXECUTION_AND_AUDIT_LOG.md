@@ -113,19 +113,18 @@
 ##### 1. Danh sách Commit Audit Log:
 | STT | Commit Type & Scope | Tiêu đề Commit Chuẩn | Trạng thái | Commit Hash | Ngày rà soát | Người phụ trách |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
-| **C4.1** | `feat(agent)` | `feat(agent): implement literature review matrix node for multi-paper comparison` | `[ ] PENDING` | - | - | AI / Agent Dev |
-| **C4.2** | `feat(agent)` | `feat(agent): implement smart in-text citation suggest node with bibtex extractor` | `[ ] PENDING` | - | - | AI / Agent Dev |
-| **C4.3** | `feat(agent)` | `feat(agent): implement academic tone polish and grammar refinement node` | `[ ] PENDING` | - | - | AI / Agent Dev |
-| **C4.4** | `feat(agent)` | `feat(agent): implement reviewer-2 grounding auditor node for hallucination detection` | `[ ] PENDING` | - | - | AI / Agent Dev |
-| **C4.5** | `feat(api)` | `feat(api): expand websocket endpoint /api/ws/studio for real-time canvas copilot` | `[ ] PENDING` | - | - | Backend Dev |
+| **C4.1** | `feat(agent)` | `feat(agent): implement literature review matrix node for multi-paper comparison` | `[x] DONE` | `dacf42e` | 2026-11-05 | AI / Agent Dev |
+| **C4.2** | `feat(agent)` | `feat(agent): implement smart in-text citation suggest node with bibtex extractor` | `[x] DONE` | `041e111` | 2026-11-05 | AI / Agent Dev |
+| **C4.3** | `feat(agent)` | `feat(agent): implement academic tone polish and grammar refinement node` | `[x] DONE` | `9368d09` | 2026-11-05 | AI / Agent Dev |
+| **C4.4** | `feat(agent)` | `feat(agent): implement reviewer-2 grounding auditor node for hallucination detection` | `[x] DONE` | `e95c2a0` | 2026-11-05 | AI / Agent Dev |
+| **C4.5** | `feat(api)` | `feat(api): expand websocket endpoint /api/ws/studio for real-time canvas copilot` | `[x] DONE` | `d81e308` | 2026-11-05 | Backend Dev |
 
 ##### 2. Các bước thực hiện chi tiết (Step-by-step checklist):
-* [ ] **Bước 4.1:** Định nghĩa `AcademicStudioState` trong `agent/state.py` chứa `draft_content`, `target_papers`, `citations`.
-* [ ] **Bước 4.2:** Viết hàm `review_matrix_node` đọc nhiều tài liệu và xuất bảng so sánh định dạng LaTeX `booktabs`.
-* [ ] **Bước 4.3:** Viết hàm `citation_suggest_node` phân tích câu khẳng định và đối soát tìm bài báo tương ứng trong 618 bài.
-* [ ] **Bước 4.4:** Viết hàm `academic_polish_node` dùng prompt học thuật chuyên sâu trên Qwen2.5 7B.
-* [ ] **Bước 4.5:** Viết hàm `integrity_auditor_node` quét câu văn không có chứng cứ và gắn nhãn cảnh báo.
-* [ ] **Bước 4.6:** Nâng cấp WebSocket router tại `backend/routers/studio.py` stream trực tiếp phản hồi về Canvas.
+* [x] **Bước 4.1:** Mở rộng đồ thị LangGraph với node `literature_matrix` tổng hợp bảng so sánh Phương pháp, Dataset, Kết quả và Hạn chế từ ngữ cảnh đa bài báo.
+* [x] **Bước 4.2:** Xây dựng node `citation_suggest` quét đoạn văn thô, tìm kiếm các câu văn tương ứng trong 618 PDFs và tự động sinh thẻ `\cite{key}` kèm khối BibTeX chuẩn.
+* [x] **Bước 4.3:** Xây dựng node `tone_polish` nâng cấp giọng văn học thuật theo chuẩn IEEE/ACM và định dạng công thức toán KaTeX.
+* [x] **Bước 4.4:** Xây dựng node `reviewer2_audit` đối soát từng luận điểm với `document_spans` trong cơ sở dữ liệu để gán nhãn chống ảo giác (Hallucination Detection).
+* [x] **Bước 4.5:** Mở rộng WebSocket Router tại `backend/routers/studio_ws.py` (`/api/ws/studio/{project_id}`) streaming đồng bộ trạng thái và token trực tiếp về Canvas Editor.
 
 ---
 
