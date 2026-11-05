@@ -121,3 +121,59 @@ export interface StreamingMessage {
 export type DisplayMessage =
   | (Message & { isStreaming?: false; original_question?: string | null; corrected_question?: string | null })
   | (StreamingMessage & { id?: string; session_id?: string; created_at?: string; isStreaming: true });
+
+
+// ============================================================
+// ACADEMIC STUDIO TYPES
+// ============================================================
+export interface PaperSection {
+  id: string;
+  project_id: string;
+  title: string;
+  slug: string;
+  order_index: number;
+  content_markdown: string;
+  content_latex?: string;
+  word_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectReference {
+  id: string;
+  project_id: string;
+  bibtex_key: string;
+  title: string;
+  authors?: string;
+  year?: number;
+  venue?: string;
+  doi?: string;
+  pdf_source_path?: string;
+  bibtex_raw: string;
+  created_at: string;
+}
+
+export interface Project {
+  id: string;
+  user_id: string;
+  title: string;
+  template_type: string;
+  target_venue?: string;
+  primary_domain: string;
+  abstract_text?: string;
+  keywords: string[];
+  created_at: string;
+  updated_at: string;
+  sections?: PaperSection[];
+  references?: ProjectReference[];
+}
+
+export interface ActiveCitation {
+  bibtexKey: string;
+  paperTitle?: string;
+  domain?: string;
+  pdfName?: string;
+  page?: number;
+  bbox?: [number, number, number, number];
+  rawText?: string;
+}

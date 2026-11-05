@@ -3,7 +3,8 @@ venv/
 .venv/
 env/
 bin/
-lib/
+/lib/
+!**/frontend/src/lib/**
 share/
 Include/
 
@@ -37,7 +38,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
+!**/frontend/src/lib/**
 lib64/
 parts/
 sdist/

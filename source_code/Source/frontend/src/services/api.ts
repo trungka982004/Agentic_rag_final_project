@@ -4,6 +4,9 @@ import type {
   User,
   ChatSession,
   ChatSessionDetail,
+  Project,
+  PaperSection,
+  ProjectReference,
 } from '@/types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000';
@@ -170,6 +173,58 @@ export interface ChatExport {
 
 export async function apiListChatExports(): Promise<ChatExport[]> {
   const res = await api.get<ChatExport[]>('/api/chat-exports');
+  return res.data;
+}
+
+
+// ==========================================================
+// ============================================================
+// ACADEMIC STUDIO PROJECTS & SECTIONS
+// ============================================================
+export async function apiListProjects(): Promise<Project[]> {
+  const res = await api.get<Project[]>('/api/projects');
+  return res.data;
+}
+
+export async function apiCreateProject(data: {
+  title: string;
+  template_type?: string;
+  target_venue?: string;
+  primary_domain?: string;
+  abstract_text?: string;
+  keywords?: string[];
+}): Promise<Project> {
+  const res = await api.post<Project>('/api/projects', data);
+  return res.data;
+}
+
+export async function apiGetProject(projectId: string): Promise<Project> {
+  const res = await api.get<Project>(`/api/projects/${projectId}`);
+  return res.data;
+}
+
+export async function apiUpdateSection(
+  projectId: string,
+  sectionId: string,
+  data: { content_markdown?: string; title?: string }
+): Promise<PaperSection> {
+  const res = await api.put<PaperSection>(`/api/projects/${projectId}/sections/${sectionId}`, data);
+  return res.data;
+}
+
+export async function apiCreateSection(
+  projectId: string,
+  data: { title: string; slug?: string; order_index?: number; content_markdown?: string }
+): Promise<PaperSection> {
+  const res = await api.post<PaperSection>(`/api/projects/${projectId}/sections`, data);
+  return res.data;
+}
+
+export async function apiAttachReference(
+  projectId: string,
+  ref: Partial<ProjectReference>
+): Promise<ProjectReference> {
+  const res = await api.post<ProjectReference>(`/api/projects/${projectId}/references`, ref);
   return res.data;
 }
 
