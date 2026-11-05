@@ -92,16 +92,16 @@
 ##### 1. Danh sách Commit Audit Log:
 | STT | Commit Type & Scope | Tiêu đề Commit Chuẩn | Trạng thái | Commit Hash | Ngày rà soát | Người phụ trách |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
-| **C3.1** | `feat(pdf-viewer)` | `feat(pdf-viewer): embed react-pdf viewer in zone 3 with high-performance stream` | `[ ] PENDING` | - | - | Fullstack Dev |
-| **C3.2** | `feat(pdf-viewer)` | `feat(pdf-viewer): build bounding-box highlight overlay for grounded text` | `[ ] PENDING` | - | - | Frontend Dev |
-| **C3.3** | `feat(sync)` | `feat(sync): implement click-to-verify interaction linking canvas citations to pdf viewer` | `[ ] PENDING` | - | - | Frontend Dev |
-| **C3.4** | `style(ui)` | `style(ui): ensure responsive split-screen panel resizing with zustand state` | `[ ] PENDING` | - | - | Frontend Dev |
+| **C3.1** | `feat(pdf-viewer)` | `feat(pdf-viewer): embed react-pdf viewer in zone 3 with high-performance stream` | `[x] DONE` | `9e71362` | 2026-11-05 | Fullstack Dev |
+| **C3.2** | `feat(pdf-viewer)` | `feat(pdf-viewer): build bounding-box highlight overlay for grounded text` | `[x] DONE` | `f8c8eab` | 2026-11-05 | Frontend Dev |
+| **C3.3** | `feat(sync)` | `feat(sync): implement click-to-verify interaction linking canvas citations to pdf viewer` | `[x] DONE` | `8727e59` | 2026-11-05 | Frontend Dev |
+| **C3.4** | `style(ui)` | `style(ui): ensure responsive split-screen panel resizing with zustand state` | `[x] DONE` | `ae8d951` | 2026-11-05 | Frontend Dev |
 
 ##### 2. Các bước thực hiện chi tiết (Step-by-step checklist):
-* [ ] **Bước 3.1:** Thêm endpoint Backend `GET /api/documents/{domain}/{doc_name}/pdf` phục vụ streaming file nhị phân.
-* [ ] **Bước 3.2:** Tích hợp `react-pdf` trong `frontend/src/components/studio/Zone3_Verifier/SplitPDFViewer.tsx`.
-* [ ] **Bước 3.3:** Xây dựng lớp phủ `BoundingBoxHighlighter.tsx` render khung chữ nhật phát sáng đè lên tọa độ $(x_0, y_0, x_1, y_1)$ của trang PDF tương ứng.
-* [ ] **Bước 3.4:** Kết nối tương tác qua Zustand Store (`studioStore.ts`): khi user click thẻ trích dẫn `\cite{key}` $\rightarrow$ State cập nhật `activeCitation` $\rightarrow$ Zone 3 tự cuộn trang và vẽ khung vàng trong $< 1.2$s.
+* [x] **Bước 3.1:** Thêm endpoint Backend `GET /api/documents/{domain}/{doc_name}/pdf` và `GET /api/documents/{domain}/{doc_name}/spans` phục vụ streaming file nhị phân và tọa độ bbox.
+* [x] **Bước 3.2:** Tích hợp `react-pdf` trong `frontend/src/components/studio/Zone3_Verifier/SplitPDFViewer.tsx` với điều khiển trang và phóng to/thu nhỏ.
+* [x] **Bước 3.3:** Xây dựng lớp phủ `BoundingBoxHighlighter.tsx` render khung chữ nhật phát sáng đè lên tọa độ $(x_0, y_0, x_1, y_1)$ của trang PDF tương ứng.
+* [x] **Bước 3.4:** Kết nối tương tác qua Zustand Store (`studioStore.ts`): khi user click thẻ trích dẫn `\cite{key}` $\rightarrow$ State cập nhật `activeCitation` $\rightarrow$ Zone 3 tự cuộn trang và vẽ khung vàng trong $< 1.2$s. Kèm thanh kéo chia tỉ lệ panel mượt mà.
 
 ---
 
