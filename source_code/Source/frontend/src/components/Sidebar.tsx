@@ -216,6 +216,44 @@ export default function Sidebar({
       {/* ─── Scrollable nav body ─── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
 
+        {/* Academic Studio IDE Link */}
+        <Link
+          href="/studio"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            width: '100%',
+            padding: '8px 12px',
+            marginBottom: '8px',
+            background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(79, 70, 229, 0.2))',
+            color: '#c084fc',
+            border: '1px solid rgba(168, 85, 247, 0.35)',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-label)',
+            fontSize: '13px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z M6 12v5c3 3 9 3 12 0v-5" />
+          </svg>
+          Academic Studio IDE
+          <span style={{
+            marginLeft: 'auto',
+            fontSize: '9.5px',
+            textTransform: 'uppercase',
+            padding: '2px 6px',
+            borderRadius: '4px',
+            background: 'rgba(168, 85, 247, 0.25)',
+            border: '1px solid rgba(168, 85, 247, 0.4)',
+            color: '#e9d5ff',
+          }}>
+            v2.0
+          </span>
+        </Link>
+
         {/* New Chat button */}
         <button
           id="new-chat-btn"
