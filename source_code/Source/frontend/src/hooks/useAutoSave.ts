@@ -32,10 +32,11 @@ export function useAutoSave(
         updateSectionContent(sectionId, content);
         setSaving(false);
         setLastSaved(new Date().toLocaleTimeString());
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Auto-save failed:', err);
         setSaving(false);
-        setSaveError(err.message || 'Auto-save failed');
+        const errorMessage = err instanceof Error ? err.message : 'Auto-save failed';
+        setSaveError(errorMessage);
       }
     }, delay);
 
@@ -57,12 +58,14 @@ export function useAutoSave(
       updateSectionContent(sectionId, content);
       setSaving(false);
       setLastSaved(new Date().toLocaleTimeString());
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Manual save failed:', err);
       setSaving(false);
-      setSaveError(err.message || 'Save failed');
+      const errorMessage = err instanceof Error ? err.message : 'Save failed';
+      setSaveError(errorMessage);
     }
   };
 
   return { saveNow };
 }
+
