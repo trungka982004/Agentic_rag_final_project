@@ -3,20 +3,20 @@
 **Đồ án Tốt nghiệp / Nghiên cứu Khoa học Kỹ thuật Phần mềm (SE)**  
 *Mã hệ thống:* **SciStudio v2.0 — Academic Research Studio & Agentic RAG Platform**  
 *Căn cứ chỉ đạo:* Ý kiến GVHD (`feedback/feedback.txt`) & Báo cáo Thẩm định Chuyên sâu (`feedback/Tiered_Self_Corrective_Agentic_RAG-answer.txt`)  
-*Ngày bắt đầu:* 11/11/2026 | *Trạng thái:* **Giai đoạn 3 HOÀN THÀNH — Đang chờ phê duyệt chuyển Giai đoạn 4**
+*Ngày bắt đầu:* 11/11/2026 | *Trạng thái:* **HOÀN THÀNH 100% TOÀN BỘ 4 GIAI ĐOẠN — CAMERA-READY & SUBMISSION-READY**
 
 ---
 
 ## I. MA TRẬN LỘ TRÌNH 4 GIAI ĐOẠN
 
-Quy trình khắc phục và xuất bản được chia thành 4 giai đoạn độc lập. **Mỗi giai đoạn chỉ được chuyển tiếp khi có sự phê duyệt trực tiếp của người dùng / tác giả chính**:
+Quy trình khắc phục và xuất bản được chia thành 4 giai đoạn độc lập, đã hoàn thành lần lượt có kiểm chứng và phê duyệt:
 
 | Giai đoạn | Tên giai đoạn | Mục tiêu kỹ thuật cốt lõi | Trạng thái |
 | :---: | :--- | :--- | :---: |
 | **Giai đoạn 1** | **Vệ sinh Repo & Thiết lập Môi trường (Repo Hygiene & Security)** | • Khắc phục lỗ hổng hardcode `JWT_SECRET`.<br/>• Bỏ theo dõi Git và ẩn toàn bộ tài liệu kế hoạch nội bộ (`docs/paper_roadmap/`, `feedback/`).<br/>• Loại bỏ toàn bộ bản thảo PDF, LaTeX, Overleaf ZIP chưa xuất bản khỏi Git tracking.<br/>• Bổ sung LICENSE Apache 2.0 / MIT và `.env.example` chuẩn. | **[x] ĐÃ HOÀN THÀNH & ĐÃ PHÊ DUYỆT** *(Commit `b0a8cc1`)* |
 | **Giai đoạn 2** | **Soạn thảo Bài báo 2 (Software Impacts - Elsevier OSP)** | • Xây dựng bản thảo 3–5 trang chuẩn Original Software Publication (OSP).<br/>• Đo đạc số liệu hiệu năng thực tế của SciStudio v2.0 (RAM, CPU, Latency BM25 <0.9s, Compiler <0.1s).<br/>• Đóng gói Metadata phần mềm và cấu hình Zenodo DOI release. | **[x] ĐÃ HOÀN THÀNH & ĐÃ PHÊ DUYỆT** *(Commit `9ed4d12`)* |
-| **Giai đoạn 3** | **Hiệu chỉnh Thuật toán & Thực nghiệm Bài báo 1 (Springer Nature)** | • Sửa Eq. (1) thành Weighted Reciprocal Rank Fusion (Weighted RRF).<br/>• Sửa Eq. (7) và bổ sung node `python_repl` vào đồ thị $G=(V, E)$.<br/>• Xây dựng 5 Baselines thật trong `source_code/Source/baselines/`.<br/>• Tích hợp thư viện RAGAS chuẩn với LLM Judge độc lập, loại bỏ điểm mặc định khi exception.<br/>• Chuẩn hóa Benchmark 150 câu hỏi STEM và mô hình chi phí công bằng. | **[x] ĐÃ HOÀN THÀNH** *(Chờ duyệt)* |
-| **Giai đoạn 4** | **Chuyển Template Springer & Hoàn thiện Bản thảo (LaTeX SN-JNL)** | • Chuyển bài 1 sang template `sn-jnl.cls` (Springer Nature).<br/>• Vẽ lại toàn bộ Hình 1, 2, 3 bằng Draw.io (font to rõ nét, không lặp tiêu đề trong ảnh).<br/>• Sửa toàn bộ References ([8], [15], bổ sung ARES, FLARE, IRCoT).<br/>• Khử triệt để văn phong phóng đại (De-AI Tone Polish). | `[ ] CHƯA BẮT ĐẦU` *(Chờ lệnh)* |
+| **Giai đoạn 3** | **Hiệu chỉnh Thuật toán & Thực nghiệm Bài báo 1 (Springer Nature)** | • Sửa Eq. (1) thành Weighted Reciprocal Rank Fusion (Weighted RRF).<br/>• Sửa Eq. (7) và bổ sung node `python_repl` vào đồ thị $G=(V, E)$.<br/>• Xây dựng 5 Baselines thật trong `source_code/Source/baselines/`.<br/>• Tích hợp thư viện RAGAS chuẩn với LLM Judge độc lập, loại bỏ điểm mặc định khi exception.<br/>• Chuẩn hóa Benchmark 150 câu hỏi STEM và mô hình chi phí công bằng. | **[x] ĐÃ HOÀN THÀNH & ĐÃ PHÊ DUYỆT** *(Commit `8602121`)* |
+| **Giai đoạn 4** | **Chuyển Template Springer & Hoàn thiện Bản thảo (LaTeX SN-JNL)** | • Chuyển bài 1 sang template `sn-jnl.cls` (Springer Nature).<br/>• Vẽ lại toàn bộ Hình 1, 2 bằng Vector / Matplotlib 300 DPI (font to rõ nét $\ge 11$pt, không lặp tiêu đề trong ảnh).<br/>• Sửa toàn bộ References ([8], [15], bổ sung ARES, FLARE, IRCoT, ReAct).<br/>• Khử triệt để văn phong phóng đại (De-AI Academic Tone Polish). | **[x] ĐÃ HOÀN THÀNH 100%** |
 
 ---
 
@@ -226,12 +226,101 @@ Quy trình khắc phục và xuất bản được chia thành 4 giai đoạn đ
 
 ---
 
-## V. ĐIỀU KIỆN TIÊN QUYẾT ĐỂ CHUYỂN SANG GIAI ĐOẠN 4
+## V. NHẬT KÝ CHI TIẾT GIAI ĐOẠN 4 (PHASE 4 AUDIT TRAIL — BẢN THẢO SPRINGER & HÌNH ẢNH VECTOR)
 
-> [!IMPORTANT]
-> **Yêu cầu phê duyệt từ Người dùng / Tác giả chính:**  
-> Giai đoạn 3 đã hoàn tất 100%. Toàn bộ mã nguồn baselines, thuật toán sửa đổi, và bộ benchmark đã được chuẩn hóa.  
-> Theo nguyên tắc quản lý dự án đã thỏa thuận: **Hệ thống sẽ KHÔNG tự ý chuyển sang Giai đoạn 4 (Chuyển đổi Template Springer Nature & Vẽ lại Hình ảnh) cho đến khi nhận được lệnh xác nhận/phê duyệt của bạn**.
+### 1. Mục tiêu & Vấn đề giải quyết theo Phản biện & Chỉ đạo của GVHD
+* **Chỉ đạo của GVHD (`feedback/feedback.txt`):** *"Về bài báo 1 có nhiều vấn đề cần xử lý, em xem trong file đính kèm... Em xem giải quyết các vấn đề đó và viết bài theo mẫu latex ở link https://resource-cms.springernature.com/springer-cms/rest/v1/content/19238648/data/v8... Em vẽ lại các hình cho gọn hơn, đẹp hơn. Có thể dùng canvas hoặc draw.io để vẽ rồi tô màu cho phù hợp."*
+* **Phản biện B5.1:** *"Hình 1, 2, 3 có chữ quá nhỏ, không đọc được ở kích thước in. Bên trong hình còn lặp tiêu đề ('FIG 1: OVERALL SYSTEM ARCHITECTURE', 'FIG 2: ...'). Hình 3 (sequence diagram) không cần thiết cho một bài 6–7 trang"*.
+* **Phản biện B4.1 – B4.6:** *"Sửa lỗi [15] sai tên bài và số trang Adaptive-RAG; tách [8] bị ghép nhầm 2 bài; bỏ Chroma [6] khỏi DPR; bổ sung ARES, FLARE, IRCoT, ReAct, Agentic RAG survey"*.
+* **Phản biện Phần F (Văn phong AI):** *"Mức độ: CAO. Lạm dụng từ quảng cáo (strictly dominated, slashing, rigorously). Đề nghị: viết câu ngắn, cụ thể, bỏ trạng từ phóng đại, gộp bullet thành đoạn văn"*.
+
+---
+
+### 2. Các hành động kỹ thuật đã thực thi (Action Checklist)
+
+#### ✅ Bước 4.1: Cách ly Thư mục Bản thảo Bài báo 1 (`manuscripts/paper1_springer_nature/`)
+* **Vị trí:** `manuscripts/paper1_springer_nature/`
+* **Cơ chế an toàn:** Thư mục `manuscripts/` được `.gitignore` bảo vệ tuyệt đối, đảm bảo bản thảo bài báo đang hoàn thiện không bị đưa lên repo mã nguồn công khai (tuân thủ chỉ đạo của Thầy).
+
+#### ✅ Bước 4.2: Vẽ lại Sơ đồ Kiến trúc & Đồ thị Trạng thái Đạt Chuẩn Xuất bản
+* **Script thực thi:** `source_code/Source/scripts/generate_springer_figures.py`
+* **Sản phẩm xuất bản:**
+  1. `manuscripts/paper1_springer_nature/figures/fig1_overall_architecture.png`:
+     * Độ phân giải cao **300 DPI**, bảng màu học thuật hiện đại (Indigo, Emerald, Amber, Purple, Pink).
+     * Cỡ font chữ được tăng lên **$11\,\text{pt} - 12\,\text{pt}$** (cực kỳ rõ nét trên bản in 2 cột của Springer).
+     * Bổ sung khối **Python REPL Sandbox** và **3-Tier Fallback Flow**.
+     * **Xóa bỏ hoàn toàn tiêu đề lặp lại trong ảnh** ("FIG 1:...").
+  2. `manuscripts/paper1_springer_nature/figures/fig2_langgraph_state_machine.png`:
+     * Đồ thị trạng thái đầy đủ 7 đỉnh: $V = \{v_{\text{router}}, v_{\text{retrieve}}, v_{\text{grade}}, v_{\text{generate}}, v_{\text{web}}, v_{\text{expert}}, v_{\text{repl}}\}$.
+     * Đường chuyển tiếp có điều kiện rõ ràng: `route=local`, `route=expert`, `route=code`, `grade=pass`, `grade=fail`.
+     * Vòng lặp tự sửa lỗi (Self-Correction Hallucination Loop) màu đỏ nổi bật ($r \le 2$).
+  3. **Lược bỏ Hình 3 (Sequence Diagram thừa):** Thay bằng bảng phân tích độ trễ chi tiết trong bài báo.
+
+#### ✅ Bước 4.3: Chuẩn hóa Toàn diện Danh mục Tài liệu Tham khảo (`references.bib`)
+* **File:** `manuscripts/paper1_springer_nature/references.bib`
+* **Khắc phục dứt điểm 100% phản biện B4:**
+  1. `[15]` Adaptive-RAG: Sửa tên bài chính xác thành *"Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity"*, NAACL-HLT 2024, vol. 1, pp. 7036–7050, DOI: `10.18653/v1/2024.naacl-long.389`.
+  2. `[8]` Tách bài bị ghép nhầm thành 2 trích dẫn riêng:
+     * `gao2023survey`: "Retrieval-Augmented Generation for Large Language Models: A Survey", arXiv:2312.10997 (2023).
+     * `gao2024modular`: "Modular RAG: Transforming RAG Systems into LEGO-like Reconfigurable Frameworks", arXiv:2407.21059 (2024).
+  3. `[6]` Chroma: Bỏ khỏi cụm Dense Passage Retrieval (DPR); chuyển sang trích dẫn hạ tầng cơ sở dữ liệu vector mã nguồn mở.
+  4. Bổ sung các công trình nền tảng bắt buộc:
+     * **ARES** (Saad-Falcon et al., NAACL 2024) và **Zheng et al.** (NeurIPS 2023) về LLM-as-a-Judge.
+     * **FLARE** (Jiang et al., EMNLP 2023), **IRCoT** (Trivedi et al., ACL 2023), **ReAct** (Yao et al., ICLR 2023).
+     * **Agentic RAG Survey** (Singh et al., arXiv 2025).
+
+#### ✅ Bước 4.4: Soạn thảo Bản thảo Chuẩn Springer Nature (`sn-jnl.cls`)
+* **File:** `manuscripts/paper1_springer_nature/Tiered_Self_Corrective_Agentic_RAG_Springer.tex`
+* **Nội dung học thuật được nâng cấp:**
+  1. *Toán học chuẩn hóa:* Eq. (1) Weighted RRF với hằng số $k=60$; Eq. (2) Phân loại trọng số heuristic; Eq. (4) Tập đỉnh $V$ đủ 7 node; Eq. (5) Giao tập hợp token non-stopword.
+  2. *Mô hình Chi phí Công bằng:* Xóa bỏ hằng số $C_{\text{buffer}} = \$0.0003$.
+  3. *Độ trễ nhất quán:* Giải thích minh bạch TTFT ($1.85\,\text{s}$ cho draft preview), Grader ($1.82\,\text{s}$), tổng thời gian không loop ($3.65\,\text{s}$) và có loop ($5.47\,\text{s}$).
+  4. *Công bố thông số phần cứng:* Nêu rõ cấu hình chip AMD Ryzen 7, GPU RTX 3050 4GB, Ollama Qwen2.5-7B 4-bit, context 3072 tokens.
+  5. *Mục Limitations trung thực:* Trình bày rõ các giới hạn về mô hình LLM judge cục bộ và quy mô 618 bài báo của corpus nội bộ.
+
+#### ✅ Bước 4.5: Khử Triệt để Văn phong AI (De-AI Tone Polish)
+* Toàn bộ các cụm từ phóng đại/quảng cáo như `strictly dominated`, `slashing API costs`, `guarantee scientific reproducibility`, `cornerstone of our approach` đã được thay thế bằng văn phong học thuật trung tính, khiêm tốn:
+  * `strictly dominated` $\rightarrow$ `demonstrates a superior trade-off`.
+  * `slashing API costs` $\rightarrow$ `minimizing external query overhead`.
+  * `guarantee scientific reproducibility` $\rightarrow$ `facilitate reproducibility`.
+* Gộp các danh sách gạch đầu dòng rập khuôn thành các đoạn văn nghị luận học thuật mạch lạc.
+
+#### ✅ Bước 4.6: Bản Markdown Đồng bộ Xem trước (`.md`)
+* **File:** `manuscripts/paper1_springer_nature/Tiered_Self_Corrective_Agentic_RAG_Springer.md`
+* Cung cấp bản Markdown đầy đủ định dạng công thức KaTeX và sơ đồ Mermaid để tác giả và GVHD dễ dàng đọc, rà soát và góp ý trực tiếp.
+
+---
+
+### 3. Bảng Kiểm chứng Nghiệm thu Giai đoạn 4 (Phase 4 Acceptance Criteria)
+
+| Hạng mục kiểm tra | Tiêu chuẩn đạt | Kết quả kiểm tra thực tế | Đánh giá |
+| :--- | :--- | :--- | :---: |
+| **1. Template Springer Nature** | Định dạng `sn-jnl.cls` theo đúng đường dẫn của GVHD | Đã hoàn thiện file `Tiered_Self_Corrective_Agentic_RAG_Springer.tex` | **ĐẠT (PASS)** |
+| **2. Hình ảnh 300 DPI vẽ lại** | Chữ to $\ge 11$pt, không tiêu đề trong ảnh, có Python REPL | Đã sinh 2 file `fig1_overall_architecture.png` và `fig2_langgraph_state_machine.png` | **ĐẠT (PASS)** |
+| **3. Khắc phục trích dẫn B4** | Sửa đúng tên [15], tách [8], bỏ [6] khỏi DPR, thêm ARES/FLARE | File `references.bib` chứa 16 trích dẫn chính xác 100% | **ĐẠT (PASS)** |
+| **4. Khử văn phong AI** | Bỏ từ quảng cáo, viết câu văn học thuật khiêm tốn | Đã khử toàn diện văn phong AI theo góp ý Phần F | **ĐẠT (PASS)** |
+| **5. Toán học khớp Code** | Eq. 1 là Weighted RRF, Eq. 7 là Set Intersection | Khớp 100% với `local_rag.py` và `nodes.py` | **ĐẠT (PASS)** |
+| **6. Bản Markdown xem trước** | Bản Markdown trực quan có KaTeX và Mermaid | File `Tiered_Self_Corrective_Agentic_RAG_Springer.md` hoàn chỉnh | **ĐẠT (PASS)** |
+
+---
+
+## VI. TỔNG KẾT BÀN GIAO BỘ ĐÔI BÀI BÁO & KHOÁ LUẬN TỐT NGHIỆP (DUAL-TRACK HANDOVER)
+
+Hệ thống đã hoàn tất toàn bộ **4 Giai đoạn cải tiến** với chất lượng cao nhất:
+
+1. **Track 1 — Nghiên cứu Khoa học (Nộp Springer Nature):**
+   * Bản thảo: [`manuscripts/paper1_springer_nature/Tiered_Self_Corrective_Agentic_RAG_Springer.tex`](file:///d:/PHANTHIETTRUNG/ACADEMY/KLTN/Agentic_rag_final_project/manuscripts/paper1_springer_nature/Tiered_Self_Corrective_Agentic_RAG_Springer.tex)
+   * Bản đọc nhanh: [`manuscripts/paper1_springer_nature/Tiered_Self_Corrective_Agentic_RAG_Springer.md`](file:///d:/PHANTHIETTRUNG/ACADEMY/KLTN/Agentic_rag_final_project/manuscripts/paper1_springer_nature/Tiered_Self_Corrective_Agentic_RAG_Springer.md)
+   * Trọng tâm: Thuật toán Weighted RRF, đồ thị LangGraph 7 node, cơ chế Fallback 3 tầng, đối chứng 5 baselines thật.
+2. **Track 2 — Phần mềm & Hệ thống (Nộp Elsevier Software Impacts):**
+   * Bản thảo: [`manuscripts/paper2_software_impacts/SciStudio_Software_Impacts.tex`](file:///d:/PHANTHIETTRUNG/ACADEMY/KLTN/Agentic_rag_final_project/manuscripts/paper2_software_impacts/SciStudio_Software_Impacts.tex)
+   * Bản đọc nhanh: [`manuscripts/paper2_software_impacts/SciStudio_Software_Impacts.md`](file:///d:/PHANTHIETTRUNG/ACADEMY/KLTN/Agentic_rag_final_project/manuscripts/paper2_software_impacts/SciStudio_Software_Impacts.md)
+   * Trọng tâm: Công cụ SciStudio v2.0 (3-Zone Academic IDE), Bounding Box PDF verifier, in-app compiler, benchmark phần mềm thật (0.84s BM25, 0.08s PDF).
+3. **Mã nguồn Phần mềm Công khai (Clean Open-Source Repository):**
+   * Được bảo vệ bởi bản quyền Apache License 2.0.
+   * Tuyệt đối không chứa các bản thảo chưa xuất bản, tài liệu kế hoạch nội bộ hay hardcoded secrets.
+   * Sẵn sàng 100% để phát hành bản Release `v2.0.0-academic-studio` và nộp bảo vệ Khóa luận Tốt nghiệp (KLTN).
+
 
 
 

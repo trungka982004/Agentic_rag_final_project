@@ -99,3 +99,4 @@ def run_crag(question: str, domain: str = None, k: int = 5) -> Dict[str, Any]:
 if __name__ == "__main__":
     res = run_crag("What is transformer model?", domain="it")
     print(f"Verdict: {res['crag_verdict']} | Web: {res['web_triggered']} | Latency: {res['latency']:.2f}s")
+

@@ -84,3 +84,4 @@ def run_adaptive_rag(question: str, domain: str = None, k: int = 5) -> Dict[str,
 if __name__ == "__main__":
     res = run_adaptive_rag("Compare Transformer and RNN architectures", domain="it")
     print(f"Complexity: {res['complexity']} | Contexts: {len(res['contexts'])} | Latency: {res['latency']:.2f}s")
+

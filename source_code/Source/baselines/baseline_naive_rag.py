@@ -51,3 +51,4 @@ if __name__ == "__main__":
     res = run_naive_rag("What is attention mechanism in transformer models?", domain="it")
     print(f"Latency: {res['latency']:.2f}s | Contexts: {len(res['contexts'])}")
     print(f"Answer:\n{res['answer'][:200]}...")
+

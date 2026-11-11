@@ -111,3 +111,4 @@ def run_self_rag(question: str, domain: str = None, k: int = 5, max_reflection_l
 if __name__ == "__main__":
     res = run_self_rag("Explain residual connections in ResNet", domain="it")
     print(f"Loops: {res['reflection_loops']} | Supported: {res['is_supported']} | Latency: {res['latency']:.2f}s")
+
