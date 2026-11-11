@@ -25,3 +25,4 @@ pyjwt
 python-multipart
 email-validator
 pymupdf
+matplotlib
