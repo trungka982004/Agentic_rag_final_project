@@ -321,6 +321,31 @@ Hệ thống đã hoàn tất toàn bộ **4 Giai đoạn cải tiến** với c
    * Tuyệt đối không chứa các bản thảo chưa xuất bản, tài liệu kế hoạch nội bộ hay hardcoded secrets.
    * Sẵn sàng 100% để phát hành bản Release `v2.0.0-academic-studio` và nộp bảo vệ Khóa luận Tốt nghiệp (KLTN).
 
+---
+
+## VII. CẬP NHẬT: THIẾT KẾ LẠI TOÀN BỘ SƠ ĐỒ VỚI PLUGIN DRAW.IO (DRAW.IO INTEGRATION)
+
+Thực hiện chính xác góp ý của Thầy ("Em vẽ lại các hình cho gọn hơn, đẹp hơn. Có thể dùng canvas hoặc draw.io để vẽ rồi tô màu cho phù hợp"), toàn bộ sơ đồ trong các bài báo đã được thiết kế lại thành các file native `.drawio` và đồng bộ đa định dạng:
+
+1. **Cài đặt Plugin Draw.io Antigravity:**
+   * Repository: `https://github.com/jgraph/drawio-mcp/tree/main/plugins/antigravity`
+   * Vị trí cài đặt: `C:\Users\thiet\.gemini\config\plugins\drawio`
+2. **Danh mục 3 Sơ đồ Khoa học Chuẩn Xuất bản:**
+   * **Hình 1: Sơ đồ Kiến trúc Tổng thể (Overall System Architecture):**
+     * Native file: `fig1_overall_architecture.drawio` (nhúng cấu trúc XML đầy đủ).
+     * Xuất bản: `fig1_overall_architecture.png` (300 DPI) & `fig1_overall_architecture.pdf` (Vector).
+     * Nội dung: 3 Knowledge Tiers (Tier 1 Local Hybrid RRF, Tier 2 Web Fallback, Tier 3 Tavily Expert), Python REPL Sandbox, Relevance Grader, LLM Generator với Self-Correction loop ($r \le 2$).
+   * **Hình 2: Sơ đồ Đồ thị Trạng thái LangGraph (LangGraph State Machine Graph $G = (V, E, S)$):**
+     * Native file: `fig2_langgraph_state_machine.drawio`.
+     * Xuất bản: `fig2_langgraph_state_machine.png` (300 DPI) & `fig2_langgraph_state_machine.pdf` (Vector).
+     * Khắc phục triệt để góp ý: Hiển thị đầy đủ tập đỉnh $V = \{v_{\text{router}}, v_{\text{retrieve}}, v_{\text{grade}}, v_{\text{web}}, v_{\text{expert}}, v_{\text{repl}}, v_{\text{generate}}\}$, vòng lặp tự sửa lỗi khi phát hiện hallucination ($r < 2$).
+   * **Hình 3: Kiến trúc Phần mềm Đa tầng SciStudio (SciStudio Multi-Tier Architecture):**
+     * Native file: `fig3_scistudio_software_architecture.drawio`.
+     * Xuất bản: `fig3_scistudio_software_architecture.png` (300 DPI) & `fig3_scistudio_software_architecture.pdf` (Vector).
+     * Nội dung: Phân tách 4 tầng rõ ràng (Presentation Layer Vue 3/Vite, API Gateway FastAPI, LangGraph Engine, Storage ChromaDB + BM25 Pickle Cache + SQLite DB).
+3. **Báo cáo Đường dẫn Tương tác Trực tuyến:**
+   * Tài liệu [DRAWIO_DIAGRAMS_LINKS.md](file:///d:/PHANTHIETTRUNG/ACADEMY/KLTN/Agentic_rag_final_project/manuscripts/DRAWIO_DIAGRAMS_LINKS.md) lưu trữ toàn bộ link mở trực tiếp trên trình duyệt `app.diagrams.net` chỉ với 1 click, giúp tác giả và GVHD dễ dàng chỉnh sửa tương tác mà không cần cài đặt phần mềm ngoài.
+
 
 
 
