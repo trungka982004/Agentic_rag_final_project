@@ -89,6 +89,7 @@ temp_assets/
 # Unpublished scientific manuscripts & Overleaf packages (Must NOT be on public source repo)
 overleaf_packages/
 science_paper_assets/
+manuscripts/
 *.tex
 *.bib
 
