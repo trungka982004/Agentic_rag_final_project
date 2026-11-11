@@ -4,16 +4,29 @@ from typing import Optional
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-import jwt as pyjwt
+try:
+    import jwt as pyjwt
+except ImportError:
+    from jose import jwt as pyjwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models import User
 
+from pathlib import Path
+
 # Load environment variables
+_source_env = Path(__file__).resolve().parent.parent / ".env"
+if _source_env.exists():
+    load_dotenv(dotenv_path=_source_env)
 load_dotenv()
 
-SECRET_KEY = os.getenv("JWT_SECRET", "supersecretagenticragkey1234567890!")
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "CRITICAL SECURITY CONFIGURATION: 'JWT_SECRET' environment variable is missing. "
+        "Please specify a secure JWT_SECRET in your .env configuration file."
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 

@@ -385,3 +385,4 @@ Bộ tài liệu FRS này chứng minh:
 1. **Tính kế thừa 100%:** Phiên bản 2.0 không loại bỏ hay làm gián đoạn bất kỳ chức năng cốt lõi nào của Version 1.0 (toàn bộ các API auth, tài liệu 8 miền, chatbot, web fallback và streaming đều hoạt động song song).
 2. **Tính đột phá công nghệ:** Mở rộng thành công sang mô hình Academic Studio IDE độc lập, mang lại giá trị thực tiễn cao cho cộng đồng nghiên cứu khoa học.
 3. **Tính kiểm chứng đầy đủ:** Tất cả các chức năng từ V1.0 đến V2.0 đều được bảo vệ bởi bộ kiểm thử tự động `run_master_suite.py` đạt tỷ lệ thành công 100%.
+

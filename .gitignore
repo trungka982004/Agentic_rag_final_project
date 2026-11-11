@@ -86,3 +86,14 @@ ragas_evaluation.csv
 scratch/
 temp_assets/
 
+# Unpublished scientific manuscripts & Overleaf packages (Must NOT be on public source repo)
+overleaf_packages/
+science_paper_assets/
+*.tex
+*.bib
+
+# Internal Advisor Roadmaps & Confidential Reviews (Never commit to public repo)
+docs/paper_roadmap/
+feedback/
+
+
