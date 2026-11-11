@@ -40,6 +40,13 @@ def parse_json_from_llm(raw_output: str) -> dict:
     return json.loads(cleaned)
 
 def compute_ragas_metrics(question, contexts, answer, ground_truth):
+    """Computes multi-dimensional RAG evaluation metrics using a multi-step audit.
+    
+    Adheres strictly to peer-review standards:
+    1. Deterministic Token-Overlap for Context Recall & Precision.
+    2. Zero default inflated scores upon exception (no 0.85/0.90 falsification).
+    3. Claim-level factuality assessment for Faithfulness.
+    """
     if not contexts or "No database found" in "".join(contexts) or "No relevant information" in "".join(contexts) or "Error occurred" in "".join(contexts):
         return {
             "context_precision": 0.0,
@@ -48,45 +55,69 @@ def compute_ragas_metrics(question, contexts, answer, ground_truth):
             "answer_relevance": 0.0
         }
     
-    contexts_text = "\n".join(contexts)[:2000] # truncate context to avoid token limits
+    contexts_text = "\n".join(contexts)
+    context_tokens = set(re.findall(r"\b[a-zA-Z0-9_\-]{3,}\b", contexts_text.lower()))
+    
+    # 1. Deterministic Context Recall (Ground Truth coverage by retrieved context)
+    gt_tokens = set(re.findall(r"\b[a-zA-Z0-9_\-]{3,}\b", ground_truth.lower())) if ground_truth else set()
+    if gt_tokens:
+        cr_hits = len(gt_tokens.intersection(context_tokens))
+        det_context_recall = round(min(1.0, cr_hits / len(gt_tokens)), 2)
+    else:
+        det_context_recall = 0.50
+
+    # 2. Deterministic Context Precision (Question salient token density in retrieved context)
+    q_tokens = set(re.findall(r"\b[a-zA-Z0-9_\-]{3,}\b", question.lower()))
+    if q_tokens:
+        cp_hits = len(q_tokens.intersection(context_tokens))
+        det_context_precision = round(min(1.0, cp_hits / len(q_tokens)), 2)
+    else:
+        det_context_precision = 0.50
+
+    # 3. LLM-as-a-Judge for Faithfulness & Answer Relevance
+    contexts_truncated = contexts_text[:2500]
     prompt = f"""
-    You are an AI system evaluator. Rate the RAG performance of the generated response based on the following information:
+    You are an objective scientific AI auditor evaluating a RAG-generated response.
     
     [Question]: {question}
-    [Contexts]: {contexts_text}
-    [Answer]: {answer}
-    [Ground Truth]: {ground_truth}
+    [Retrieved Context]: {contexts_truncated}
+    [Generated Answer]: {answer}
     
-    Grade the following four metrics on a scale from 0.0 to 1.0. Follow these precise mathematical definitions:
-    1. context_precision: How relevant are the retrieved contexts to the question? (1.0 = all retrieved context is highly relevant, 0.0 = completely irrelevant).
-    2. context_recall: Does the retrieved context contain the information in the ground truth? (1.0 = context fully covers the ground truth, 0.0 = context has no overlap with ground truth).
-    3. faithfulness: Is the answer completely supported by the context without hallucination? (1.0 = all claims in answer are supported by context, 0.0 = answer has no support in context).
-    4. answer_relevance: How relevant is the answer to the question? (1.0 = answer directly and completely answers the question, 0.0 = answer is off-topic or generic).
-    
-    Return ONLY a valid JSON object with the following keys and float values, nothing else. Do not include any explanation or markdown formatting:
+    Evaluate the following two properties rigorously:
+    1. faithfulness: What fraction of factual claims in the answer can be directly verified from the retrieved context?
+       (1.0 = completely faithful with 0% hallucination, 0.0 = entire answer is fabricated or unsupported).
+    2. answer_relevance: Does the generated answer directly, clearly and comprehensively address the question asked?
+       (1.0 = directly addresses all parts of the question, 0.0 = completely off-topic, evasive, or refusing to answer).
+       
+    Output ONLY a valid JSON object with exact keys "faithfulness" and "answer_relevance" as float values between 0.0 and 1.0.
+    Do not output markdown code blocks, do not explain.
     {{
-      "context_precision": 1.0,
-      "context_recall": 1.0,
-      "faithfulness": 1.0,
-      "answer_relevance": 1.0
+      "faithfulness": 0.0,
+      "answer_relevance": 0.0
     }}
     """
     try:
         response = llm.invoke(prompt)
         raw_output = response.content.strip()
         metrics = parse_json_from_llm(raw_output)
-        validated = {}
-        for key in ["context_precision", "context_recall", "faithfulness", "answer_relevance"]:
-            val = float(metrics.get(key, 0.8))
-            validated[key] = round(max(0.0, min(1.0, val)), 2)
-        return validated
-    except Exception as e:
-        # Avoid print race by running outside lock or just let it print
+        
+        faith = round(max(0.0, min(1.0, float(metrics.get("faithfulness", 0.0)))), 2)
+        rel = round(max(0.0, min(1.0, float(metrics.get("answer_relevance", 0.0)))), 2)
+        
         return {
-            "context_precision": 0.85,
-            "context_recall": 0.80,
-            "faithfulness": 0.90,
-            "answer_relevance": 0.90
+            "context_precision": det_context_precision,
+            "context_recall": det_context_recall,
+            "faithfulness": faith,
+            "answer_relevance": rel
+        }
+    except Exception as e:
+        # Strictly return honest zero scores on parsing error (NO false 0.85/0.90 defaults)
+        print(f"[Warning] Evaluator parsing failed for query: {e}")
+        return {
+            "context_precision": det_context_precision,
+            "context_recall": det_context_recall,
+            "faithfulness": 0.0,
+            "answer_relevance": 0.0
         }
 
 def save_csv(results, csv_filepath):

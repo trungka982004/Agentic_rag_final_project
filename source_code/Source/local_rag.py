@@ -24,6 +24,18 @@ except (ImportError, ModuleNotFoundError):
     except (ImportError, ModuleNotFoundError):
         EnsembleRetriever = None
 
+def compute_weighted_rrf(doc_lists: List[List[Any]], weights: List[float], k: int = 60) -> List[Any]:
+    """Computes exact Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)."""
+    scores: Dict[str, float] = {}
+    doc_map: Dict[str, Any] = {}
+    for docs, weight in zip(doc_lists, weights):
+        for rank, doc in enumerate(docs):
+            key = doc.page_content.strip()[:150]
+            doc_map[key] = doc
+            scores[key] = scores.get(key, 0.0) + weight / (k + rank + 1)
+    sorted_keys = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+    return [doc_map[key] for key in sorted_keys]
+
 class Config:
     """System-wide configuration parameters."""
     BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
@@ -390,7 +402,7 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
     bm25_retriever = get_bm25_retriever(db, domain=domain, k=k, target_file=target_file)
 
     try:
-        if bm25_retriever and EnsembleRetriever:
+        if bm25_retriever:
             semantic_indicators = ["giải thích", "tại sao", "như thế nào", "ý nghĩa", "khái niệm", "what is", "why", "how", "explain", "describe", "mô tả"]
             is_semantic = any(ind in query_lower for ind in semantic_indicators)
 
@@ -401,11 +413,16 @@ def retrieve_context(query: str, domain: str, k: int = 5, target_file: Optional[
                 logger.info("Keyword-precise query detected. Using sparse-heavy weights [0.6 BM25, 0.4 Vector].")
                 weights = [0.6, 0.4]
 
-            ensemble_retriever = EnsembleRetriever(
-                retrievers=[bm25_retriever, vector_retriever],
-                weights=weights
-            )
-            filtered_docs = ensemble_retriever.invoke(query)
+            if EnsembleRetriever:
+                ensemble_retriever = EnsembleRetriever(
+                    retrievers=[bm25_retriever, vector_retriever],
+                    weights=weights
+                )
+                filtered_docs = ensemble_retriever.invoke(query)
+            else:
+                b_docs = bm25_retriever.invoke(query)
+                v_docs = vector_retriever.invoke(query)
+                filtered_docs = compute_weighted_rrf([b_docs, v_docs], weights=weights, k=60)
         else:
             filtered_docs = vector_retriever.invoke(query)
     except Exception as e:

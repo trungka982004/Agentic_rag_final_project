@@ -201,18 +201,34 @@ def grade_documents_node(state: GraphState) -> Dict[str, Any]:
         logger.info(f"Explicit target PDF specified ('{selected_doc}'). Skipping relevance grader.")
         return {"web_fallback": False}
 
-    # Fast keyword overlap check to prevent latency spikes
+    # Fast token set intersection with stopword filtering (Mathematical Eq. 7 alignment)
+    STOPWORDS = {
+        "what", "which", "where", "when", "why", "how", "this", "that", "these", "those",
+        "with", "from", "have", "has", "had", "been", "were", "will", "would", "should",
+        "could", "about", "above", "after", "again", "also", "into", "just", "more", "most",
+        "other", "some", "such", "than", "then", "their", "there", "them", "they", "does",
+        "described", "paper", "article", "study", "analysis", "system", "method", "using",
+        "nhung", "cac", "cua", "trong", "tren", "duoc", "bang", "cho", "voi", "nay", "kia"
+    }
     context_text = documents[0].lower()
-    question_tokens = [t for t in re.split(r"\W+", question.lower()) if len(t) > 2]
+    question_tokens = set(
+        t for t in re.findall(r"\b[a-zA-Z0-9_\-]{3,}\b", question.lower())
+        if t not in STOPWORDS
+    )
+    context_tokens = set(re.findall(r"\b[a-zA-Z0-9_\-]{3,}\b", context_text))
+
     if question_tokens:
-        hits = sum(1 for tok in question_tokens if tok in context_text)
-        overlap_ratio = hits / len(question_tokens)
+        intersection = question_tokens.intersection(context_tokens)
+        overlap_ratio = len(intersection) / len(question_tokens)
         is_relevant = overlap_ratio >= 0.25
-        logger.info(f"Keyword overlap: {hits}/{len(question_tokens)} tokens matched (ratio={overlap_ratio:.2f}). Relevant={is_relevant}")
+        logger.info(
+            f"Token set intersection: {len(intersection)}/{len(question_tokens)} unique tokens matched "
+            f"(ratio={overlap_ratio:.2f}, hits={list(intersection)[:5]}). Relevant={is_relevant}"
+        )
         if is_relevant:
             return {"web_fallback": False}
     else:
-        logger.info("No meaningful tokens in question. Trusting retrieved documents.")
+        logger.info("No meaningful non-stopword tokens in question. Trusting retrieved documents.")
         return {"web_fallback": False}
 
     logger.info("Low keyword overlap. Triggering Web Search.")
