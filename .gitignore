@@ -85,6 +85,8 @@ ragas_evaluation.csv
 # Temporary scratchpad scripts and assets
 scratch/
 temp_assets/
+BACKUP_KLTN_TO_USB/
+*.bundle
 
 # Unpublished scientific manuscripts & Overleaf packages (Must NOT be on public source repo)
 overleaf_packages/
